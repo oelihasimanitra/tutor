@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 from typing import Mapping
 
 from .config import Config
@@ -57,7 +57,7 @@ def simuler_adaptatif(
     rng = random.Random(seed)
     reponses_par_noeud: dict[str, list[Reponse]] = {}
     etats: dict = {}
-    jour = date(2026, 1, 1)
+    jour = datetime(2026, 1, 1)
 
     for _ in range(n_iterations):
         etats = calculer_etats(graphe, reponses_par_noeud, config)

@@ -1,14 +1,14 @@
 """Tests des indicateurs dérivés."""
 from __future__ import annotations
 
-from datetime import date
+from datetime import datetime
 
 import pytest
 
 from app.engine.indicators import calibration, progression, taux_par_domaine, taux_reussite
 from app.engine.status import EtatCompetence, Origine, Reponse, Statut
 
-D = date(2026, 1, 1)
+D = datetime(2026, 1, 1)
 
 
 def test_taux_reussite():

@@ -12,7 +12,6 @@ L'item généré est persisté (``items_generes``) et la réponse y est liée
 """
 from __future__ import annotations
 
-from datetime import date
 from typing import Mapping
 
 from sqlmodel import Session, select
@@ -125,7 +124,7 @@ class TuteurService:
             par_noeud.setdefault(r.competence_id, []).append(ReponseMoteur(
                 competence_id=r.competence_id,
                 est_correct=bool(r.est_correct),
-                date=(r.date.date() if r.date else date.today()),
+                date=r.date,
                 methode_observee=r.methode_observee,
                 type_erreur=r.type_erreur,
                 confiance_annoncee=r.confiance_annoncee,

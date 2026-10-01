@@ -11,7 +11,7 @@ Priorité des origines quand elles s'opposent : **mesure > controle > propagatio
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Mapping
 
@@ -42,7 +42,7 @@ class Reponse:
 
     competence_id: str
     est_correct: bool
-    date: date
+    date: datetime
     methode_observee: str | None = None
     type_erreur: str | None = None
     confiance_annoncee: int | None = None
@@ -56,8 +56,8 @@ class EtatCompetence:
     origine: Origine = Origine.MESURE
     nb_reussites: int = 0
     nb_tentatives: int = 0
-    date_acquisition: date | None = None
-    date_consolidation: date | None = None
+    date_acquisition: datetime | None = None
+    date_consolidation: datetime | None = None
 
 
 def statut_noeud(
@@ -67,34 +67,42 @@ def statut_noeud(
 ) -> EtatCompetence:
     """Calcule le statut « mesure » d'un nœud à partir de ses réponses brutes.
 
-    Fenêtre glissante : on ne regarde que les ``sur`` dernières tentatives
-    (SPEC §4-B). Si ``methode_correcte`` est actif, une réussite ne compte que si
-    la méthode observée correspond à la méthode attendue. ``date_acquisition`` est
-    la date où le seuil a été franchi (utile pour J+7).
+    - ``date_acquisition`` est **figée** au premier franchissement du seuil sur
+      l'historique complet : elle ne dérive pas avec la fenêtre glissante.
+    - le statut courant dépend de la fenêtre glissante des ``sur`` dernières
+      tentatives (un échec récent peut faire retomber à ``fragile``).
     """
     seuil = config.seuil_maitrise
+    reponses_triees = sorted(reponses, key=lambda r: r.date)
 
-    # Fenêtre : les `sur` dernières tentatives, remises dans l'ordre chronologique.
-    tentatives = sorted(reponses, key=lambda r: r.date)[-seuil.sur:]
-    etat = EtatCompetence(nb_tentatives=len(tentatives))
+    def _ok(r: Reponse) -> bool:
+        if not r.est_correct:
+            return False
+        if seuil.methode_correcte and methode_attendue and r.methode_observee != methode_attendue:
+            return False
+        return True
 
-    reussites = 0
-    date_acq: date | None = None
-    for r in tentatives:
-        ok = r.est_correct
-        if ok and seuil.methode_correcte and methode_attendue and r.methode_observee != methode_attendue:
-            ok = False
-        if ok:
-            reussites += 1
-            if reussites >= seuil.reussites and date_acq is None:
+    # date_acquisition : premier franchissement du seuil sur l'historique complet.
+    reussites_cumul = 0
+    date_acq: datetime | None = None
+    for r in reponses_triees:
+        if _ok(r):
+            reussites_cumul += 1
+            if reussites_cumul >= seuil.reussites and date_acq is None:
                 date_acq = r.date
 
-    etat.nb_reussites = reussites
-    if reussites >= seuil.reussites:
+    # Statut courant : fenêtre glissante des `sur` dernières tentatives.
+    fenetre = reponses_triees[-seuil.sur:]
+    reussites_fenetre = sum(1 for r in fenetre if _ok(r))
+    etat = EtatCompetence(nb_tentatives=len(fenetre), nb_reussites=reussites_fenetre)
+
+    # date_acquisition est figée au premier franchissement, indépendamment du
+    # statut courant (un échec récent fait retomber à fragile, sans l'effacer).
+    etat.date_acquisition = date_acq
+    if reussites_fenetre >= seuil.reussites:
         etat.statut = Statut.ACQUIS
         etat.origine = Origine.MESURE
-        etat.date_acquisition = date_acq
-    elif tentatives:
+    elif fenetre:
         etat.statut = Statut.FRAGILE
     # sinon : ABSENT (défaut)
 

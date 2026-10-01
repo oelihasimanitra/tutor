@@ -1,7 +1,7 @@
 """Tests des statuts de compétence et de la propagation des prérequis."""
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 
 from app.engine.graph import Graphe
 from app.engine.status import (
@@ -14,7 +14,7 @@ from app.engine.status import (
     statut_noeud,
 )
 
-D = date(2026, 1, 1)
+D = datetime(2026, 1, 1)
 
 
 def _reponses(corrects, jour=0, methode=None):
@@ -117,3 +117,45 @@ def test_mesure_emporte_sur_propagation(config, make_noeud):
     assert etats["B"].statut == Statut.ACQUIS
     assert etats["A"].statut == Statut.FRAGILE
     assert etats["A"].origine == Origine.MESURE
+
+
+def test_date_acquisition_figee_au_premier_franchissement(config):
+    """Régression : la date d'acquisition ne dérive pas avec la fenêtre glissante."""
+    reponses = [
+        Reponse("N", True, D),
+        Reponse("N", True, D + timedelta(hours=1)),
+        Reponse("N", False, D + timedelta(hours=2)),
+        Reponse("N", True, D + timedelta(hours=3)),   # 3e réussite -> acquis
+        Reponse("N", True, D + timedelta(days=8)),     # contrôle tardif
+    ]
+    etat = statut_noeud(reponses, config)
+    # Figée au premier franchissement (3e réussite), pas au contrôle J+8.
+    assert etat.date_acquisition == D + timedelta(hours=3)
+
+
+def test_echec_apres_acquisition_retour_fragile(config):
+    """Un échec récent fait retomber à fragile, sans effacer date_acquisition."""
+    reponses = [
+        Reponse("N", True, D),
+        Reponse("N", True, D + timedelta(hours=1)),
+        Reponse("N", True, D + timedelta(hours=2)),   # acquis
+        Reponse("N", False, D + timedelta(days=1)),
+        Reponse("N", False, D + timedelta(days=2)),
+        Reponse("N", False, D + timedelta(days=3)),
+        Reponse("N", False, D + timedelta(days=4)),   # fenêtre = 4 échecs
+    ]
+    etat = statut_noeud(reponses, config)
+    assert etat.statut == Statut.FRAGILE
+    assert etat.date_acquisition == D + timedelta(hours=2)  # figé
+
+
+def test_ordre_meme_jour_par_horodatage(config):
+    """Des réponses le même jour sont ordonnées par horodatage (heure)."""
+    reponses = [
+        Reponse("N", False, D),
+        Reponse("N", True, D + timedelta(hours=1)),
+        Reponse("N", True, D + timedelta(hours=2)),
+        Reponse("N", True, D + timedelta(hours=3)),
+    ]
+    etat = statut_noeud(reponses, config)
+    assert etat.statut == Statut.ACQUIS  # 3 réussites sur les 4 dernières
