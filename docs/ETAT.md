@@ -5,29 +5,34 @@
 
 ## Où on en est — phase 1 quasi complète
 
-**Fait et committé (4 commits, `main`) :**
-- **Moteur Python pur** (`app/engine/`) : graphe (acyclicité), items (sympy), statuts +
-  propagation transitive, sélection adaptative, planificateur J+2/J+7, indicateurs,
-  règles de décision, simulateur d'élèves.
-- **Contenu** : graphe **88 nœuds** + **91 gabarits** (NUM + ALG, cycle 4 + seconde).
+**Fait et committé (`main`) :**
+- **Moteur Python pur** (`app/engine/`) : graphe (acyclicité), items (réponse calculée par sympy,
+  jamais par un LLM), statuts + propagation transitive, sélection adaptative, planificateur J+2/J+7,
+  indicateurs, règles de décision, simulateur d'élèves.
+- **Contenu** : graphe **88 nœuds** + **182 gabarits** (NUM 100 + ALG 82, cycle 4 + seconde).
 - **Entretien module A** : `app/content/entretien.yaml` (41 questions + 7 signaux d'observation).
-- **Schéma SQLModel** (15 tables), **service de saisie** (`app/services/`).
-- **Interface web phase 1** : 4 endpoints API + pages HTMX (index, saisie, carte), flux
-  complet validé (créer élève → poser item → saisir → carte).
-- **84 tests verts**.
+- **Schéma SQLModel** (15 tables) + **migrations Alembic** (migration initiale en place).
+- **Service de saisie** (`app/services/`) et **profil élève versionné** (entretien, journal D/M/H,
+  point d'entrée déduit).
+- **Interface web phase 1** : flux complet (créer élève → entretien → poser item → saisir → carte),
+  accès protégé par **PIN** (`X-Tuteur-Pin`).
+- **Sécurité** : évaluation des réponses via `parse_expr` en environnement restreint (anti code-exec).
+- **96 tests verts**.
 
-**Fait (2026-10-01) — le chaînon « profil » est bouclé :**
-1. Saisie de l'entretien dans l'UI (`entretien.html`) → alimente le profil.
-2. Profil vivant + journal (`app/services/profil.py`) : versionné, D/M/H, « M l'emporte sur D ».
-3. Point d'entrée déduit (`niveau_declare` / `noeuds_suspects` → nœud du graphe).
+**Fait (2026-10-01) — revue de code traitée :** les 7 points de la revue sont corrigés et mergés dans
+`main` (branche `fix/revue` conservée) : sécurité sympy, `date_acquisition` figée, `methode_correcte`,
+contrôle des prérequis propagés, config/selection, robustesse des réponses, hygiène (Alembic, chemin
+SQLite absolu, SPEC.md séparé).
 
 **Reste pour boucler la phase 1 :**
-4. Plan de progression exposé (le moteur `planner.py` est prêt et testé).
-5. Tester sur 2-3 élèves réels (= critère de passage, SPEC §6).
+1. Plan de progression exposé dans l'UI (le moteur `planner.py` est prêt et testé).
+2. Tester sur 2-3 élèves réels (= critère de passage, SPEC §6).
 
 ## Décisions prises
 
-- **ORM** : SQLModel (choix utilisateur) ; Alembic à configurer quand le schéma évoluera.
+- **ORM** : SQLModel (choix utilisateur) ; migrations Alembic en place.
+- **Sécurité** : `parse_expr` restreint (pas d'`eval`), PIN via `X-Tuteur-Pin` (env `TUTORAT_PIN`,
+  défaut `tutor`).
 - **Contenu** : NUM + ALG, cycle 4 + seconde ; `LOG.*` reporté (module C).
 - **`reaction_erreur`** (module A) : typologie A-E validée (A évitement, B persévérance,
   C recours au soutien, D inhibition, E auto-contrôle).
@@ -47,7 +52,9 @@
 
 - Warning `httpx`/`starlette` (`TestClient`) — épingler les versions.
 - Migrer les 2 gabarits de factorisation vers `format_reponse: factorisee`.
-- Alembic (migrations) à mettre en place.
+- Vérification de forme « factorisée » non implémentée (l'équivalence + traçage de méthode
+  suffisent pour l'instant).
+- Pilotage par l'affect (`anxiete`) non branché (seuils présents dans la config, non utilisés).
 
 ## Prochain pas (priorisé)
 
