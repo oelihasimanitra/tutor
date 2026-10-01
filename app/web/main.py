@@ -17,7 +17,7 @@ from app.engine.config import load_config
 from app.engine.content import charger_contenu
 from app.services.importer import importer_contenu
 
-from .db import engine, init_db
+from .db import engine, migrer
 from .routes.tuteur import router as tuteur_router
 from .routes.profil import router as profil_router
 
@@ -32,8 +32,8 @@ ITEMS_PATHS = [
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 1. Tables de la base (idempotent).
-    init_db()
+    # 1. Schéma de la base via les migrations Alembic.
+    migrer()
     # 2. Charger contenu + config, et importer le contenu en base.
     config = load_config()
     graphe, gabarits = charger_contenu(GRAPH_PATH, ITEMS_PATHS)
