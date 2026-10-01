@@ -1,0 +1,164 @@
+{# =============================================================================
+   eleve.html — page de saisie tuteur pour un élève (cœur de la phase 1).
+
+   CONTEXTE ATTENDU :
+     - `eleve`      (recommandé) objet avec `id` et `pseudonyme` (modèle Eleve).
+     - `eleve_id`   (repli) identifiant seul si `eleve` n'est pas fourni.
+     Le template tolère les deux ; au moins l'un des deux est nécessaire pour
+     construire les URLs.
+
+   ENDPOINTS UTILISÉS :
+     - POST /eleves/{eleve_id}/items/prochain
+         body {"point_entree": str, "preferer_facile": bool}
+         → 200 {"item_id", "enonce", "competence_id", "gabarit_id"} | 204
+     - POST /eleves/{eleve_id}/reponses
+         body {"item_id", "reponse_eleve", "confiance_annoncee",
+               "type_erreur", "methode_observee"}
+         → 200 {"id", "est_correct", "reponse_attendue"}
+
+   NOTE — ROUTES DE PAGE (hors contrat JSON) :
+     - GET /eleves/{eleve_id}       → rend ce template (route déjà en place).
+     - GET /eleves/{eleve_id}/carte → rend competences.html (route déjà en place).
+   Le routeur actuel ne passe que `eleve_id` (pas l'objet `eleve`) : l'en-tête
+   affiche donc « élève #N ». Passer `eleve` au template donnerait le pseudonyme.
+
+   UX : deux formulaires séquentiels (poser → saisir). Aucun rechargement de
+   page : HTMX poste en JSON, les helpers `TutorUI` rendent les réponses.
+   Le bouton « même nœud » ré-injecte la dernière compétence résolue pour
+   enchaîner plusieurs items sans retaper l'identifiant de nœud.
+   ============================================================================= #}
+{% extends "base.html" %}
+
+{% set eid = (eleve.id if eleve is defined and eleve else (eleve_id | default(none))) %}
+{% set pseudo = (eleve.pseudonyme if eleve is defined and eleve and eleve.pseudonyme else ('élève #' ~ eid)) %}
+
+{% block titre %}{{ pseudo }} — saisie tuteur{% endblock %}
+
+{% block header_context %}
+  <span class="who">
+    Élève : <strong>{{ pseudo }}</strong>
+    <span class="sub">(id {{ eid }})</span>
+    · <a href="/eleves/{{ eid }}/carte">Carte de compétences</a>
+    · <a href="/">Accueil</a>
+  </span>
+{% endblock %}
+
+{% block contenu %}
+
+  {# --- 1. Poser un item ------------------------------------------------- #}
+  <div class="card">
+    <h2><span class="step">1</span>Poser un item</h2>
+    <p class="hint">
+      Le point d'entrée est l'identifiant d'un nœud du graphe
+      (ex. <code>ALG.EQ1.01</code>). Le moteur descend ensuite tout seul le
+      long de la branche.
+    </p>
+
+    <form id="poser-form"
+          hx-post="/eleves/{{ eid }}/items/prochain"
+          hx-swap="none"
+          hx-disabled-elt="find button"
+          hx-on::after-request="TutorUI.poserItem(event)">
+      <div class="row">
+        <div class="field" style="flex:2 1 260px">
+          <label for="point-entree">Point d'entrée <span class="sub">(id de nœud)</span></label>
+          <div style="display:flex; gap:8px">
+            <input type="text" id="point-entree" name="point_entree"
+                   placeholder="ex. ALG.EQ1.01" required autocomplete="off"
+                   style="flex:1 1 auto">
+            <button type="button" class="btn-ghost" title="Réutiliser le dernier nœud résolu"
+                    onclick="(function(i){if(window.TutorUI.state.competenceId){i.value=window.TutorUI.state.competenceId;}})(document.getElementById('point-entree'))">
+              Même nœud
+            </button>
+          </div>
+        </div>
+        <div class="field" style="flex:0 0 auto; align-self:flex-end">
+          <label class="check" for="preferer-facile">
+            <input type="checkbox" id="preferer-facile" name="preferer_facile" value="true">
+            Préférer le plus facile
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Poser l'item</button>
+      </div>
+    </form>
+
+    <div id="item-zone" class="feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  {# --- 2. Saisir la réponse -------------------------------------------- #}
+  <div class="card">
+    <h2><span class="step">2</span>Saisir la réponse de l'élève</h2>
+    <p class="hint">
+      L'élève travaille sur papier ; tu saisis ici ce qu'il a écrit (réponse
+      brute, jamais modifiée ensuite).
+    </p>
+
+    <p id="reponse-note" class="hint" style="color:var(--warn)">
+      Pose d'abord un item (étape 1) pour activer la saisie.
+    </p>
+
+    <form id="reponse-form"
+          hx-post="/eleves/{{ eid }}/reponses"
+          hx-swap="none"
+          hx-disabled-elt="find button"
+          hx-on::after-request="TutorUI.envoyerReponse(event)">
+      {# item_id est injecté par TutorUI.poserItem après réception de l'item. #}
+      <input type="hidden" id="reponse-item-id" name="item_id">
+
+      <div class="field">
+        <label for="reponse-eleve">Réponse de l'élève</label>
+        <textarea id="reponse-eleve" name="reponse_eleve"
+                  placeholder="ex. x = 3" required autocomplete="off"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="confiance-annoncee">Confiance annoncée <span class="sub">(1 = pas sûr · 5 = sûr)</span></label>
+          <select id="confiance-annoncee" name="confiance_annoncee">
+            <option value="1">1 — pas du tout sûr</option>
+            <option value="2">2 — peu sûr</option>
+            <option value="3" selected>3 — moyennement sûr</option>
+            <option value="4">4 — assez sûr</option>
+            <option value="5">5 — tout à fait sûr</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="type-erreur">Type d'erreur <span class="sub">(si échec)</span></label>
+          <select id="type-erreur" name="type_erreur">
+            <option value="">— non renseigné</option>
+            <option value="etourderie">Étourderie</option>
+            <option value="procedure">Procédure</option>
+            <option value="concept">Concept</option>
+            <option value="lacune">Lacune</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="methode-observee">Méthode observée <span class="sub">(optionnel — traçage de méthode)</span></label>
+        <input type="text" id="methode-observee" name="methode_observee"
+               placeholder="ex. mise au même dénominateur" autocomplete="off">
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="reponse-submit" class="btn-primary" disabled>
+          Enregistrer la réponse
+        </button>
+      </div>
+    </form>
+
+    <div id="verdict" class="feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  {# --- 3. Carte de compétences ----------------------------------------- #}
+  <div class="card">
+    <h2>Carte de compétences</h2>
+    <p class="hint">État dérivé de chaque compétence pour cet élève.</p>
+    <a class="btn btn-ghost" href="/eleves/{{ eid }}/carte">Voir la carte de compétences →</a>
+  </div>
+
+{% endblock %}

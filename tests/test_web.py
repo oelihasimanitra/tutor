@@ -6,5 +6,6 @@ def test_app_route_health():
     """L'application FastAPI expose une route de santé."""
     from app.web.main import app
 
-    routes = [r.path for r in app.routes]
+    # FastAPI inclut les routers de façon paresseuse (objet _IncludedRouter sans .path).
+    routes = [getattr(r, "path", None) for r in app.routes]
     assert "/health" in routes

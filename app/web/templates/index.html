@@ -1,0 +1,94 @@
+{# =============================================================================
+   index.html — accueil de l'outil tuteur.
+
+   CONTEXTE ATTENDU (aucun requis) :
+     - (optionnel) `eleves` : itérable d'objets {id, pseudonyme} pour lister
+       les élèves récents. Non fourni par le contrat actuel → section omise si
+       absent. Aucune requête de liste n'existe dans le contrat JSON ; voir
+       NOTE ci-dessous.
+
+   ENDPOINTS UTILISÉS :
+     - POST /eleves  body {"pseudonyme": str} → 201 {"id", "pseudonyme"}
+
+   NOTE — ROUTE DE PAGE NÉCESSAIRE (hors contrat JSON) :
+     - GET /            → rend ce template.
+     - GET /eleves/{id} → page de saisie (eleve.html). Le lien « ouvrir » et le
+                          champ identifiant y mènent directement.
+   Aucune route de LISTE des élèves n'est définie dans le contrat ; si le routeur
+   expose un `GET /eleves` (HTML ou JSON) ou passe `eleves` au template, la
+   liste ci-dessous s'affichera automatiquement.
+   ============================================================================= #}
+{% extends "base.html" %}
+
+{% block titre %}Accueil — suivi de tutorat{% endblock %}
+
+{% block contenu %}
+
+  <div class="card">
+    <h2>Créer un élève</h2>
+    <p class="hint">
+      Seul un <strong>pseudonyme</strong> est demandé : aucune donnée identifiante
+      (nom, prénom, naissance) ne doit être saisie ici.
+    </p>
+
+    <form id="create-form"
+          hx-post="/eleves"
+          hx-swap="none"
+          hx-disabled-elt="find button"
+          hx-on::after-request="TutorUI.creerEleve(event)">
+      <div class="field">
+        <label for="pseudonyme">Pseudonyme de l'élève</label>
+        <input type="text" id="pseudonyme" name="pseudonyme"
+               placeholder="ex. « Pixel-42 »" required autocomplete="off" autofocus>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary">Créer l'élève</button>
+      </div>
+    </form>
+
+    <div id="create-result" class="feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="card">
+    <h2>Ouvrir un élève existant</h2>
+    <p class="hint">Saisis l'identifiant numérique d'un élève déjà créé.</p>
+
+    <form id="open-form" onsubmit="return TutorUI.ouvrirEleve(event)">
+      <div class="row">
+        <div class="field" style="flex:1 1 220px">
+          <label for="eleve-id">Identifiant de l'élève <span class="sub">(id)</span></label>
+          <input type="number" id="eleve-id" name="eleve_id" min="1" step="1"
+                 placeholder="ex. 12" inputmode="numeric" required>
+        </div>
+        <div class="actions" style="flex:0 0 auto; align-self:flex-end">
+          <button type="submit" class="btn-ghost">Ouvrir la page de saisie</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="open-result" class="feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  {% if eleves %}
+  <div class="card">
+    <h2>Élèves récents</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Pseudonyme</th><th>Identifiant</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for eleve in eleves %}
+          <tr>
+            <td>{{ eleve.pseudonyme }}</td>
+            <td class="num"><code>{{ eleve.id }}</code></td>
+            <td><a href="/eleves/{{ eleve.id }}">Ouvrir</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+{% endblock %}

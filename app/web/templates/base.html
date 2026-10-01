@@ -1,0 +1,342 @@
+{# =============================================================================
+   base.html — gabarit commun de l'interface tuteur (phase 1).
+
+   RÔLE : porte le <head>, le CSS, le chargement de HTMX + l'extension
+   `json-enc`, et les helpers JS de rendu. Les pages index.html / eleve.html /
+   competences.html l'étendent via `{% extends "base.html" %}`.
+
+   POURQUOI DEUX SCRIPTS :
+   - htmx.org            → moteur de requêtes (pas de rechargement complet).
+   - ext/json-enc.js     → les POST partent en `application/json`, conformément
+                           au contrat des endpoints (`{"pseudonyme": "..."}`),
+                           au lieu du `x-www-form-urlencoded` par défaut.
+
+   POURQUOI DU JS MALGRÉ TOUT :
+   Les 4 endpoints du contrat renvoient du JSON (pas des fragments HTML). HTMX
+   ne sait pas transformer du JSON en HTML nativement : les réponses sont donc
+   rendues par les helpers `TutorUI.*` ci-dessous (vanilla JS, ~60 lignes,
+   aucun build, aucun framework). Les `<form>` gardent leur sémantique HTML
+   normale ; HTMX intercepte l'événement submit.
+
+   Voir le commentaire en tête de index.html / eleve.html / competences.html
+   pour les routes de PAGE attendues (absentes du contrat JSON).
+   ============================================================================= #}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titre %}Suivi de tutorat — maths &amp; logique{% endblock %}</title>
+
+  <script src="https://unpkg.com/htmx.org"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+
+  <style>
+    :root {
+      --bg: #f5f6f8; --panel: #ffffff; --ink: #1b2130; --muted: #5c6675;
+      --line: #dde2ea; --accent: #2f6fed; --accent-ink: #ffffff;
+      --ok: #10794a; --ok-bg: #e6f6ee;
+      --err: #b3261e; --err-bg: #fdecea;
+      --warn: #8a5a00; --warn-bg: #fff5e0;
+      --strong: #0b6b6b; --strong-bg: #e0f5f5;
+      --neutral-bg: #eef1f5;
+      --radius: 10px; --gap: 16px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #12151b; --panel: #1a1f27; --ink: #e8ecf3; --muted: #9aa4b2;
+        --line: #2b3340; --accent: #6c9bff; --accent-ink: #0b0e14;
+        --ok: #5bd39b; --ok-bg: #12301f;
+        --err: #ff9a90; --err-bg: #3a1512;
+        --warn: #ffcf70; --warn-bg: #3a2c0c;
+        --strong: #74d8d8; --strong-bg: #0f2c2c;
+        --neutral-bg: #232a34;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.55 system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    a { color: var(--accent); }
+    code, kbd { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: .92em; }
+    code { background: var(--neutral-bg); padding: .1em .35em; border-radius: 5px; }
+
+    .app-header {
+      background: var(--panel); border-bottom: 1px solid var(--line);
+      padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 8px 20px;
+      align-items: baseline; justify-content: space-between;
+    }
+    .app-header .brand { font-weight: 700; font-size: 1.05rem; color: inherit; text-decoration: none; }
+    .app-header .who { color: var(--muted); font-size: .9rem; }
+    .app-header .who strong { color: var(--ink); }
+
+    .app-main { max-width: 900px; margin: 0 auto; padding: 24px 20px 64px; }
+
+    .card {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 20px; margin-bottom: var(--gap);
+    }
+    .card > h2 { margin: 0 0 4px; font-size: 1.12rem; }
+    .card > h2 .step {
+      display: inline-flex; width: 1.6em; height: 1.6em; margin-right: .5em;
+      align-items: center; justify-content: center; border-radius: 50%;
+      background: var(--accent); color: var(--accent-ink); font-size: .8em;
+    }
+    .card .hint { color: var(--muted); font-size: .88rem; margin: 0 0 14px; }
+
+    .field { margin-bottom: 14px; }
+    .field > label { display: block; font-weight: 600; font-size: .9rem; margin-bottom: 5px; }
+    .field .sub { color: var(--muted); font-weight: 400; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%; padding: 10px 12px; font: inherit; color: var(--ink);
+      background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    }
+    input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 1px;
+    }
+    textarea { min-height: 84px; resize: vertical; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .row > .field { flex: 1 1 180px; margin-bottom: 0; }
+    .check { display: flex; align-items: center; gap: 8px; font-size: .92rem; }
+    .check input { width: auto; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+    button, .btn {
+      font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px;
+      padding: 10px 16px; border: 1px solid transparent; text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary { background: var(--accent); color: var(--accent-ink); }
+    .btn-ghost { background: transparent; color: var(--accent); border-color: var(--line); }
+    .btn-ghost:hover { background: var(--neutral-bg); }
+    button[disabled], .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+    .feedback { margin-top: 12px; border-radius: 8px; padding: 12px 14px; font-size: .95rem; }
+    .feedback:empty { display: none; }
+    .feedback.success { background: var(--ok-bg); color: var(--ok); }
+    .feedback.error { background: var(--err-bg); color: var(--err); }
+    .feedback.info { background: var(--neutral-bg); color: var(--muted); }
+
+    .enonce {
+      font-size: 1.22rem; line-height: 1.6; margin: 6px 0 0;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .item-meta { color: var(--muted); font-size: .82rem; margin-bottom: 4px; }
+    .verdict { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .verdict .mark { font-size: 1.4rem; line-height: 1; }
+
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 999px;
+      font-size: .8rem; font-weight: 600; white-space: nowrap;
+    }
+    .badge-neutral { background: var(--neutral-bg); color: var(--muted); }
+    .badge-warn    { background: var(--warn-bg); color: var(--warn); }
+    .badge-ok      { background: var(--ok-bg); color: var(--ok); }
+    .badge-strong  { background: var(--strong-bg); color: var(--strong); }
+
+    table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    tbody tr:last-child td { border-bottom: 0; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .table-wrap { overflow-x: auto; }
+
+    .legend { color: var(--muted); font-size: .82rem; margin-top: 10px; }
+    .legend code { font-size: .95em; }
+  </style>
+</head>
+
+<body hx-ext="json-enc">
+
+  <header class="app-header">
+    <a class="brand" href="/">Suivi de tutorat — maths &amp; logique</a>
+    {% block header_context %}{% endblock %}
+  </header>
+
+  <main class="app-main">
+    <div id="global-error" class="feedback error" role="alert" aria-live="assertive"></div>
+    {% block contenu %}{% endblock %}
+  </main>
+
+  <script>
+  // ===========================================================================
+  // TutorUI — helpers de rendu pour les réponses JSON des endpoints.
+  // Aucun build, aucun framework : juste HTMX en amont et un peu de DOM ici.
+  // ===========================================================================
+  window.TutorUI = (function () {
+    'use strict';
+
+    var state = { competenceId: null, hasItem: false };
+
+    // --- Utilitaires ------------------------------------------------------
+    function esc(value) {
+      return String(value === null || value === undefined ? '' : value)
+        .replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+    function parse(evt) {
+      try { return JSON.parse(evt.detail.xhr.responseText); } catch (e) { return null; }
+    }
+    function el(id) { return document.getElementById(id); }
+    function setFeedback(node, kind, html) {
+      if (!node) return;
+      node.className = 'feedback ' + kind;
+      node.innerHTML = html;
+    }
+    function fail(evt, node, label) {
+      setFeedback(node, 'error',
+        esc(label) + " (code HTTP " + esc(evt.detail.xhr.status) + ").");
+    }
+
+    // Conversion des libellés (les clés restent en anglais côté moteur).
+    var STATUT_LABEL = { absent: 'Absent', fragile: 'Fragile', acquis: 'Acquis', consolide: 'Consolidé' };
+    var STATUT_CLASS = { absent: 'badge-neutral', fragile: 'badge-warn', acquis: 'badge-ok', consolide: 'badge-strong' };
+    var ORIGINE_LABEL = { mesure: 'Mesure', propagation: 'Propagation', controle: 'Contrôle' };
+
+    // --- 1. Création d'un élève (index.html) ------------------------------
+    function creerEleve(evt) {
+      var xhr = evt.detail.xhr, box = el('create-result');
+      if (xhr.status === 201 || xhr.status === 200) {
+        var d = parse(evt) || {};
+        setFeedback(box, 'success',
+          'Élève créé : <strong>' + esc(d.pseudonyme) + '</strong> (id ' + esc(d.id) + '). ' +
+          '<a href="/eleves/' + encodeURIComponent(d.id) + '">Ouvrir la page de saisie →</a>');
+        evt.detail.elt.reset();
+      } else if (xhr.status === 409) {
+        setFeedback(box, 'error', 'Ce pseudonyme est déjà utilisé. Choisis-en un autre.');
+      } else {
+        fail(evt, box, "La création de l'élève a échoué");
+      }
+    }
+
+    // --- 2. Pose d'un item (eleve.html) -----------------------------------
+    function poserItem(evt) {
+      var xhr = evt.detail.xhr, zone = el('item-zone');
+      if (xhr.status === 204) {
+        state.hasItem = false; state.competenceId = null;
+        setFeedback(zone, 'info',
+          'Branche épuisée : plus rien à proposer à partir de ce point d\'entrée. ' +
+          'Essaie un autre nœud.');
+        disableReponse(true);
+        return;
+      }
+      if (xhr.status !== 200) { fail(evt, zone, "Impossible de poser un item"); return; }
+
+      var d = parse(evt) || {};
+      state.hasItem = true;
+      state.competenceId = d.competence_id || null;
+
+      zone.className = '';
+      zone.innerHTML =
+        '<div class="item-meta">Compétence <code>' + esc(d.competence_id) + '</code>' +
+        ' · gabarit <code>' + esc(d.gabarit_id) + '</code>' +
+        ' · item #' + esc(d.item_id) + '</div>' +
+        '<p class="enonce">' + esc(d.enonce) + '</p>';
+
+      // Arme le formulaire de réponse sur CET item.
+      // reset() d'abord (il vide aussi le champ caché), puis on lie l'item_id.
+      var form = el('reponse-form');
+      if (form) form.reset();
+      var hidden = el('reponse-item-id');
+      if (hidden) hidden.value = d.item_id;
+      if (el('confiance-annoncee')) el('confiance-annoncee').value = '3';
+      disableReponse(false);
+      var v = el('verdict'); if (v) { v.className = 'feedback'; v.innerHTML = ''; }
+      if (el('reponse-eleve')) el('reponse-eleve').focus();
+    }
+
+    function disableReponse(disabled) {
+      var btn = el('reponse-submit');
+      if (btn) btn.disabled = disabled;
+      var note = el('reponse-note');
+      if (note) note.style.display = disabled && !state.hasItem ? '' : 'none';
+    }
+
+    // --- 3. Envoi d'une réponse (eleve.html) ------------------------------
+    function envoyerReponse(evt) {
+      var xhr = evt.detail.xhr, v = el('verdict');
+      if (xhr.status !== 200) { fail(evt, v, "L'enregistrement de la réponse a échoué"); return; }
+      var d = parse(evt) || {};
+      var correct = d.est_correct === true;
+
+      if (v) {
+        v.className = 'feedback ' + (correct ? 'success' : 'error');
+        v.innerHTML = '<span class="verdict"><span class="mark">' + (correct ? '✔' : '✘') + '</span>' +
+          '<span><strong>' + (correct ? 'Réponse correcte' : 'Réponse incorrecte') + '</strong>' +
+          (correct ? '' : ' — réponse attendue : <code>' + esc(d.reponse_attendue) + '</code>') +
+          '</span></span>';
+      }
+      // L'item est consommé : on empêche une double saisie sur le même item.
+      state.hasItem = false;
+      disableReponse(true);
+      if (el('reponse-eleve')) el('reponse-eleve').value = '';
+    }
+
+    // --- 4. Rafraîchissement de la carte (competences.html) ---------------
+    function rafraichirCompetences(evt) {
+      var xhr = evt.detail.xhr, box = el('competences-feedback');
+      if (xhr.status !== 200) { fail(evt, box, 'Le rafraîchissement a échoué'); return; }
+      var d = parse(evt) || {}, map = d.competences || {};
+      var ids = Object.keys(map).sort();
+
+      var tbody = el('competences-body');
+      if (tbody) {
+        if (ids.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4">Aucune compétence évaluée pour le moment.</td></tr>';
+        } else {
+          tbody.innerHTML = ids.map(function (noeud) {
+            var c = map[noeud] || {}, st = c.statut || 'absent';
+            return '<tr>' +
+              '<td><code>' + esc(noeud) + '</code></td>' +
+              '<td><span class="badge ' + (STATUT_CLASS[st] || 'badge-neutral') + '">' +
+                esc(STATUT_LABEL[st] || st) + '</span></td>' +
+              '<td>' + esc(ORIGINE_LABEL[c.origine] || c.origine || '—') + '</td>' +
+              '<td class="num">' + esc(c.nb_reussites || 0) + ' / ' + esc(c.nb_tentatives || 0) + '</td>' +
+              '</tr>';
+          }).join('');
+        }
+      }
+      setFeedback(box, 'info', ids.length + ' compétence(s) — carte à jour.');
+    }
+
+    // --- 5. Navigation simple (index.html) --------------------------------
+    function ouvrirEleve(evt) {
+      if (evt) evt.preventDefault();
+      var input = el('eleve-id'), box = el('open-result');
+      var id = input ? String(input.value).trim() : '';
+      if (!/^\d+$/.test(id)) {
+        setFeedback(box, 'error', "Saisis un identifiant numérique d'élève.");
+        return false;
+      }
+      window.location.href = '/eleves/' + id;
+      return false;
+    }
+
+    return {
+      state: state, esc: esc,
+      creerEleve: creerEleve, poserItem: poserItem, envoyerReponse: envoyerReponse,
+      rafraichirCompetences: rafraichirCompetences, ouvrirEleve: ouvrirEleve,
+      disableReponse: disableReponse
+    };
+  })();
+
+  // Corps JSON propre : on retire les champs optionnels laissés vides, pour ne
+  // pas envoyer "" sur un champ `int | None` (Pydantic rejetterait "" mais
+  // accepte le champ absent). S'applique à toutes les requêtes HTMX.
+  document.addEventListener('htmx:configRequest', function (evt) {
+    var p = evt.detail.parameters;
+    for (var k in p) {
+      if (Object.prototype.hasOwnProperty.call(p, k) && p[k] === '') delete p[k];
+    }
+  });
+
+  // Erreur réseau : bandeau global (les erreurs HTTP sont gérées par action).
+  document.addEventListener('htmx:sendError', function () {
+    var box = document.getElementById('global-error');
+    if (box) box.textContent = 'Le serveur est injoignable. Vérifie que l\'API tourne.';
+  });
+  </script>
+</body>
+</html>

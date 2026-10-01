@@ -1,0 +1,116 @@
+{# =============================================================================
+   competences.html — carte de compétences d'un élève (état dérivé).
+
+   CONTEXTE ATTENDU :
+     - `competences` : dict {noeud_id: {"statut", "origine",
+                                        "nb_reussites", "nb_tentatives"}}
+                       (même forme que la réponse de l'endpoint JSON).
+     - `eleve`       (recommandé) objet {id, pseudonyme}.
+     - `eleve_id`    (repli) identifiant seul.
+
+   ENDPOINT UTILISÉ :
+     - GET /eleves/{eleve_id}/competences → 200 {"competences": {...}}
+       Le tableau est rendu côté client par `TutorUI.rafraichirCompetences`.
+       La requête part au chargement de la page (`hx-trigger="load, click"`) ET
+       au clic sur « Rafraîchir » : pas de rechargement complet.
+
+   ÉCART CONSTATÉ AVEC LE ROUTEUR (app/web/routes/tuteur.py) :
+     - La route de page `GET /eleves/{eleve_id}/carte` rend ce template mais ne
+       passe PAS `competences` (seulement `eleve_id`). Le tableau est donc vide
+       au premier rendu et se remplit au `load` via l'API JSON ci-dessus.
+       Correctif recommandé côté routeur : passer `competences=service.carte_competences(id)`
+       (et l'objet `eleve`), ce qui rend le tableau immédiatement disponible même
+       sans JS. Le template gère l'absence de la variable sans erreur.
+     - La page carte vit sur `/carte` (l'API JSON garde `/competences`) : pas de
+       collision d'URL, la négociation de contenu n'est pas nécessaire.
+     - `GET /eleves/{eleve_id}` → page de saisie (eleve.html), lien « retour ».
+
+   Les libellés affichés sont en français ; les clés (statut/origine) restent
+   celles du moteur : absent|fragile|acquis|consolide et
+   mesure|propagation|controle.
+   ============================================================================= #}
+{% extends "base.html" %}
+
+{% set eid = (eleve.id if eleve is defined and eleve else (eleve_id | default(none))) %}
+{% set pseudo = (eleve.pseudonyme if eleve is defined and eleve and eleve.pseudonyme else ('élève #' ~ eid)) %}
+{% set carte = competences | default({}, true) %}
+
+{% set statut_label = {'absent': 'Absent', 'fragile': 'Fragile', 'acquis': 'Acquis', 'consolide': 'Consolidé'} %}
+{% set statut_class = {'absent': 'badge-neutral', 'fragile': 'badge-warn', 'acquis': 'badge-ok', 'consolide': 'badge-strong'} %}
+{% set origine_label = {'mesure': 'Mesure', 'propagation': 'Propagation', 'controle': 'Contrôle'} %}
+
+{% block titre %}Compétences — {{ pseudo }}{% endblock %}
+
+{% block header_context %}
+  <span class="who">
+    Élève : <strong>{{ pseudo }}</strong>
+    <span class="sub">(id {{ eid }})</span>
+    · <a href="/eleves/{{ eid }}">← Saisie</a>
+    · <a href="/">Accueil</a>
+  </span>
+{% endblock %}
+
+{% block contenu %}
+
+  <div class="card">
+    <h2>Carte de compétences</h2>
+    <p class="hint">
+      Recalculée depuis les réponses brutes. « Origine » indique d'où vient
+      l'état : <strong>mesure</strong> (item posé sur ce nœud),
+      <strong>propagation</strong> (déduit des prérequis),
+      <strong>contrôle</strong> (item de contrôle de rétention).
+    </p>
+
+    <div class="actions" style="margin-bottom:14px">
+      <button type="button" class="btn-ghost"
+              hx-get="/eleves/{{ eid }}/competences"
+              hx-trigger="load, click"
+              hx-swap="none"
+              hx-disabled-elt="this"
+              hx-on::after-request="TutorUI.rafraichirCompetences(event)">
+        Rafraîchir
+      </button>
+      <a class="btn btn-ghost" href="/eleves/{{ eid }}">← Retour à la saisie</a>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nœud</th>
+            <th>Statut</th>
+            <th>Origine</th>
+            <th style="text-align:right">Réussites / tentatives</th>
+          </tr>
+        </thead>
+        <tbody id="competences-body">
+          {% for noeud, c in carte | dictsort %}
+          {% set statut = c.statut | default('absent') %}
+          <tr>
+            <td><code>{{ noeud }}</code></td>
+            <td>
+              <span class="badge {{ statut_class.get(statut, 'badge-neutral') }}">
+                {{ statut_label.get(statut, statut) }}
+              </span>
+            </td>
+            <td>{{ origine_label.get(c.origine, c.origine | default('—')) }}</td>
+            <td class="num">{{ c.nb_reussites | default(0) }} / {{ c.nb_tentatives | default(0) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Aucune compétence évaluée pour le moment.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="legend">
+      Statuts : <span class="badge badge-neutral">Absent</span>
+      <span class="badge badge-warn">Fragile</span>
+      <span class="badge badge-ok">Acquis</span>
+      <span class="badge badge-strong">Consolidé</span>
+    </p>
+
+    <div id="competences-feedback" class="feedback" role="status" aria-live="polite"></div>
+  </div>
+
+{% endblock %}
