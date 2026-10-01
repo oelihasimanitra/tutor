@@ -19,6 +19,7 @@ from app.services.importer import importer_contenu
 
 from .db import engine, init_db
 from .routes.tuteur import router as tuteur_router
+from .routes.profil import router as profil_router
 
 # Racine du projet (app/web/main.py -> 3 niveaux au-dessus).
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -50,6 +51,8 @@ app = FastAPI(title="Suivi de tutorat — maths & logique", lifespan=lifespan)
 
 # Routes de saisie tuteur (API JSON + pages Jinja2) — cf. app/web/routes/tuteur.py.
 app.include_router(tuteur_router)
+# Routes du profil élève versionné (entretien, journal, point d'entrée).
+app.include_router(profil_router)
 
 
 @app.get("/health")

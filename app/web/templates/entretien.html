@@ -1,0 +1,238 @@
+{# =============================================================================
+   entretien.html — saisie de l'entretien de départ (module A).
+
+   CONTEXTE ATTENDU :
+     - `blocs`   : liste des blocs d'app/content/entretien.yaml (chargés par la
+                   route). Chaque bloc porte `questions` (et `signaux` pour le
+                   bloc 7 d'observation). Chaque question porte `id`, `champ`,
+                   `type_reponse`, `options`, `statut`, `libelle`.
+     - `eleve`   (recommandé) objet {id, pseudonyme} ; `eleve_id` en repli.
+
+   ENDPOINT UTILISÉ :
+     - POST /eleves/{eleve_id}/entretien
+         body {"reponses": {question_id: valeur}, "raison": str|null}
+         -> 201 {"version", "champs", "statuts"}
+
+   Les réponses sont envoyées en JSON par un petit script (fetch) : les noms de
+   champs du formulaire ne peuvent pas être directement mappés sur un objet
+   `reponses` imbriqué par HTMX. Le champ `data-question` porte l'id de question.
+   ============================================================================= #}
+{% extends "base.html" %}
+
+{% set eid = (eleve.id if eleve is defined and eleve else (eleve_id | default(none))) %}
+{% set pseudo = (eleve.pseudonyme if eleve is defined and eleve and eleve.pseudonyme else ('élève #' ~ eid)) %}
+
+{% block titre %}Entretien — {{ pseudo }}{% endblock %}
+
+{% block header_context %}
+  <span class="who">
+    Élève : <strong>{{ pseudo }}</strong>
+    <span class="sub">(id {{ eid }})</span>
+    · <a href="/eleves/{{ eid }}/profil-page">Profil &amp; journal</a>
+    · <a href="/">Accueil</a>
+  </span>
+{% endblock %}
+
+{% block contenu %}
+
+  <div class="card">
+    <h2>Entretien de départ (module A)</h2>
+    <p class="hint">
+      Réponses brutes de l'élève ; le codage (sommes d'anxiété et de mindset,
+      statuts D/M/H) est appliqué côté serveur. Laisser vide ce qui n'a pas été posé.
+    </p>
+
+    <form id="entretien-form" onsubmit="soumettreEntretien(event)">
+      {% for bloc in blocs | default([]) %}
+      <section class="card" style="background:transparent; border-style:dashed">
+        <h2 style="font-size:1rem">Bloc {{ bloc.id }} — {{ bloc.nom }}</h2>
+
+        {% for question in bloc.questions | default([]) %}
+        <div class="field">
+          <label for="{{ question.id }}">
+            {{ question.libelle }}
+            <span class="sub">
+              <code>{{ question.champ }}</code>
+              {% if question.statut %}· statut {{ question.statut }}{% endif %}
+            </span>
+          </label>
+
+          {% if question.type_reponse == 'choix' %}
+            {% if question.multiple %}
+              {% for option in question.options | default([]) %}
+              {% set code = option.split(':')[0] | trim %}
+              <label class="check">
+                <input type="checkbox" data-question="{{ question.id }}"
+                       value="{{ code }}" name="{{ question.id }}__{{ code }}">
+                {{ option }}
+              </label>
+              {% endfor %}
+            {% else %}
+              <select data-question="{{ question.id }}" name="{{ question.id }}">
+                <option value="">— non renseigné —</option>
+                {% for option in question.options | default([]) %}
+                {% set code = option.split(':')[0] | trim %}
+                <option value="{{ code }}">{{ option }}</option>
+                {% endfor %}
+              </select>
+            {% endif %}
+          {% elif '[' in (question.champ | default('', true)) %}
+            {# Champ indexé (autoeval[domaine]) : une note 1-5 par domaine,
+               collectée en dict {domaine: note} côté script. #}
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Domaine</th><th>Niveau (1 → 5)</th></tr>
+                </thead>
+                <tbody>
+                  {% for d in ['NUM', 'PRO', 'ALG', 'GEO', 'ESP', 'FON', 'STA', 'LOG'] %}
+                  <tr>
+                    <td><code>{{ d }}</code></td>
+                    <td>
+                      <select data-question="{{ question.id }}" data-domaine="{{ d }}"
+                              aria-label="{{ d }}" style="max-width:220px">
+                        <option value="">—</option>
+                        {% for opt in question.options | default(['1', '2', '3', '4', '5']) %}
+                        <option value="{{ opt.split(':')[0] | trim }}">{{ opt }}</option>
+                        {% endfor %}
+                      </select>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% elif question.type_reponse in ['echelle_1_5', 'entier'] %}
+            <input type="number" data-question="{{ question.id }}" name="{{ question.id }}"
+                   {% if question.type_reponse == 'echelle_1_5' %}min="1" max="5"{% endif %}
+                   autocomplete="off">
+          {% elif question.type_reponse == 'booleen' %}
+            <label class="check">
+              <input type="checkbox" data-question="{{ question.id }}" name="{{ question.id }}">
+              Oui
+            </label>
+          {% else %}
+            <textarea data-question="{{ question.id }}" name="{{ question.id }}"
+                      placeholder="Réponse libre (séparer les éléments par des virgules)"></textarea>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        {% if bloc.signaux %}
+        {# Bloc 7 : grille d'observation 0-2, remplie par le tuteur, JAMAIS posée
+           à l'élève. Séparée visuellement (bandeau de gauche) des questions. #}
+        <div style="border-left:4px solid var(--accent); padding-left:14px; margin-top:14px">
+          <p class="hint">
+            <strong>Grille d'observation (tuteur)</strong> — à remplir pendant
+            l'entretien et la séance : 0 = jamais / absent, 1 = ponctuel,
+            2 = marqué / répété. Survole un intitulé pour lire la règle.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Signal observé</th>
+                  <th style="text-align:center">0</th>
+                  <th style="text-align:center">1</th>
+                  <th style="text-align:center">2</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for signal in bloc.signaux %}
+                <tr>
+                  <td title="{{ signal.codage | default('') }}">{{ signal.libelle }}</td>
+                  {% for note in [0, 1, 2] %}
+                  <td style="text-align:center">
+                    <input type="radio" data-question="{{ signal.id }}"
+                           name="obs-{{ signal.id }}" value="{{ note }}"
+                           aria-label="{{ signal.libelle }} — {{ note }}">
+                  </td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+      {% endfor %}
+
+      <div class="field">
+        <label for="raison">Raison de cette version <span class="sub">(optionnel)</span></label>
+        <input type="text" id="raison" name="raison"
+               placeholder="ex. entretien de départ" autocomplete="off">
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Enregistrer l'entretien</button>
+        <a class="btn btn-ghost" href="/eleves/{{ eid }}/profil-page">Voir le profil</a>
+      </div>
+    </form>
+
+    <div id="entretien-resultat" class="feedback" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+  function collecterReponses(form) {
+    var reponses = {};
+    form.querySelectorAll('[data-question]').forEach(function (el) {
+      var id = el.dataset.question;
+      if (el.type === 'checkbox') {
+        // Choix multiple : liste ; booléen simple : valeur booléenne.
+        if (el.name.indexOf('__') !== -1) {
+          if (!Array.isArray(reponses[id])) reponses[id] = [];
+          if (el.checked) reponses[id].push(el.value);
+        } else {
+          reponses[id] = el.checked;
+        }
+      } else if (el.dataset.domaine) {
+        // Champ indexé (autoeval) : construit un dict {domaine: note}.
+        if (el.value !== '') {
+          if (!reponses[id] || typeof reponses[id] !== 'object') reponses[id] = {};
+          reponses[id][el.dataset.domaine] = el.value;
+        }
+      } else if (el.type === 'radio') {
+        // Radios : ne retenir que la case cochée (sinon la dernière écrase).
+        if (el.checked) reponses[id] = el.value;
+      } else if (el.value !== '') {
+        reponses[id] = el.value;
+      }
+    });
+    return reponses;
+  }
+
+  async function soumettreEntretien(evt) {
+    evt.preventDefault();
+    var form = evt.target;
+    var box = document.getElementById('entretien-resultat');
+    var eid = {{ eid | tojson }};
+    box.className = 'feedback info';
+    box.textContent = 'Enregistrement…';
+    try {
+      var reponse = await fetch('/eleves/' + eid + '/entretien', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reponses: collecterReponses(form),
+          raison: (form.elements['raison'] ? form.elements['raison'].value : '') || null
+        })
+      });
+      if (reponse.status !== 201) {
+        box.className = 'feedback error';
+        box.textContent = "L'enregistrement a échoué (code HTTP " + reponse.status + ').';
+        return;
+      }
+      var d = await reponse.json();
+      var nb = Object.keys(d.champs || {}).length;
+      box.className = 'feedback success';
+      box.innerHTML = 'Profil enregistré : <strong>version ' + d.version + '</strong> (' +
+        nb + ' champ(s)). <a href="/eleves/' + eid + '/profil-page">Voir le profil →</a>';
+    } catch (e) {
+      box.className = 'feedback error';
+      box.textContent = 'Le serveur est injoignable.';
+    }
+  }
+  </script>
+
+{% endblock %}

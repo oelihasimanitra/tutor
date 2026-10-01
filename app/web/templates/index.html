@@ -62,6 +62,8 @@
         </div>
         <div class="actions" style="flex:0 0 auto; align-self:flex-end">
           <button type="submit" class="btn-ghost">Ouvrir la page de saisie</button>
+          <button type="button" class="btn-ghost" onclick="IndexUI.ouvrirVers(event, 'entretien')">Entretien</button>
+          <button type="button" class="btn-ghost" onclick="IndexUI.ouvrirVers(event, 'profil')">Profil</button>
         </div>
       </div>
     </form>
@@ -75,14 +77,18 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Pseudonyme</th><th>Identifiant</th><th></th></tr>
+          <tr><th>Pseudonyme</th><th>Identifiant</th><th>Accès</th></tr>
         </thead>
         <tbody>
           {% for eleve in eleves %}
           <tr>
             <td>{{ eleve.pseudonyme }}</td>
             <td class="num"><code>{{ eleve.id }}</code></td>
-            <td><a href="/eleves/{{ eleve.id }}">Ouvrir</a></td>
+            <td>
+              <a href="/eleves/{{ eleve.id }}">Saisie</a>
+              · <a href="/eleves/{{ eleve.id }}/entretien">Entretien</a>
+              · <a href="/eleves/{{ eleve.id }}/profil">Profil</a>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -90,5 +96,36 @@
     </div>
   </div>
   {% endif %}
+
+  <script>
+  // ===========================================================================
+  // IndexUI — accès direct à l'entretien / au profil depuis l'identifiant saisi.
+  // (La page de saisie reste gérée par TutorUI.ouvrirEleve, cf. base.html.)
+  // ===========================================================================
+  (function () {
+    'use strict';
+    function identifiant() {
+      var input = document.getElementById('eleve-id');
+      var box = document.getElementById('open-result');
+      var id = input ? String(input.value).trim() : '';
+      if (!/^\d+$/.test(id)) {
+        if (box) {
+          box.className = 'feedback error';
+          box.textContent = "Saisis un identifiant numérique d'élève.";
+        }
+        return null;
+      }
+      return id;
+    }
+    window.IndexUI = {
+      ouvrirVers: function (evt, section) {
+        if (evt) { evt.preventDefault(); }
+        var id = identifiant();
+        if (id) { window.location.href = '/eleves/' + id + '/' + section; }
+        return false;
+      }
+    };
+  })();
+  </script>
 
 {% endblock %}

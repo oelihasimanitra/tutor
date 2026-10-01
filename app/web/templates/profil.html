@@ -1,0 +1,127 @@
+{# =============================================================================
+   profil.html — profil vivant d'un élève : version courante + journal.
+
+   CONTEXTE ATTENDU :
+     - `profil`       : version courante (ou None/absent si aucun profil) avec
+                        `version`, `champs` (dict), `statuts` (dict D/M/H),
+                        `raison`, `date_version`.
+     - `journal`      : liste de JournalProfil (du plus récent au plus ancien),
+                        chaque entrée portant `champ`, `ancienne_valeur`,
+                        `nouvelle_valeur`, `statut`, `raison`, `date`, `version`.
+     - `point_entree` : nœud d'entrée déduit (ou None).
+     - `eleve`        (recommandé) objet {id, pseudonyme} ; `eleve_id` en repli.
+
+   ROUTE DE PAGE : GET /eleves/{eleve_id}/profil-page
+     (l'API JSON homonyme `GET /eleves/{eleve_id}/profil` renvoie la même
+      version sans le journal — cf. en-tête de routes/profil.py).
+   ============================================================================= #}
+{% extends "base.html" %}
+
+{% set eid = (eleve.id if eleve is defined and eleve else (eleve_id | default(none))) %}
+{% set pseudo = (eleve.pseudonyme if eleve is defined and eleve and eleve.pseudonyme else ('élève #' ~ eid)) %}
+
+{% set statut_class = {'D': 'badge-neutral', 'H': 'badge-warn', 'M': 'badge-strong'} %}
+{% set statut_label = {'D': 'Déclaré', 'H': 'Hypothèse', 'M': 'Mesuré'} %}
+
+{% block titre %}Profil — {{ pseudo }}{% endblock %}
+
+{% block header_context %}
+  <span class="who">
+    Élève : <strong>{{ pseudo }}</strong>
+    <span class="sub">(id {{ eid }})</span>
+    · <a href="/eleves/{{ eid }}/entretien">Entretien</a>
+    · <a href="/eleves/{{ eid }}">← Saisie</a>
+    · <a href="/">Accueil</a>
+  </span>
+{% endblock %}
+
+{% block contenu %}
+
+  <div class="card">
+    <h2>Profil vivant</h2>
+    {% if profil %}
+      <p class="hint">
+        Version <strong>{{ profil.version }}</strong>
+        {% if profil.raison %}· raison : {{ profil.raison }}{% endif %}
+        · mise à jour le {{ profil.date_version.strftime('%d/%m/%Y %H:%M') }}
+      </p>
+
+      <p class="hint">
+        Point d'entrée déduit :
+        <code>{{ point_entree | default('—') }}</code>
+        {% if point_entree %}· <a class="btn btn-ghost" href="/eleves/{{ eid }}">Aller à la saisie</a>{% endif %}
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Champ</th><th>Valeur</th><th>Statut</th></tr>
+          </thead>
+          <tbody>
+            {% for champ, valeur in profil.champs | dictsort %}
+            {% set statut = profil.statuts.get(champ, 'D') %}
+            <tr>
+              <td><code>{{ champ }}</code></td>
+              <td>{{ valeur }}</td>
+              <td>
+                <span class="badge {{ statut_class.get(statut, 'badge-neutral') }}">
+                  {{ statut_label.get(statut, statut) }}
+                </span>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">Aucun champ renseigné.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="legend">
+        Statuts : <span class="badge badge-neutral">Déclaré (D)</span>
+        <span class="badge badge-warn">Hypothèse (H)</span>
+        <span class="badge badge-strong">Mesuré (M)</span>
+        — M l'emporte sur D.
+      </p>
+    {% else %}
+      <p class="hint">
+        Aucun profil pour cet élève.
+        <a href="/eleves/{{ eid }}/entretien">Saisir l'entretien de départ →</a>
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Journal des changements</h2>
+    <p class="hint">Historique champ par champ, du plus récent au plus ancien.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Version</th><th>Champ</th>
+            <th>Ancienne</th><th>Nouvelle</th><th>Statut</th><th>Raison</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entree in journal | default([]) %}
+          <tr>
+            <td>{{ entree.date.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td class="num">{{ entree.version }}</td>
+            <td><code>{{ entree.champ }}</code></td>
+            <td>{{ entree.ancienne_valeur if entree.ancienne_valeur is not none else '—' }}</td>
+            <td>{{ entree.nouvelle_valeur if entree.nouvelle_valeur is not none else '—' }}</td>
+            <td>
+              <span class="badge {{ statut_class.get(entree.statut, 'badge-neutral') }}">
+                {{ entree.statut }}
+              </span>
+            </td>
+            <td>{{ entree.raison | default('—') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7">Aucun changement journalisé.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+{% endblock %}

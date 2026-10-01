@@ -38,6 +38,8 @@
   <span class="who">
     Élève : <strong>{{ pseudo }}</strong>
     <span class="sub">(id {{ eid }})</span>
+    · <a href="/eleves/{{ eid }}/entretien">Entretien</a>
+    · <a href="/eleves/{{ eid }}/profil">Profil</a>
     · <a href="/eleves/{{ eid }}/carte">Carte de compétences</a>
     · <a href="/">Accueil</a>
   </span>
@@ -158,7 +160,11 @@
   <div class="card">
     <h2>Carte de compétences</h2>
     <p class="hint">État dérivé de chaque compétence pour cet élève.</p>
-    <a class="btn btn-ghost" href="/eleves/{{ eid }}/carte">Voir la carte de compétences →</a>
+    <div class="actions">
+      <a class="btn btn-ghost" href="/eleves/{{ eid }}/carte">Voir la carte de compétences →</a>
+      <a class="btn btn-ghost" href="/eleves/{{ eid }}/entretien">Entretien de départ →</a>
+      <a class="btn btn-ghost" href="/eleves/{{ eid }}/profil">Profil de l'élève →</a>
+    </div>
   </div>
 
 {% endblock %}

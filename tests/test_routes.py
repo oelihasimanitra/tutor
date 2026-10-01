@@ -1,48 +1,58 @@
 """Tests d'intégration des routes de saisie tuteur (phase 1).
 
-On monte un ``FastAPI`` avec le lifespan réel (``app.web.main.lifespan``) et le
-router, puis on exerce le parcours complet via ``TestClient``. La base SQLite
-locale ``tutorat.db`` (créée par le lifespan, gitignorée) est supprimée avant et
-après le test pour rester hermétique.
+On monte une application avec un lifespan **isolé** (base SQLite temporaire par
+test, jamais ``tutorat.db``) pour éviter les conflits de verrou de fichier sous
+Windows et rester hermétique entre tests — même pattern que ``tests/test_profil.py``.
 """
 from __future__ import annotations
 
-from pathlib import Path
+from contextlib import asynccontextmanager
 from typing import Iterator
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from sqlmodel import Session
 
-from app.web.db import engine
-from app.web.main import lifespan
+from app.engine.config import load_config
+from app.engine.content import charger_contenu
+from app.models import create_db_and_tables, create_engine_sqlite
+from app.services.importer import importer_contenu
+from app.web.main import GRAPH_PATH, ITEMS_PATHS
 from app.web.routes.tuteur import router
 
-ROOT = Path(__file__).resolve().parent.parent
-DB_PATH = ROOT / "tutorat.db"
 POINT_ENTREE = "NUM.ENT.01"
 
 
-def _make_app() -> FastAPI:
-    """Application de test : le lifespan réel + le router tuteur."""
-    app = FastAPI(lifespan=lifespan)
+def _make_app(db_url: str) -> FastAPI:
+    """Application de test : lifespan isolé sur une base temporaire + router tuteur."""
+
+    @asynccontextmanager
+    async def _lifespan(app: FastAPI):
+        moteur = create_engine_sqlite(db_url)
+        create_db_and_tables(moteur)
+        config = load_config()
+        graphe, gabarits = charger_contenu(GRAPH_PATH, ITEMS_PATHS)
+        with Session(moteur) as session:
+            importer_contenu(graphe, gabarits, session)
+        app.state.engine = moteur
+        app.state.config = config
+        app.state.graphe = graphe
+        app.state.gabarits = gabarits
+        yield
+        moteur.dispose()
+
+    app = FastAPI(lifespan=_lifespan)
     app.include_router(router)
     return app
 
 
 @pytest.fixture()
-def client() -> Iterator[TestClient]:
-    """Client de test avec base propre (tutorat.db supprimée avant ET après)."""
-    engine.dispose()  # relâche toute connexion ouverte (Windows : fichier verrouillé sinon)
-    if DB_PATH.exists():
-        DB_PATH.unlink()
-
-    with TestClient(_make_app()) as c:
+def client(tmp_path) -> Iterator[TestClient]:
+    """Client de test sur une base SQLite jetable propre à chaque test."""
+    db_url = f"sqlite:///{(tmp_path / 'test_routes.db').as_posix()}"
+    with TestClient(_make_app(db_url)) as c:
         yield c
-
-    engine.dispose()
-    if DB_PATH.exists():
-        DB_PATH.unlink()
 
 
 def test_parcours_complet(client: TestClient) -> None:

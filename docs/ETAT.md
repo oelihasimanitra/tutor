@@ -14,14 +14,16 @@
 - **Schéma SQLModel** (15 tables), **service de saisie** (`app/services/`).
 - **Interface web phase 1** : 4 endpoints API + pages HTMX (index, saisie, carte), flux
   complet validé (créer élève → poser item → saisir → carte).
-- **61 tests verts**.
+- **84 tests verts**.
 
-**Ce qui manque pour boucler la phase 1 (le chaînon « profil ») :**
-1. Saisie de l'entretien (module A) dans l'UI → alimenter le profil.
-2. **Profil vivant + journal** : logique + UI (les modèles `Profil`/`JournalProfil` existent
-   mais ne sont pas branchés) — versionné, statut D/M/H, « M l'emporte sur D ».
-3. Point d'entrée déduit de l'entretien (`niveau_declare` / `noeuds_suspects` → nœud du graphe).
+**Fait (2026-10-01) — le chaînon « profil » est bouclé :**
+1. Saisie de l'entretien dans l'UI (`entretien.html`) → alimente le profil.
+2. Profil vivant + journal (`app/services/profil.py`) : versionné, D/M/H, « M l'emporte sur D ».
+3. Point d'entrée déduit (`niveau_declare` / `noeuds_suspects` → nœud du graphe).
+
+**Reste pour boucler la phase 1 :**
 4. Plan de progression exposé (le moteur `planner.py` est prêt et testé).
+5. Tester sur 2-3 élèves réels (= critère de passage, SPEC §6).
 
 ## Décisions prises
 
@@ -49,8 +51,8 @@
 
 ## Prochain pas (priorisé)
 
-Boucler **entretien → profil (versionné/journalisé) → point d'entrée déduit → plan**,
-puis tester sur 2-3 élèves réels (= critère de passage de la phase 1, SPEC §6).
+Exposer le **plan de progression** (`planner.py`) dans l'UI, puis **tester sur 2-3 élèves réels**
+(= critère de passage de la phase 1, SPEC §6).
 
 ## Phases suivantes (SPEC §6)
 
