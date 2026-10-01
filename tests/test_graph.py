@@ -7,8 +7,8 @@ from app.engine.graph import Graphe, GrapheCycleError, Noeud
 
 
 def test_chargement_graphe_reel(graphe):
-    """Le graphe réel doit contenir l'échantillon NUM + ALG attendu."""
-    assert len(graphe) == 25
+    """Le graphe réel doit couvrir le périmètre NUM + ALG (SPEC : 80-120 nœuds)."""
+    assert len(graphe) >= 80
     assert "ALG.EQ1.03" in graphe
     assert "NUM.FRA.04" in graphe
     assert graphe["NUM.FRA.04"].domaine == "NUM"

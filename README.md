@@ -39,7 +39,8 @@ python -m venv .venv
 ```
 app/engine/     moteur pédagogique (pur, testable)
 app/models/     schéma SQLModel
-app/content/    graphe + gabarits (versionnés)
+app/services/   pont moteur ↔ persistance (import contenu, saisie tuteur)
+app/content/    graphe + gabarits + entretien (versionnés)
 app/config/     seuils et pondérations (rien en dur)
 app/web/        FastAPI + Jinja2 + HTMX (phase 1)
 docs/           les 8 livrables de conception
@@ -48,6 +49,7 @@ tests/          tests unitaires + simulation d'élèves virtuels
 
 ## État
 
-Phase 1 en cours : moteur complet, schéma de données, échantillon de contenu (25 nœuds NUM + ALG),
-squelette web, tests verts. Prochaine étape : saisie tuteur sur 2-3 élèves réels
+Phase 1 en cours : moteur complet, schéma de données, contenu NUM + ALG (88 nœuds, 91 gabarits),
+entretien de départ (module A), service de saisie tuteur, squelette web, 55 tests verts.
+Prochaine étape : saisie tuteur sur 2-3 élèves réels
 (cf. [docs/07-roadmap-phase1.md](docs/07-roadmap-phase1.md)).

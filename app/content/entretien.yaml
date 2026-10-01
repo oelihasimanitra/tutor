@@ -1,0 +1,571 @@
+# =============================================================================
+# Module A — Entretien de départ structuré (25 à 30 min).
+#
+# Contenu versionné sous Git, importé en base comme le graphe et les gabarits.
+# Chaque question alimente EXACTEMENT un champ du SPEC §4-A : aucun champ sans
+# usage (SPEC §4-A). Les champs alimentés deviennent des entrées de `profils.champs`
+# avec leur statut D / M / H dans `profils.statuts` (SPEC §3.8).
+#
+# Conventions :
+#   - ids en anglais, libellés et codages en français (SPEC §7).
+#   - `statut` = statut de profil visé par la réponse : D déclaré, M mesuré,
+#     H hypothèse (M l'emporte toujours sur D).
+#   - Les seuils ne sont PAS écrits ici : ils vivent dans app/config/default.yaml
+#     (SPEC §7 : rien de figé en dur). Voir `notes_codage` en fin de fichier.
+# =============================================================================
+version: 1
+module: A
+titre: "Entretien de départ"
+duree_cible_min: "25-30"
+blocs:
+
+  # ===========================================================================
+  # BLOC 1 — Cible et contexte
+  # Pilote : point d'entrée dans le graphe, périmètre et rythme du plan.
+  # ===========================================================================
+  - id: 1
+    nom: "Cible et contexte"
+    duree_min_estimee: 6
+    questions:
+      - id: bloc1.niveau_declare.q1
+        libelle: "En quelle classe es-tu cette année ?"
+        champ: niveau_declare
+        type_reponse: choix
+        options:
+          - "A: 5e"
+          - "B: 4e"
+          - "C: 3e"
+          - "D: 2nde"
+          - "E: 1re"
+          - "F: Terminale"
+        codage: "Normaliser en niveau scolaire (5e..Tle). Sert de point d'entrée initial dans le graphe (module B). 6 options nécessaires car la cible couvre 5e→Terminale (voir notes_codage, écart A-E)."
+        statut: D
+
+      - id: bloc1.tendance.q1
+        libelle: "Depuis le début de l'année, tes résultats en maths plutôt : montent, stagnent ou baissent ?"
+        champ: tendance
+        type_reponse: choix
+        options:
+          - "A: en baisse"
+          - "B: stables"
+          - "C: en hausse"
+          - "D: je ne sais pas"
+        codage: "A -> en_baisse, B -> stable, C -> hausse, D -> inconnue. Oriente le rythme (tendance à la baisse -> consolider les prérequis avant d'avancer)."
+        statut: D
+
+      - id: bloc1.objectif.q1
+        libelle: "Quel est ton objectif principal avec ce tutorat ?"
+        champ: objectif
+        type_reponse: choix
+        options:
+          - "A: rattraper un retard"
+          - "B: remettre à niveau puis avancer"
+          - "C: accélérer / prendre de l'avance"
+          - "D: préparer un examen (brevet, bac, concours)"
+        codage: "A rattraper, B remise_a_niveau, C accelerer, D examen. Sélectionne les noeuds cibles et la pente du plan (module B / planificateur)."
+        statut: D
+
+      - id: bloc1.cible_niveau.q1
+        libelle: "Jusqu'où veux-tu arriver, à quel niveau de maîtrise ou de programme ?"
+        champ: cible_niveau
+        type_reponse: choix
+        options:
+          - "A: consolider le programme de l'année en cours"
+          - "B: atteindre le programme de l'année suivante"
+          - "C: viser le niveau examen (brevet / bac)"
+          - "D: combler les lacunes des années précédentes"
+          - "E: niveau d'excellence / prépa"
+        codage: "Mappe vers un (domaine, chapitre) cible ou un ensemble de noeuds cibles. Détermine le chemin critique calculé de la cible vers le statut actuel."
+        statut: D
+
+      - id: bloc1.horizon_mois.q1
+        libelle: "En combien de mois veux-tu atteindre cet objectif (échéance : examen, fin de trimestre, autre) ?"
+        champ: horizon_mois
+        type_reponse: entier
+        codage: "Entier en mois (>= 1). Contraint la densité et l'échéance du plan (planificateur). Si un examen est daté, saisir le nombre de mois restants."
+        statut: D
+
+      - id: bloc1.chapitres_vus.q1
+        libelle: "Quels chapitres de maths as-tu déjà étudiés cette année (et l'an dernier) ?"
+        champ: chapitres_vus
+        type_reponse: texte
+        codage: "Rapprocher les libellés cités des `chapitre` du graphe (NUM, PRO, ALG, GEO, ESP, FON, STA) ; produire la liste des chapitres considérés comme vus. Définit le périmètre initial du test ; hors périmètre -> statut absent."
+        statut: D
+
+      - id: bloc1.noeuds_suspects.q1
+        libelle: "Quels chapitres ou notions te semblent fragiles, où tu sens que tu vas échouer ?"
+        champ: noeuds_suspects
+        type_reponse: texte
+        codage: "Rapproprier chaque notion aux ids `noeud` du graphe -> liste de noeuds suspects. Statut H : simple hypothèse à tester, sert à ordonner les premiers items du test adaptatif (priorité de vérification)."
+        statut: H
+
+      - id: bloc1.priorites_log.q1
+        libelle: "En logique et raisonnement (déduction, contre-exemple, démonstration, estimation), qu'est-ce qui te pose le plus problème ?"
+        champ: priorites_log
+        type_reponse: texte
+        codage: "Classer la réponse dans les sous-domaines LOG (deduction, negation, contre_exemple, motifs, detection_erreur, estimation, probleme_ouvert). Statut H : oriente l'ordre d'injection du module C."
+        statut: H
+
+      - id: bloc1.drapeaux_orientation.q1
+        libelle: "Y a-t-il des difficultés importantes dont je devrais tenir compte (sommeil, stress très fort, attention, suivi particulier) ?"
+        champ: drapeaux_orientation
+        type_reponse: booleen
+        codage: "true -> renseigner la liste `drapeaux_orientation` avec le motif cité. Précaution SPEC : profil pédagogique, pas diagnostic ; si difficultés marquées et persistantes, orienter la famille vers un professionnel (jamais poser de diagnostic)."
+        statut: D
+
+  # ===========================================================================
+  # BLOC 2 — Disponibilité
+  # Pilote : durée des séances, densité du plan.
+  # ===========================================================================
+  - id: 2
+    nom: "Disponibilité"
+    duree_min_estimee: 4
+    questions:
+      - id: bloc2.charge_hebdo.q1
+        libelle: "Combien d'heures par semaine peux-tu consacrer aux maths au total (séances + travail seul) ?"
+        champ: charge_hebdo
+        type_reponse: entier
+        codage: "Entier, heures/semaine. Borne haute du volume planifiable par le planificateur."
+        statut: D
+
+      - id: bloc2.duree_seance.q1
+        libelle: "Quelle durée de séance te conviendrait le mieux ? (45, 60, 90 min...)"
+        champ: duree_seance
+        type_reponse: entier
+        codage: "Entier, minutes par séance. Fixe la longueur des blocs de travail ; une durée courte associée à une attention courte -> blocs de 10-15 min (table de pilotage)."
+        statut: D
+
+      - id: bloc2.creneau.q1
+        libelle: "Quels jours et quelles plages horaires es-tu disponible pour les séances ?"
+        champ: creneau
+        type_reponse: texte
+        codage: "Convertir en liste de créneaux (jour + plage). Contrainte de planification des séances."
+        statut: D
+
+      - id: bloc2.travail_perso_min.q1
+        libelle: "Combien de minutes par jour peux-tu travailler les maths seul, en plus des séances ?"
+        champ: travail_perso_min
+        type_reponse: entier
+        codage: "Entier, minutes/jour. Plafonne la charge de travail perso et la quantité de révisions espacées planifiables (J+2, J+7)."
+        statut: D
+
+      - id: bloc2.supports_dispo.q1
+        libelle: "De quoi disposes-tu pour travailler ? (plusieurs réponses possibles)"
+        champ: supports_dispo
+        type_reponse: choix
+        multiple: true
+        options:
+          - "A: manuel / cahier de cours"
+          - "B: calculatrice"
+          - "C: ordinateur ou tablette"
+          - "D: accès internet / plateformes d'exercices"
+          - "E: rien de particulier"
+        codage: "Liste des supports cochés. Conditionne les modalités de travail hors séance (exercices papier vs numériques)."
+        statut: D
+
+      - id: bloc2.soutien.q1
+        libelle: "À la maison, qui peut t'aider si tu bloques ?"
+        champ: soutien
+        type_reponse: choix
+        options:
+          - "A: parents"
+          - "B: frère / soeur / proche"
+          - "C: personne"
+          - "D: cours ou soutien payant"
+          - "E: autre"
+        codage: "Catégoriser (famille, pair, aucun, professionnel, autre). Un soutien nul -> renforcer l'autonomie et le travail guidé en séance."
+        statut: D
+
+  # ===========================================================================
+  # BLOC 3 — Affect
+  # Pilote : difficulté des premiers items, chronomètre, ton.
+  # ===========================================================================
+  - id: 3
+    nom: "Affect"
+    duree_min_estimee: 7
+    questions:
+      # --- Anxiété : 6 items, score 6 à 30 (SPEC §4-A) -----------------------
+      # Échelle : 1 pas du tout d'accord ... 5 tout à fait d'accord.
+      # Tous les items sont orientés "anxiété croissante" -> somme directe.
+      - id: bloc3.anxiete.q1
+        libelle: "Je me sens tendu(e) quand on me demande de faire des maths."
+        champ: anxiete
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 1/6 de l'échelle d'anxiété : valeur 1 à 5 conservée telle quelle."
+        statut: D
+
+      - id: bloc3.anxiete.q2
+        libelle: "J'ai peur de me tromper en maths devant les autres."
+        champ: anxiete
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 2/6 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.anxiete.q3
+        libelle: "Je stresse avant un contrôle de maths."
+        champ: anxiete
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 3/6 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.anxiete.q4
+        libelle: "Je perds mes moyens quand un exercice de maths est long."
+        champ: anxiete
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 4/6 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.anxiete.q5
+        libelle: "Je pense que je suis mauvais(e) en maths."
+        champ: anxiete
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 5/6 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.anxiete.q6
+        libelle: "J'évite de poser des questions en maths de peur de paraître bête."
+        champ: anxiete
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 6/6 : valeur 1 à 5."
+        statut: D
+
+      # --- Autoevaluation par domaine (statut D, comparée plus tard au mesuré)
+      - id: bloc3.autoeval.q1
+        libelle: "Sur une échelle de 1 (très à l'aise... non) à 5, comment te sens-tu dans chacun de ces domaines ?"
+        champ: "autoeval[domaine]"
+        type_reponse: echelle_1_5
+        options: ["1: très en difficulté", "2", "3: moyen", "4", "5: très à l'aise"]
+        codage: "Grille : poser la note 1-5 pour chaque domaine NUM, PRO, ALG, GEO, ESP, FON, STA, LOG. Stocker en dictionnaire {domaine: 1..5} dans le champ `autoeval` (JSON de profil). Statut D. Sert au pilotage : autoeval très supérieure au niveau mesuré -> travailler la lucidité d'abord (table de pilotage)."
+        statut: D
+
+      # --- Mindset : 4 items, score 4 à 20 (SPEC §4-A) -----------------------
+      # Échelle : 1 pas du tout d'accord ... 5 tout à fait d'accord.
+      # Items orientés "état d'esprit de développement" -> somme, haut = favorable.
+      - id: bloc3.mindset.q1
+        libelle: "En maths, on peut progresser si on travaille, même quand on part de loin."
+        champ: mindset
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 1/4 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.mindset.q2
+        libelle: "Quand je bloque sur un exercice, c'est que je n'ai pas encore trouvé la bonne méthode, pas que je suis nul(le)."
+        champ: mindset
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 2/4 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.mindset.q3
+        libelle: "J'aime les exercices difficiles, ceux qui me font chercher."
+        champ: mindset
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 3/4 : valeur 1 à 5."
+        statut: D
+
+      - id: bloc3.mindset.q4
+        libelle: "Mes difficultés en maths sont des choses que je peux faire évoluer."
+        champ: mindset
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Item 4/4 : valeur 1 à 5."
+        statut: D
+
+      # --- Réaction à l'erreur : choix A à E (SPEC §4-A) ---------------------
+      - id: bloc3.reaction_erreur.q1
+        libelle: "Quand tu te rends compte que tu t'es trompé(e) dans un exercice, que fais-tu le plus souvent ?"
+        champ: reaction_erreur
+        type_reponse: choix
+        options:
+          - "A: j'arrête et j'abandonne l'exercice"
+          - "B: j'essaie une autre méthode ou je recommence"
+          - "C: je demande de l'aide (tuteur, camarade, famille)"
+          - "D: je reste bloqué(e), je n'ose pas demander"
+          - "E: je cherche où est l'erreur et je vérifie mon calcul"
+        codage: "Réponse stockée en clair A-E. Familles : A évitement, B persévérance, C recours au soutien, D inhibition, E auto-contrôle. Se lit avec la grille d'observation (bloc 7) : une stratégie déclarée B/E et un comportement observé d'abandon signalent un écart D/M."
+        statut: D
+
+      - id: bloc3.perseverance_declaree.q1
+        libelle: "Quand un exercice est vraiment difficile, je continue jusqu'à trouver la solution."
+        champ: perseverance_declaree
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout d'accord", "2", "3: moyen", "4", "5: tout à fait d'accord"]
+        codage: "Valeur 1 à 5, confronter à la persévérance observée au bloc 7 (abandon, demandes d'indice). Écart D/M -> hypothèse d'inhibition à tester."
+        statut: D
+
+  # ===========================================================================
+  # BLOC 4 — Motivation
+  # Pilote : contextes des problèmes, jalons.
+  # ===========================================================================
+  - id: 4
+    nom: "Motivation"
+    duree_min_estimee: 3
+    questions:
+      - id: bloc4.motivation.q1
+        libelle: "Sur une échelle de 1 à 5, à quel point as-tu envie de progresser en maths en ce moment ?"
+        champ: motivation
+        type_reponse: echelle_1_5
+        options: ["1: pas du tout", "2", "3: moyen", "4", "5: très envie"]
+        codage: "Valeur 1 à 5. Niveau de motivation de départ, à confronter à l'engagement observé."
+        statut: D
+
+      - id: bloc4.but.q1
+        libelle: "Pour toi, réussir en maths, c'est surtout quoi ?"
+        champ: but
+        type_reponse: choix
+        options:
+          - "A: avoir de bonnes notes et réussir les contrôles"
+          - "B: comprendre vraiment et savoir m'en servir"
+          - "C: les deux autant"
+          - "D: je ne sais pas trop"
+        codage: "A -> performance, B -> maitrise, C -> mixte, D -> indetermine. But performance -> jalons chiffrés (notes, réussites) ; but maîtrise -> jalons de compréhension."
+        statut: D
+
+      - id: bloc4.interets.q1
+        libelle: "Qu'est-ce que tu aimes faire en dehors de l'école (sports, jeux, musique, sujets qui t'intéressent) ?"
+        champ: interets
+        type_reponse: texte
+        codage: "Extraire une liste de centres d'intérêt. Servent de contexte concret dans les énoncés et problèmes (module B/D) pour l'ancrage."
+        statut: D
+
+      - id: bloc4.levier_motivation.q1
+        libelle: "Qu'est-ce qui te motiverait le plus pour travailler les maths ?"
+        champ: levier_motivation
+        type_reponse: choix
+        options:
+          - "A: avoir de meilleures notes"
+          - "B: être fier(ère) de progresser"
+          - "C: être moins stressé(e) en maths"
+          - "D: me préparer pour mes études / mon futur métier"
+          - "E: jouer, relever des défis, faire du concret"
+        codage: "Stocker l'option retenue (A-E). Détermine le type de jalons et la mise en scène des progrès (progrès chiffrés si mindset bas, etc.)."
+        statut: D
+
+  # ===========================================================================
+  # BLOC 5 — Habitudes et préférences déclarées
+  # Pilote : hypothèses à tester en module D.
+  # ===========================================================================
+  - id: 5
+    nom: "Habitudes et préférences déclarées"
+    duree_min_estimee: 4
+    questions:
+      - id: bloc5.habitudes.q1
+        libelle: "Quand tu révises ou apprends une leçon de maths, comment t'y prends-tu ?"
+        champ: habitudes
+        type_reponse: texte
+        codage: "Étiqueter la réponse avec une liste fermée : relire_le_cours, refaire_les_exercices, faire_des_fiches, regarder_des_videos, aucun_rituel. Liste vide ou 'aucun_rituel' -> travailler explicitement les méthodes d'apprentissage."
+        statut: D
+
+      - id: bloc5.preference_declaree.q1
+        libelle: "Pour découvrir une nouvelle notion, qu'est-ce qui t'aiderait le plus : l'entendre expliquer, voir un schéma, manipuler un exemple concret, ou un mélange des trois ?"
+        champ: preference_declaree
+        type_reponse: choix
+        options:
+          - "A: l'explication orale (verbale)"
+          - "B: un schéma / une figure (visuelle)"
+          - "C: manipuler, partir d'un exemple concret (concrète)"
+          - "D: le mélange des trois (multimodale)"
+          - "E: je ne sais pas"
+        codage: "A->V, B->S, C->C, D->M, E->inconnue. Statut H et POIDS FAIBLE (SPEC §4-A/§4-D) : c'est une préférence déclarée, jamais une règle ; le module D teste expérimentalement la modalité réellement efficace."
+        statut: H
+
+      - id: bloc5.obstacles.q1
+        libelle: "Qu'est-ce qui t'empêche le plus de travailler les maths correctement ?"
+        champ: obstacles
+        type_reponse: choix
+        options:
+          - "A: le manque de temps"
+          - "B: les distractions (téléphone, jeux, réseau)"
+          - "C: le découragement, j'abandonne vite"
+          - "D: je ne sais pas quoi réviser / je ne comprends pas le cours"
+          - "E: autre chose"
+        codage: "Stocker l'obstacle principal (A-E). Détermine les aménagements (blocs courts, plan détaillé fourni, travail de confiance) et alimente la table de pilotage."
+        statut: D
+
+      - id: bloc5.attention_declaree.q1
+        libelle: "Combien de minutes arrives-tu à rester concentré(e) sur un même exercice sans décrocher ?"
+        champ: attention_declaree
+        type_reponse: entier
+        codage: "Entier, minutes. Bandes indicatives à construire en config : <=10 -> blocs de 10-15 min ; 11-25 -> blocs moyens ; >=26 -> blocs longs. Comparer à la fatigue observée (bloc 7)."
+        statut: D
+
+      - id: bloc5.moment_optimal.q1
+        libelle: "À quel moment de la journée ou de la semaine es-tu le plus efficace pour travailler ?"
+        champ: moment_optimal
+        type_reponse: choix
+        options:
+          - "A: le matin"
+          - "B: l'après-midi"
+          - "C: en fin d'après-midi / début de soirée"
+          - "D: tard le soir"
+          - "E: plutôt le week-end"
+        codage: "Stocker la plage retenue (A-E). Sert à proposer des créneaux de travail perso et, à terme, à placer les révisions J+2/J+7."
+        statut: D
+
+  # ===========================================================================
+  # BLOC 6 — Métacognition
+  # Pilote : entraînement à la prédiction de réussite.
+  # ===========================================================================
+  - id: 6
+    nom: "Métacognition"
+    duree_min_estimee: 4
+    questions:
+      - id: bloc6.strategie_entree.q1
+        libelle: "Face à un exercice que tu ne connais pas, qu'est-ce que tu fais en premier ?"
+        champ: strategie_entree
+        type_reponse: choix
+        options:
+          - "A: je relis l'énoncé et je repère les données"
+          - "B: je cherche un exemple ou une leçon qui ressemble"
+          - "C: j'essaie des opérations au hasard"
+          - "D: j'attends ou je demande tout de suite de l'aide"
+          - "E: je passe à autre chose / je n'y arrive pas"
+        codage: "A planification, B analogie, C essai-erreur non réfléchi, D dépendance, E évitement. Alimente la sélection d'items et le travail de stratégie d'entrée."
+        statut: D
+
+      - id: bloc6.verification.q1
+        libelle: "Quand tu as terminé un exercice, est-ce que tu vérifies ton résultat ?"
+        champ: verification
+        type_reponse: choix
+        options:
+          - "A: jamais"
+          - "B: parfois"
+          - "C: souvent"
+          - "D: toujours"
+          - "E: je ne saurais pas comment vérifier"
+        codage: "Ordinal 0-3 (A=0..D=3) ; E -> booléen sait_verifier=false. Vérification faible -> entraînement explicite au contrôle du résultat (méthode correcte exigée au module B)."
+        statut: D
+
+      - id: bloc6.exposition_logique.q1
+        libelle: "As-tu déjà fait du raisonnement / de la logique (déduire, prouver qu'un exemple ne marche pas, démontrer) ?"
+        champ: exposition_logique
+        type_reponse: choix
+        options:
+          - "A: souvent, j'aime ça"
+          - "B: un peu, en classe"
+          - "C: jamais vraiment"
+        codage: "A->2 (exposition forte), B->1 (partielle), C->0 (nulle). Sert de point d'entrée au module C (module LOG) et d'indicateur d'aisance avec le raisonnement."
+        statut: D
+
+      - id: bloc6.calibration.q1
+        libelle: "Avant chaque petit exercice, dis-moi si tu penses réussir ou non ; je note ta prédiction."
+        champ: calibration
+        type_reponse: echelle_1_5
+        options: ["1: sûr(e) d'échouer", "2", "3: incertain(e)", "4", "5: sûr(e) de réussir"]
+        codage: "MESURÉ (statut M) : poser 3 exercices courts, recueillir la confiance annoncée avant chaque (1-5, cf. `reponses.confiance`), puis comparer à la réussite observée. calibration = moyenne(confiance_normalisée − réussite 0/1) -> biais ; > 0 surconfiance, < 0 sous-confiance, ~0 calibré. Surconfiance -> exercices 'prédis ta réussite' (table de pilotage)."
+        statut: M
+
+# ===========================================================================
+# BLOC 7 — Grille d'observation (tuteur)
+# Ne comporte PAS de questions posées à l'élève : le tuteur code des signaux
+# comportementaux pendant l'entretien et tout le long de la séance (SPEC §4-A).
+# Chaque signal alimente la table `observations` (type + valeur JSON).
+# Codage 0-2 (0 = jamais/absent, 1 = ponctuel, 2 = marqué/répété) ou binaire.
+# ===========================================================================
+  - id: 7
+    nom: "Observation (tuteur)"
+    duree_min_estimee: "continue (toute la séance)"
+    signaux:
+      - id: bloc7.latence
+        libelle: "Latence avant de commencer un exercice"
+        champ: latence
+        type_reponse: observation
+        codage: "0: démarre en < 5 s ; 1: hésite 5-20 s ; 2: silence > 20 s. Valeur numérique du temps mesuré conservée en JSON."
+        observation_type: latence
+
+      - id: bloc7.abandon
+        libelle: "Abandon d'un exercice sans y être invité"
+        champ: abandon
+        type_reponse: observation
+        codage: "0: aucun ; 1: une fois ; 2: plusieurs fois. Binaire possible (0/1) selon le besoin de granularité."
+        observation_type: abandon
+
+      - id: bloc7.auto_corrections
+        libelle: "Auto-correction spontanée (revient sur sa réponse sans consigne)"
+        champ: auto_corrections
+        type_reponse: observation
+        codage: "0: jamais ; 1: une fois, sur sollicitation légère ; 2: régulière et spontanée. Signal positif à croiser avec la vérification déclarée (bloc 6)."
+        observation_type: autocorrection
+
+      - id: bloc7.demandes_indice
+        libelle: "Demandes d'indice / d'aide"
+        champ: demandes_indice
+        type_reponse: observation
+        codage: "0: aucune demande ; 1: après avoir cherché ; 2: demande immédiate dès la difficulté. 2 combiné à reaction_erreur D -> dépendance/inhibition."
+        observation_type: demande_indice
+
+      - id: bloc7.decouragement
+        libelle: "Signes de découragement (soupirs, 'je n'y arriverai jamais', dévalorisation)"
+        champ: decouragement
+        type_reponse: observation
+        codage: "0: aucun ; 1: verbalisé une fois ; 2: marqué et persistant. Élevé -> réduire la difficulté des items et sécuriser les premiers succès."
+        observation_type: decouragement
+
+      - id: bloc7.gestes_spontanes
+        libelle: "Gestes/initiatives spontanés (schéma, reformulation, essai au brouillon, question de fond)"
+        champ: gestes_spontanes
+        type_reponse: observation
+        codage: "0: aucun ; 1: un geste ; 2: gestes fréquents. Signal favorable d'engagement à croiser avec la modalité efficace du module D."
+        observation_type: geste_spontane
+
+      - id: bloc7.fatigue
+        libelle: "Fatigue apparente (bâillements, décrochage, ralentissement)"
+        champ: fatigue
+        type_reponse: observation
+        codage: "0: alerte ; 1: quelques signes ; 2: fatigue marquée. Ici 0-2 ; le module D mesure la fatigue sur 1-3 (SPEC §4-D). Fatigue forte -> séance/bloc exclu ou refait."
+        observation_type: fatigue
+
+# ===========================================================================
+# Notes de codage (transverses)
+# ===========================================================================
+notes_codage:
+  anxiete: |
+    Score `anxiete` = somme des 6 items (chacun 1-5) -> entier de 6 à 30.
+    Seuils PROVISOIRES (SPEC §4-A, dans app/config/default.yaml) :
+      <= 14 : faible ; 15-21 : modérée ; >= 22 : élevée.
+    Anxiété élevée -> premiers items faciles, pas de chronomètre, ton rassurant
+    (table de pilotage). Seuils restent configurables, jamais en dur.
+  mindset: |
+    Score `mindset` = somme des 4 items (chacun 1-5) -> entier de 4 à 20.
+    Items orientés "état d'esprit de développement" : score haut = favorable.
+    (Sens de codage à valider : le SPEC ne fixe que l'étendue 4-20.)
+    Mindset bas -> mettre en avant des progrès chiffrés (table de pilotage).
+  reaction_erreur: |
+    Choix A à E, conservé en clair. Familles : A évitement, B persévérance,
+    C recours au soutien, D inhibition, E auto-contrôle.
+    Le SPEC ne fixe que "A à E" : les cinq libellés ci-dessus sont une
+    proposition à valider, pas une contrainte du SPEC.
+  autoeval: |
+    Champ indexé par domaine : `autoeval[domaine]`, dictionnaire
+    {NUM, PRO, ALG, GEO, ESP, FON, STA, LOG -> 1..5}, statut D.
+    LOG peut être omis tant que le module C n'est pas déployé (hypothèse H6).
+  calibration: |
+    Seul champ MESURÉ du module A (statut M) : confiance annoncée avant un
+    exercice vs réussite observée. L'écart est calculé par le moteur
+    (indicateurs), pas saisi à la main.
+  statuts_profil: |
+    Règle SPEC §3.8 : M l'emporte toujours sur D. Statuts par défaut :
+    la plupart des champs sont D ; `noeuds_suspects`, `priorites_log` et
+    `preference_declaree` sont H (hypothèses) ; `calibration` est M.
+    `preference_declaree` a en outre un POIDS FAIBLE (SPEC §4-A).
+  ecart_type_reponse: |
+    Le type "choix A-E" est respecté partout (<= 5 options), SAUF
+    `niveau_declare` et `cible_niveau` qui couvrent 5e → Terminale soit
+    6 niveaux (options A-F) ; `cible_niveau` reste néanmoins à 5 options.
+  duree: |
+    Durée totale visée 25-30 min : blocs 1-6 (questions posées). Le bloc 7
+    est une grille d'observation remplie par le tuteur en continu, sans temps
+    d'entretien dédié. Les 18 cotations d'affect (6 anxiété + 4 mindset +
+    8 autoeval) se posent en grille rapide, pas en questions lentes.
+  hors_perimetre: |
+    Champs du tableau §4-A non alimentés par l'entretien tel quel :
+    `calibration` n'est mesurable qu'en associant des exercices (module B) ;
+    elle est amorcée ici par une prédiction sur 3 items courts.

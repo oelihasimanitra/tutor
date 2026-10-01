@@ -93,24 +93,29 @@ def instancier(gabarit: Gabarit, seed: int | None = None) -> ItemGenere:
     )
 
 
-def verifier(item: ItemGenere, reponse_eleve: str) -> bool:
-    """Vérifie la réponse d'un élève par **équivalence sympy**.
+def reponse_equivalente(reponse_attendue: str, reponse_eleve: str) -> bool:
+    """Vérifie l'équivalence de deux expressions sympy (attendue vs élève).
 
     ``x + 1`` et ``1 + x`` sont équivalentes ; ``3/6`` et ``1/2`` aussi. Une
     réponse non parsable (ex. ``x = 5``) est simplement incorrecte, jamais une
     exception. On note que ``sympify`` active la multiplication implicite
     (``5x`` = ``5*x``) : la saisie du tuteur doit rester une expression sympy
-    licite, ce qui est documenté côté interface.
+    licite.
     """
     if not reponse_eleve or not reponse_eleve.strip():
         return False
     try:
         eleve = sympy.sympify(reponse_eleve)
-        attendu = sympy.sympify(item.reponse_attendue)
+        attendu = sympy.sympify(reponse_attendue)
     except (sympy.SympifyError, TypeError, ValueError):
         return False
     # simplify(eleve - attendu) == 0  <=> équivalence (nombres ou expressions).
     return bool(sympy.simplify(eleve - attendu) == 0)
+
+
+def verifier(item: ItemGenere, reponse_eleve: str) -> bool:
+    """Vérifie la réponse d'un élève par équivalence sympy (voir :func:`reponse_equivalente`)."""
+    return reponse_equivalente(item.reponse_attendue, reponse_eleve)
 
 
 def gabarits_from_yaml(paths: Sequence[str | Path]) -> dict[str, Gabarit]:
