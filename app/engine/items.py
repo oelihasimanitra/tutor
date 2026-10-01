@@ -15,6 +15,7 @@ Deux mécanismes complémentaires :
 from __future__ import annotations
 
 import random
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from string import Template
@@ -22,6 +23,7 @@ from typing import Any, Mapping, Sequence
 
 import sympy
 import yaml
+from sympy.parsing.sympy_parser import parse_expr, standard_transformations
 
 
 @dataclass(frozen=True)
@@ -99,19 +101,77 @@ def instancier(gabarit: Gabarit, seed: int | None = None) -> ItemGenere:
     )
 
 
-def reponse_equivalente(reponse_attendue: str, reponse_eleve: str) -> bool:
-    """Vérifie l'équivalence de deux expressions sympy (attendue vs élève).
+# Namespace global sécurisé : les fonctions sympy (nécessaires au parse), mais
+# SANS les builtins Python (``__import__``, ``open``, ``eval``…) — ce qui empêche
+# toute exécution de code arbitraire saisi par le tuteur ou l'élève.
+_GLOBAL_SECURISE: dict = {}
+exec('from sympy import *', _GLOBAL_SECURISE)
+_GLOBAL_SECURISE['__builtins__'] = {}
+
+# Symboles et fonctions autorisés explicitement dans une réponse d'élève.
+_LOCAL_SECURISE = {
+    'x': sympy.Symbol('x'),
+    'sqrt': sympy.sqrt,
+    'floor': sympy.floor,
+    'ceil': sympy.ceiling,
+    'Mod': sympy.Mod,
+    'Abs': sympy.Abs,
+    'Min': sympy.Min,
+    'Max': sympy.Max,
+    'pi': sympy.pi,
+    'E': sympy.E,
+}
+
+# Longueur maximale d'une réponse (garde-fou anti-DoS). Valeur de secours,
+# surchargeable par la config ``seuils.verification.longueur_max``.
+_LONGUEUR_MAX_PAR_DEFAUT = 200
+
+# Multiplication implicite : "2x" -> "2*x", "2(x+1)" -> "2*(x+1)", ")x" -> ")*x".
+# (``parse_expr`` ne gère pas "2x" seul dans sympy 1.14 — on l'explicite.)
+_MULT_IMPLICITE = re.compile(r'(\d|\))\s*([a-zA-Z(])')
+
+
+def _parser_reponse(s: str, max_longueur: int) -> sympy.Expr | None:
+    """Parse une réponse élève de façon **sûre** (liste blanche, sans exécution).
+
+    La longueur borne aussi le coût de ``simplify`` (budget anti-DoS) : une
+    expression courte ne peut pas faire exploser la simplification. Un vrai
+    ``timeout`` sur ``simplify`` n'est pas implémenté (hypothèse signalée).
+    """
+    if len(s) > max_longueur:
+        return None
+    s = _MULT_IMPLICITE.sub(r'\1*\2', s)
+    try:
+        return parse_expr(
+            s,
+            local_dict=_LOCAL_SECURISE,
+            global_dict=_GLOBAL_SECURISE,
+            transformations=standard_transformations,
+        )
+    except Exception:
+        return None
+
+
+def reponse_equivalente(
+    reponse_attendue: str,
+    reponse_eleve: str,
+    max_longueur: int = _LONGUEUR_MAX_PAR_DEFAUT,
+) -> bool:
+    """Vérifie l'équivalence entre la réponse attendue et la réponse élève.
 
     ``x + 1`` et ``1 + x`` sont équivalentes ; ``3/6`` et ``1/2`` aussi. Une
-    réponse non parsable (ex. ``x = 5``) est simplement incorrecte, jamais une
-    exception. On note que ``sympify`` active la multiplication implicite
-    (``5x`` = ``5*x``) : la saisie du tuteur doit rester une expression sympy
-    licite.
+    réponse non parsable ou malveillante est simplement incorrecte, jamais une
+    exception ni une exécution de code. La réponse **attendue** est produite par
+    nos gabarits (fiable) : elle reste parsée par ``sympify``.
     """
     if not reponse_eleve or not reponse_eleve.strip():
         return False
+
+    eleve = _parser_reponse(reponse_eleve, max_longueur)
+    if eleve is None:
+        return False
+
     try:
-        eleve = sympy.sympify(reponse_eleve)
         attendu = sympy.sympify(reponse_attendue)
     except (sympy.SympifyError, TypeError, ValueError):
         return False

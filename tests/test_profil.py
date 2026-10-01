@@ -286,6 +286,7 @@ def client(tmp_path) -> Iterator[TestClient]:
     """Client de test sur une base SQLite jetable propre à chaque test."""
     db_url = f"sqlite:///{(tmp_path / 'test_profil.db').as_posix()}"
     with TestClient(_make_app(db_url)) as c:
+        c.headers.update({"X-Tuteur-Pin": "tutor"})
         yield c
 
 

@@ -63,6 +63,13 @@ class Ponderation:
 
 
 @dataclass(frozen=True)
+class Verification:
+    """Limites de vérification des réponses saisies (anti-DoS)."""
+
+    longueur_max: int
+
+
+@dataclass(frozen=True)
 class Config:
     """Configuration complète, figée après chargement."""
 
@@ -71,6 +78,7 @@ class Config:
     anxiete: Anxiete
     adaptatif: Adaptatif
     ponderation: Ponderation
+    verification: Verification
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> "Config":
@@ -82,6 +90,7 @@ class Config:
             anxiete=Anxiete(**s["anxiete"]),
             adaptatif=Adaptatif(**d["adaptatif"]),
             ponderation=Ponderation(**d["ponderation"]),
+            verification=Verification(**s["verification"]),
         )
 
 

@@ -26,6 +26,8 @@ from app.models import Eleve
 from app.services.codage import coder_reponses, structure_entretien
 from app.services.profil import ServiceProfil
 
+from ..auth import verifier_pin
+
 from ..schemas_profil import (
     EntretienRequete,
     JournalEntreeOut,
@@ -34,7 +36,7 @@ from ..schemas_profil import (
     ProfilOut,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verifier_pin)])
 
 # Templates servis par les routes de page (mêmes conventions que routes/tuteur.py).
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"

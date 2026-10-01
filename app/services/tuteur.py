@@ -85,7 +85,11 @@ class TuteurService:
         methode_observee: str | None = None,
     ) -> Reponse:
         """Vérifie la réponse (sympy) et enregistre la réponse brute, liée à l'item."""
-        est_correct = reponse_equivalente(item_db.reponse_attendue, reponse_eleve)
+        est_correct = reponse_equivalente(
+            item_db.reponse_attendue,
+            reponse_eleve,
+            max_longueur=self.config.verification.longueur_max,
+        )
         competence_id = self.gabarits[item_db.gabarit_id].competence_id
 
         reponse = Reponse(

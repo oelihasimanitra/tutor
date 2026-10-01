@@ -21,6 +21,8 @@ from sqlmodel import Session
 from app.models import Eleve, ItemGenere
 from app.services.tuteur import TuteurService
 
+from ..auth import verifier_pin
+
 from ..schemas import (
     CarteCompetencesOut,
     CompetenceOut,
@@ -32,7 +34,7 @@ from ..schemas import (
     ReponseSaisie,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verifier_pin)])
 
 # Templates servis par les routes de page (produits en parallèle côté front).
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"

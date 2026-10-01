@@ -1,7 +1,7 @@
 """Tests des items : génération seedée, bornes, vérification sympy."""
 from __future__ import annotations
 
-from app.engine.items import Gabarit, instancier, verifier
+from app.engine.items import Gabarit, instancier, reponse_equivalente, verifier
 
 
 def test_generation_reproductible(gabarits):
@@ -101,3 +101,21 @@ def test_factorisation_conservee():
     assert verifier(item, f"(x - {a})*(x + {a})")
     assert verifier(item, f"x**2 - {a**2}")
     assert not verifier(item, f"x**2 - {a**2 + 1}")
+
+
+def test_reponse_malveillante_refusee_sans_effet_de_bord():
+    """Sécurité : une saisie qui tente d'exécuter du code est refusée proprement.
+
+    ``sympify`` passe par ``eval`` et exécuterait ``__import__('os').getcwd()``.
+    On vérifie qu'une saisie malveillante renvoie ``False`` (sans exception ni
+    exécution), tandis que les saisies légitimes restent acceptées.
+    """
+    assert not reponse_equivalente("5", "__import__('os').getcwd()")
+    assert not reponse_equivalente("5", "open('secret.txt').read()")
+    assert not reponse_equivalente("5", "(lambda: __import__('os').system('dir'))()")
+    # Saisies légitimes : multiplication implicite, fraction, expression.
+    assert reponse_equivalente("2*x", "2x")
+    assert reponse_equivalente("1/2", "0.5")
+    assert reponse_equivalente("x + 1", "1 + x")
+    # Limite de longueur : une saisie démesurée est refusée (budget anti-DoS).
+    assert not reponse_equivalente("5", "1" * 10000)

@@ -52,6 +52,7 @@ def client(tmp_path) -> Iterator[TestClient]:
     """Client de test sur une base SQLite jetable propre à chaque test."""
     db_url = f"sqlite:///{(tmp_path / 'test_routes.db').as_posix()}"
     with TestClient(_make_app(db_url)) as c:
+        c.headers.update({"X-Tuteur-Pin": "tutor"})
         yield c
 
 
@@ -154,3 +155,12 @@ def test_routes_de_page_enregistrees(client: TestClient) -> None:
     assert "/eleves/{eleve_id}/items/prochain" in chemins
     assert "/eleves/{eleve_id}/reponses" in chemins
     assert "/eleves/{eleve_id}/competences" in chemins
+
+
+def test_auth_requise_sans_pin(tmp_path):
+    """Sans le PIN (header X-Tuteur-Pin), les routes de saisie renvoient 401."""
+    db_url = f"sqlite:///{(tmp_path / 'test_auth.db').as_posix()}"
+    with TestClient(_make_app(db_url)) as c:
+        assert c.post("/eleves", json={"pseudonyme": "x"}).status_code == 401
+        r = c.post("/eleves", json={"pseudonyme": "x"}, headers={"X-Tuteur-Pin": "tutor"})
+        assert r.status_code == 201

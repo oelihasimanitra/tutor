@@ -29,6 +29,10 @@ seuils:
     items: 4
     max: 20
 
+  # Vérification des réponses saisies (anti-DoS).
+  verification:
+    longueur_max: 200
+
 # Pilotage du test adaptatif.
 adaptatif:
   # Nombre d'items de contrôle posés sur chaque prérequis direct
