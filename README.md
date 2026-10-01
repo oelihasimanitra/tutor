@@ -27,12 +27,22 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pytest
 ```
 
-## Lancer l'API (squelette phase 1)
+## Lancer l'API
 
 ```bash
+# accès local uniquement (développement)
 .venv/Scripts/python.exe -m uvicorn app.web.main:app --reload
 # puis GET http://127.0.0.1:8000/health
+
+# accès depuis une autre machine du réseau (ex. élève sur le même hotspot)
+.venv/Scripts/python.exe -m uvicorn app.web.main:app --host 0.0.0.0 --port 8000
 ```
+
+`0.0.0.0` écoute sur toutes les interfaces. Depuis l'autre machine, ouvrir
+`http://<IP locale du PC>:8000` (IP via `ipconfig`, interface Wi-Fi). Points de
+vigilance : autoriser Python dans le pare-feu Windows, désactiver l'« isolation
+AP » du hotspot téléphone si elle bloque la communication entre appareils, et ne
+pas laisser le serveur exposé en permanence (données d'élèves).
 
 ## Structure
 
