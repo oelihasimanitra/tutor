@@ -539,10 +539,13 @@ notes_codage:
     (Sens de codage à valider : le SPEC ne fixe que l'étendue 4-20.)
     Mindset bas -> mettre en avant des progrès chiffrés (table de pilotage).
   reaction_erreur: |
-    Choix A à E, conservé en clair. Familles : A évitement, B persévérance,
-    C recours au soutien, D inhibition, E auto-contrôle.
-    Le SPEC ne fixe que "A à E" : les cinq libellés ci-dessus sont une
-    proposition à valider, pas une contrainte du SPEC.
+    Choix A à E, conservé en clair (échelle ordinale de réaction à l'erreur).
+    A évitement (abandon), B persévérance (réessayer autrement),
+    C recours au soutien (demander de l'aide), D inhibition (blocage),
+    E auto-contrôle (chercher l'erreur et vérifier).
+    Lecture : A/D = retrait (à apaiser), C = dépendance, B/E = constructif
+    (à renforcer). Confronter au bloc 7 : B/E déclaré mais abandon observé
+    -> écart D/M à investiguer.
   autoeval: |
     Champ indexé par domaine : `autoeval[domaine]`, dictionnaire
     {NUM, PRO, ALG, GEO, ESP, FON, STA, LOG -> 1..5}, statut D.

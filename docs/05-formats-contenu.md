@@ -34,7 +34,7 @@ gabarits:
     competence_id: ALG.EQ1.01
     type: equation_ax_plus_b    # nom de la fonction génératrice (voir engine/items.py)
     difficulte: 2
-    format_reponse: entier      # entier | fraction | expression | qcm
+    format_reponse: entier      # entier | fraction | expression | factorisee | qcm
     enonce: "Résous l'équation ${a}x + ${b} = ${c}."
     variables:                  # variables bornées, tirées au hasard (seedé)
       a: {type: int, min: 1, max: 9}
@@ -47,6 +47,10 @@ gabarits:
 Règles : `enonce` est un template `string.Template` (`${var}`) ; `reponse` est une expression sympy ;
 `variables` définit les bornes de chaque variable. Le moteur tire les valeurs (RNG seedé, donc
 reproductible), substitue dans `enonce` et évalue `reponse`.
+
+Pour `format_reponse: factorisee`, la réponse n'est **pas** simplifiée (sinon elle serait ré-expandée
+et contredirait un énoncé « factorise ») : la forme du template est conservée, et la vérification
+reste par équivalence (les formes factorisée et développée sont toutes deux acceptées).
 
 ## 5.3 Cinq nœuds d'exemple
 

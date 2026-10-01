@@ -81,7 +81,13 @@ def instancier(gabarit: Gabarit, seed: int | None = None) -> ItemGenere:
     enonce = Template(gabarit.enonce).substitute(valeurs)
     # La réponse est *calculée* ici par sympy — jamais écrite à la main dans la base.
     reponse_sym = sympy.sympify(Template(gabarit.reponse).substitute(valeurs))
-    reponse_canonique = sympy.sstr(sympy.simplify(reponse_sym))
+    if gabarit.format_reponse == "factorisee":
+        # Une réponse factorisée est conservée telle quelle : la simplifier la
+        # ré-expanderait, ce qui contredirait un énoncé « factorise ». La
+        # vérification reste par équivalence (les deux formes sont acceptées).
+        reponse_canonique = sympy.sstr(reponse_sym)
+    else:
+        reponse_canonique = sympy.sstr(sympy.simplify(reponse_sym))
 
     return ItemGenere(
         gabarit_id=gabarit.id,

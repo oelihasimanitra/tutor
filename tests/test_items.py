@@ -83,3 +83,21 @@ def test_instancier_seed_par_defaut_variable(gabarits):
     g = gabarits["NUM.DIV.01.i1"]
     items = {instancier(g).enonce for _ in range(20)}
     assert len(items) > 1
+
+
+def test_factorisation_conservee():
+    """Une réponse factorisée n'est pas ré-expandée ; l'équivalence accepte les deux formes."""
+    g = Gabarit(
+        id="t", competence_id="c", type="factorisation", difficulte=3,
+        format_reponse="factorisee", enonce="Factorise : x^2 - ${a}^2",
+        variables={"a": {"min": 2, "max": 9}},
+        reponse="(x - ${a})*(x + ${a})",
+    )
+    item = instancier(g, seed=1)
+    a = item.variables["a"]
+    # La réponse attendue reste factorisée (contient des parenthèses de facteurs).
+    assert "(" in item.reponse_attendue
+    # Les deux formes sont acceptées (équivalence), une fausse est refusée.
+    assert verifier(item, f"(x - {a})*(x + {a})")
+    assert verifier(item, f"x**2 - {a**2}")
+    assert not verifier(item, f"x**2 - {a**2 + 1}")
