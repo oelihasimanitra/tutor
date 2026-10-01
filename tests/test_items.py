@@ -103,6 +103,14 @@ def test_factorisation_conservee():
     assert not verifier(item, f"x**2 - {a**2 + 1}")
 
 
+def test_fraction_irreductible_exigee():
+    """format_reponse "fraction" exige la forme irréductible."""
+    assert reponse_equivalente("3/4", "6/8", format_reponse="fraction") is False
+    assert reponse_equivalente("3/4", "3/4", format_reponse="fraction") is True
+    # Sans format "fraction", l'équivalence accepte les formes équivalentes.
+    assert reponse_equivalente("3/4", "6/8") is True
+
+
 def test_reponse_malveillante_refusee_sans_effet_de_bord():
     """Sécurité : une saisie qui tente d'exécuter du code est refusée proprement.
 

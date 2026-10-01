@@ -63,6 +63,7 @@ class TuteurService:
 
         item_db = ItemGenereModel(
             gabarit_id=item.gabarit_id,
+            eleve_id=eleve_id,
             variables=dict(item.variables),
             seed=item.seed,
             enonce=item.enonce,
@@ -84,12 +85,14 @@ class TuteurService:
         methode_observee: str | None = None,
     ) -> Reponse:
         """Vérifie la réponse (sympy) et enregistre la réponse brute, liée à l'item."""
+        gabarit = self.gabarits[item_db.gabarit_id]
         est_correct = reponse_equivalente(
             item_db.reponse_attendue,
             reponse_eleve,
             max_longueur=self.config.verification.longueur_max,
+            format_reponse=gabarit.format_reponse,
         )
-        competence_id = self.gabarits[item_db.gabarit_id].competence_id
+        competence_id = gabarit.competence_id
 
         # Détecter un item de contrôle : la cible était un prérequis propagé.
         etats_avant = self.carte_competences(eleve_id)

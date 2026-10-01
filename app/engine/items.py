@@ -14,6 +14,7 @@ Deux mécanismes complémentaires :
 """
 from __future__ import annotations
 
+import math
 import random
 import re
 from dataclasses import dataclass, field
@@ -130,6 +131,18 @@ _LONGUEUR_MAX_PAR_DEFAUT = 200
 # (``parse_expr`` ne gère pas "2x" seul dans sympy 1.14 — on l'explicite.)
 _MULT_IMPLICITE = re.compile(r'(\d|\))\s*([a-zA-Z(])')
 
+# Fraction explicite "a/b" (pour la vérification de forme irréductible).
+_FRACTION = re.compile(r'^([+-]?\d+)\s*/\s*([+-]?\d+)$')
+
+
+def _forme_irreductible(s: str) -> bool:
+    """Vrai si ``s`` n'est pas une fraction réductible (forme attendue pour « simplifier »)."""
+    m = _FRACTION.match(s.strip())
+    if not m:
+        return True  # pas une fraction simple : l'équivalence juge
+    a, b = int(m.group(1)), int(m.group(2))
+    return math.gcd(abs(a), abs(b)) == 1
+
 
 def _parser_reponse(s: str, max_longueur: int) -> sympy.Expr | None:
     """Parse une réponse élève de façon **sûre** (liste blanche, sans exécution).
@@ -156,6 +169,7 @@ def reponse_equivalente(
     reponse_attendue: str,
     reponse_eleve: str,
     max_longueur: int = _LONGUEUR_MAX_PAR_DEFAUT,
+    format_reponse: str | None = None,
 ) -> bool:
     """Vérifie l'équivalence entre la réponse attendue et la réponse élève.
 
@@ -165,6 +179,10 @@ def reponse_equivalente(
     nos gabarits (fiable) : elle reste parsée par ``sympify``.
     """
     if not reponse_eleve or not reponse_eleve.strip():
+        return False
+
+    # Vérification de forme : une fraction doit être irréductible.
+    if format_reponse == "fraction" and not _forme_irreductible(reponse_eleve):
         return False
 
     eleve = _parser_reponse(reponse_eleve, max_longueur)

@@ -49,7 +49,7 @@ def test_saisie_bonne_reponse_acquisition(engine, graphe, gabarits, config):
 
         item_db = service.prochain_item(eleve.id, "NUM.ENT.01")
         assert item_db is not None
-        assert item_db.gabarit_id == "NUM.ENT.01.i1"
+        assert item_db.gabarit_id.startswith("NUM.ENT.01.i1")  # .i1 ou sa variante .v2
 
         for _ in range(3):
             service.enregistrer_reponse(eleve.id, item_db, item_db.reponse_attendue)

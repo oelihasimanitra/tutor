@@ -28,6 +28,7 @@ class ItemGenere(SQLModel, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     gabarit_id: str = Field(foreign_key="gabarits_items.id")
+    eleve_id: int | None = Field(default=None, foreign_key="eleves.id")
     variables: dict = Field(default_factory=dict, sa_column=Column(JSON))
     seed: int
     enonce: str

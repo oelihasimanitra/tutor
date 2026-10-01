@@ -90,29 +90,22 @@ def test_parcours_complet(client: TestClient) -> None:
     assert isinstance(fausse["reponse_attendue"], str) and fausse["reponse_attendue"]
     assert isinstance(fausse["id"], int)
 
-    # 3b. La réponse attendue (renvoyée après saisie) est acceptée comme correcte.
+    # Un item ne peut être répondu qu'une seule fois (409).
     r = client.post(
         f"/eleves/{eleve_id}/reponses",
-        json={
-            "item_id": item_id,
-            "reponse_eleve": fausse["reponse_attendue"],
-            "confiance_annoncee": 4,
-            "type_erreur": None,
-            "methode_observee": None,
-        },
+        json={"item_id": item_id, "reponse_eleve": "1"},
     )
-    assert r.status_code == 200
-    assert r.json()["est_correct"] is True
+    assert r.status_code == 409
 
-    # 4. Carte de compétences : 2 tentatives, 1 réussite sur le nœud visé.
+    # 4. Carte de compétences : 1 tentative, 0 réussite sur le nœud visé.
     r = client.get(f"/eleves/{eleve_id}/competences")
     assert r.status_code == 200
     competences = r.json()["competences"]
     assert isinstance(competences, dict)
     etat = competences[POINT_ENTREE]
     assert set(etat) == {"statut", "origine", "nb_reussites", "nb_tentatives"}
-    assert etat["nb_tentatives"] == 2
-    assert etat["nb_reussites"] == 1
+    assert etat["nb_tentatives"] == 1
+    assert etat["nb_reussites"] == 0
     assert etat["statut"] == "fragile"
     assert etat["origine"] == "mesure"
 
@@ -136,6 +129,20 @@ def test_reponse_item_inconnu_404(client: TestClient) -> None:
         json={"item_id": 999_999, "reponse_eleve": "1"},
     )
     assert r.status_code == 404
+
+
+def test_reponse_item_autre_eleve_409(client: TestClient) -> None:
+    """Une réponse sur un item posé pour un autre élève est refusée (409)."""
+    e1 = client.post("/eleves", json={"pseudonyme": "autre-a"}).json()["id"]
+    e2 = client.post("/eleves", json={"pseudonyme": "autre-b"}).json()["id"]
+    item = client.post(
+        f"/eleves/{e1}/items/prochain", json={"point_entree": POINT_ENTREE}
+    ).json()
+    r = client.post(
+        f"/eleves/{e2}/reponses",
+        json={"item_id": item["item_id"], "reponse_eleve": "1"},
+    )
+    assert r.status_code == 409
 
 
 def test_pseudonyme_duplique_409(client: TestClient) -> None:

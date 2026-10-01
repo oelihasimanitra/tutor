@@ -16,9 +16,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session
+from sqlmodel import Session, select
 
-from app.models import Eleve, ItemGenere
+from app.models import Eleve, ItemGenere, Reponse
 from app.services.tuteur import TuteurService
 
 from ..auth import verifier_pin
@@ -107,6 +107,13 @@ def enregistrer_reponse(
     item = service.session.get(ItemGenere, payload.item_id)
     if item is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Item introuvable.")
+    if item.eleve_id != eleve_id:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Cet item n'appartient pas à cet élève.")
+    deja_repondu = service.session.exec(
+        select(Reponse).where(Reponse.item_id == item.id)
+    ).first()
+    if deja_repondu is not None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Cet item a déjà reçu une réponse.")
 
     reponse = service.enregistrer_reponse(
         eleve_id,
