@@ -1,6 +1,8 @@
 """Tests de la sélection adaptative du prochain item."""
 from __future__ import annotations
 
+import pytest
+
 from app.engine.graph import Graphe
 from app.engine.selection import prochain_item
 from app.engine.status import EtatCompetence, Origine, Statut
@@ -59,11 +61,12 @@ def test_branche_epuisee_retourne_none(make_noeud, make_gabarit):
     assert prochain_item(graphe, etats, gabarits, "C") is None
 
 
-def test_noeud_sans_item_ignore(make_noeud):
-    """Un nœud sans gabarit ne fait pas planter la sélection (ignoré)."""
+def test_noeud_sans_item_erreur_explicite(make_noeud):
+    """Un nœud sans gabarit lève une erreur explicite (contenu invalide)."""
     graphe = Graphe(noeuds={"A": make_noeud("A", items=("inexistant",))})
     etats = {"A": EtatCompetence()}
-    assert prochain_item(graphe, etats, {}, "A") is None
+    with pytest.raises(ValueError):
+        prochain_item(graphe, etats, {}, "A")
 
 
 def test_preferer_facile(graphe, gabarits):

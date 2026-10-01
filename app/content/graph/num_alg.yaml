@@ -1,984 +1,1358 @@
-# =============================================================================
-# Graphe de compétences — NUM + ALG, cycle 4 (5e → 3e) et seconde.
-# Version étendue : les 25 nœuds de num_alg.yaml (à l'identique) + extension
-# jusqu'à ~88 nœuds. Format : voir docs/05-formats-contenu.md
-# Principe : un `prerequis` pointe toujours vers une compétence plus
-# fondamentale ; le graphe est donc un DAG (aucun cycle).
-# =============================================================================
 version: 1
 noeuds:
-  # ================================ EXISTANT (25 nœuds, inchangés) ========
-  # ------------------------------------------------------------- NUM --------
-  - id: NUM.ENT.01
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Addition et soustraction d'entiers"
-    niveau_ref: "5e"
-    difficulte: 1
-    type: procedure
-    prerequis: []
-    erreurs_types: [etourderie, procedure]
-    items: [NUM.ENT.01.i1]
-
-  - id: NUM.ENT.02
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Multiplication d'entiers"
-    niveau_ref: "5e"
-    difficulte: 1
-    type: procedure
-    prerequis: [NUM.ENT.01]
-    erreurs_types: [procedure]
-    items: [NUM.ENT.02.i1]
-
-  - id: NUM.DIV.01
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Division euclidienne"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.ENT.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.DIV.01.i1, NUM.DIV.01.i2]
-
-  - id: NUM.DIV.02
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Divisibilité et multiples"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.DIV.01]
-    erreurs_types: [concept, procedure]
-    items: [NUM.DIV.02.i1]
-
-  - id: NUM.FRA.01
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Fraction : partage et valeur"
-    niveau_ref: "5e"
-    difficulte: 1
-    type: concept
-    prerequis: [NUM.DIV.01]
-    erreurs_types: [concept]
-    items: [NUM.FRA.01.i1]
-
-  - id: NUM.FRA.02
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Fractions équivalentes"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.DIV.02, NUM.FRA.01]
-    erreurs_types: [concept, procedure]
-    items: [NUM.FRA.02.i1]
-
-  - id: NUM.FRA.03
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Comparer des fractions"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.FRA.02]
-    liens_faibles: [NUM.REL.01]
-    erreurs_types: [procedure, concept]
-    items: [NUM.FRA.03.i1]
-
-  - id: NUM.FRA.04
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Addition de fractions (même dénominateur)"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.FRA.02]
-    erreurs_types: [procedure]
-    items: [NUM.FRA.04.i1]
-
-  - id: NUM.FRA.05
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Addition de fractions (dénominateurs différents)"
-    niveau_ref: "5e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.FRA.04, NUM.DIV.02]
-    erreurs_types: [procedure, lacune]
-    items: [NUM.FRA.05.i1]
-
-  - id: NUM.REL.01
-    domaine: NUM
-    chapitre: "Nombres relatifs"
-    intitule: "Relatifs : repérage et notion"
-    niveau_ref: "5e"
-    difficulte: 1
-    type: concept
-    prerequis: [NUM.ENT.01]
-    erreurs_types: [concept]
-    items: [NUM.REL.01.i1]
-
-  - id: NUM.REL.02
-    domaine: NUM
-    chapitre: "Nombres relatifs"
-    intitule: "Addition et soustraction de relatifs"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.REL.01]
-    erreurs_types: [procedure, concept]
-    items: [NUM.REL.02.i1]
-
-  - id: NUM.REL.03
-    domaine: NUM
-    chapitre: "Nombres relatifs"
-    intitule: "Multiplication et division de relatifs"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.REL.02, NUM.ENT.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.REL.03.i1]
-
-  - id: NUM.PUI.01
-    domaine: NUM
-    chapitre: "Puissances"
-    intitule: "Puissances de 10"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.ENT.02]
-    erreurs_types: [concept]
-    items: [NUM.PUI.01.i1]
-
-  - id: NUM.PUI.02
-    domaine: NUM
-    chapitre: "Puissances"
-    intitule: "Règles sur les puissances"
-    niveau_ref: "seconde"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.PUI.01]
-    erreurs_types: [procedure, concept]
-    items: [NUM.PUI.02.i1]
-
-  - id: NUM.RAC.01
-    domaine: NUM
-    chapitre: "Racines carrées"
-    intitule: "Racine carrée d'un carré"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: concept
-    prerequis: [NUM.ENT.02]
-    erreurs_types: [concept]
-    items: [NUM.RAC.01.i1]
-
-  # ------------------------------------------------------------- ALG --------
-  - id: ALG.LIT.01
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Expression littérale : notation et valeur"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.REL.03]
-    erreurs_types: [concept]
-    items: [ALG.LIT.01.i1]
-
-  - id: ALG.LIT.02
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Simplifier une expression (réduire)"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [ALG.LIT.01]
-    erreurs_types: [procedure]
-    items: [ALG.LIT.02.i1]
-
-  - id: ALG.LIT.03
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Développer a(b + c)"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.02, NUM.ENT.02]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.03.i1]
-
-  - id: ALG.EQ1.01
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Résoudre x + a = b"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.REL.02, ALG.LIT.01]
-    erreurs_types: [procedure, concept]
-    items: [ALG.EQ1.01.i1, ALG.EQ1.01.i2]
-
-  - id: ALG.EQ1.02
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Résoudre ax = b"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [ALG.EQ1.01, NUM.REL.03]
-    erreurs_types: [procedure, lacune]
-    items: [ALG.EQ1.02.i1]
-
-  - id: ALG.EQ1.03
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Résoudre ax + b = c"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.EQ1.01, ALG.EQ1.02]
-    erreurs_types: [procedure, concept, lacune]
-    items: [ALG.EQ1.03.i1, ALG.EQ1.03.i2]
-
-  - id: ALG.EQ1.04
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Mettre en équation un problème"
-    niveau_ref: "4e"
-    difficulte: 4
-    type: modelisation
-    prerequis: [ALG.EQ1.03]
-    liens_faibles: [NUM.FRA.05]
-    erreurs_types: [modelisation, procedure]
-    items: [ALG.EQ1.04.i1]
-
-  - id: ALG.EQ2.01
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Résoudre ax + b = cx + d"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.EQ1.03, ALG.LIT.02]
-    erreurs_types: [procedure, lacune]
-    items: [ALG.EQ2.01.i1]
-
-  - id: ALG.PRD.01
-    domaine: ALG
-    chapitre: "Équations produit nul"
-    intitule: "Équation produit nul"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: raisonnement
-    prerequis: [ALG.LIT.03, ALG.EQ1.03]
-    erreurs_types: [raisonnement, concept]
-    items: [ALG.PRD.01.i1]
-
-  - id: ALG.INE.01
-    domaine: ALG
-    chapitre: "Inéquations"
-    intitule: "Inéquation du premier degré"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.EQ1.03, NUM.REL.03]
-    liens_faibles: [ALG.EQ2.01]
-    erreurs_types: [procedure, concept]
-    items: [ALG.INE.01.i1]
-
-  # ================================ EXTENSION — NUM =======================
-  - id: NUM.ENT.03
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Priorités opératoires"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.ENT.01, NUM.ENT.02]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.ENT.03.i1]
-
-  - id: NUM.ENT.04
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Ordre de grandeur et arrondi"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: modelisation
-    prerequis: [NUM.ENT.03]
-    erreurs_types: [modelisation, etourderie]
-    items: [NUM.ENT.04.i1]
-
-  - id: NUM.ENT.05
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Carré et cube d'un nombre"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.ENT.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.ENT.05.i1]
-
-  - id: NUM.DEC.01
-    domaine: NUM
-    chapitre: "Nombres décimaux"
-    intitule: "Nombres décimaux : écriture et rangs"
-    niveau_ref: "5e"
-    difficulte: 1
-    type: concept
-    prerequis: [NUM.ENT.01]
-    erreurs_types: [concept]
-    items: [NUM.DEC.01.i1]
-
-  - id: NUM.DEC.02
-    domaine: NUM
-    chapitre: "Nombres décimaux"
-    intitule: "Addition et soustraction de décimaux"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.DEC.01, NUM.ENT.01]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.DEC.02.i1]
-
-  - id: NUM.DEC.03
-    domaine: NUM
-    chapitre: "Nombres décimaux"
-    intitule: "Multiplication de décimaux"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.DEC.02, NUM.ENT.02]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.DEC.03.i1]
-
-  - id: NUM.DEC.04
-    domaine: NUM
-    chapitre: "Nombres décimaux"
-    intitule: "Division décimale"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.DEC.03, NUM.DIV.01]
-    erreurs_types: [procedure, concept]
-    items: [NUM.DEC.04.i1]
-
-  - id: NUM.DEC.05
-    domaine: NUM
-    chapitre: "Nombres décimaux"
-    intitule: "Multiplier un décimal par 10, 100, 1000"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.DEC.03]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.DEC.05.i1]
-
-  - id: NUM.DIV.03
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Critères de divisibilité"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.DIV.02]
-    erreurs_types: [concept, procedure]
-    items: [NUM.DIV.03.i1]
-
-  - id: NUM.DIV.04
-    domaine: NUM
-    chapitre: "Nombres entiers"
-    intitule: "Problème de partage (division euclidienne)"
-    niveau_ref: "5e"
-    difficulte: 3
-    type: modelisation
-    prerequis: [NUM.DIV.01]
-    erreurs_types: [modelisation, procedure]
-    items: [NUM.DIV.04.i1]
-
-  - id: NUM.FRA.06
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Fraction d'une quantité"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.FRA.02]
-    erreurs_types: [procedure, modelisation]
-    items: [NUM.FRA.06.i1]
-
-  - id: NUM.FRA.07
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Multiplication de fractions"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.FRA.05]
-    erreurs_types: [procedure, concept]
-    items: [NUM.FRA.07.i1]
-
-  - id: NUM.FRA.08
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Inverse et division de fractions"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.FRA.07]
-    erreurs_types: [procedure, concept]
-    items: [NUM.FRA.08.i1]
-
-  - id: NUM.FRA.09
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Écriture fractionnaire et décimale"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.FRA.02, NUM.DEC.01]
-    erreurs_types: [concept]
-    items: [NUM.FRA.09.i1]
-
-  - id: NUM.FRA.10
-    domaine: NUM
-    chapitre: "Fractions"
-    intitule: "Comparer des fractions (dénominateurs différents)"
-    niveau_ref: "5e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.FRA.03, NUM.FRA.05]
-    erreurs_types: [procedure, concept]
-    items: [NUM.FRA.10.i1]
-
-  - id: NUM.REL.04
-    domaine: NUM
-    chapitre: "Nombres relatifs"
-    intitule: "Distance à zéro et opposé"
-    niveau_ref: "5e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.REL.01]
-    erreurs_types: [concept]
-    items: [NUM.REL.04.i1]
-
-  - id: NUM.REL.05
-    domaine: NUM
-    chapitre: "Nombres relatifs"
-    intitule: "Soustraction de nombres relatifs"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.REL.03, NUM.ENT.03]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.REL.05.i1]
-
-  - id: NUM.REL.06
-    domaine: NUM
-    chapitre: "Nombres relatifs"
-    intitule: "Somme algébrique de plusieurs relatifs"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.REL.05]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.REL.06.i1]
-
-  - id: NUM.PUI.03
-    domaine: NUM
-    chapitre: "Puissances"
-    intitule: "Puissances d'un nombre"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [NUM.PUI.01, NUM.ENT.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.PUI.03.i1]
-
-  - id: NUM.PUI.04
-    domaine: NUM
-    chapitre: "Puissances"
-    intitule: "Notation scientifique"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: modelisation
-    prerequis: [NUM.PUI.03]
-    erreurs_types: [modelisation, procedure]
-    items: [NUM.PUI.04.i1]
-
-  - id: NUM.PUI.05
-    domaine: NUM
-    chapitre: "Puissances"
-    intitule: "Exposants négatifs"
-    niveau_ref: "seconde"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.PUI.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.PUI.05.i1]
-
-  - id: NUM.PUI.06
-    domaine: NUM
-    chapitre: "Puissances"
-    intitule: "Simplifier une expression avec puissances"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [NUM.PUI.02, NUM.PUI.05]
-    erreurs_types: [procedure, concept]
-    items: [NUM.PUI.06.i1]
-
-  - id: NUM.RAC.02
-    domaine: NUM
-    chapitre: "Racines carrées"
-    intitule: "Partie entière d'une racine carrée"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: concept
-    prerequis: [NUM.RAC.01, NUM.ENT.05]
-    erreurs_types: [concept]
-    items: [NUM.RAC.02.i1]
-
-  - id: NUM.RAC.03
-    domaine: NUM
-    chapitre: "Racines carrées"
-    intitule: "Simplifier une racine carrée"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: procedure
-    prerequis: [NUM.RAC.01, NUM.DIV.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.RAC.03.i1]
-
-  - id: NUM.RAC.04
-    domaine: NUM
-    chapitre: "Racines carrées"
-    intitule: "Opérations sur les racines carrées"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [NUM.RAC.03, NUM.PUI.03]
-    erreurs_types: [procedure, concept]
-    items: [NUM.RAC.04.i1]
-
-  - id: NUM.ARI.01
-    domaine: NUM
-    chapitre: "Arithmétique"
-    intitule: "Nombres premiers"
-    niveau_ref: "3e"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.DIV.02]
-    erreurs_types: [concept]
-    items: [NUM.ARI.01.i1]
-
-  - id: NUM.ARI.02
-    domaine: NUM
-    chapitre: "Arithmétique"
-    intitule: "Décomposition en facteurs premiers"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.ARI.01]
-    erreurs_types: [procedure, concept]
-    items: [NUM.ARI.02.i1]
-
-  - id: NUM.ARI.03
-    domaine: NUM
-    chapitre: "Arithmétique"
-    intitule: "PGCD de deux nombres"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.ARI.02]
-    erreurs_types: [procedure]
-    items: [NUM.ARI.03.i1]
-
-  - id: NUM.ARI.04
-    domaine: NUM
-    chapitre: "Arithmétique"
-    intitule: "Rendre une fraction irréductible"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.ARI.03, NUM.FRA.02]
-    erreurs_types: [procedure, concept]
-    items: [NUM.ARI.04.i1]
-
-  - id: NUM.CAL.01
-    domaine: NUM
-    chapitre: "Calcul numérique"
-    intitule: "Calcul exact mêlant fractions et priorités"
-    niveau_ref: "seconde"
-    difficulte: 3
-    type: procedure
-    prerequis: [NUM.FRA.08, NUM.ENT.03]
-    erreurs_types: [procedure, etourderie]
-    items: [NUM.CAL.01.i1]
-
-  - id: NUM.CAL.02
-    domaine: NUM
-    chapitre: "Calcul numérique"
-    intitule: "Carrés parfaits et ensembles de nombres"
-    niveau_ref: "seconde"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.FRA.09, NUM.RAC.01]
-    erreurs_types: [concept]
-    items: [NUM.CAL.02.i1]
-
-  - id: NUM.CAL.03
-    domaine: NUM
-    chapitre: "Calcul numérique"
-    intitule: "Équation avec valeur absolue"
-    niveau_ref: "seconde"
-    difficulte: 3
-    type: concept
-    prerequis: [NUM.REL.04]
-    erreurs_types: [concept, raisonnement]
-    items: [NUM.CAL.03.i1]
-
-  - id: NUM.CAL.04
-    domaine: NUM
-    chapitre: "Calcul numérique"
-    intitule: "Encadrement par des multiples"
-    niveau_ref: "seconde"
-    difficulte: 2
-    type: concept
-    prerequis: [NUM.REL.01, NUM.DEC.01]
-    erreurs_types: [concept]
-    items: [NUM.CAL.04.i1]
-
-  - id: NUM.CAL.05
-    domaine: NUM
-    chapitre: "Calcul numérique"
-    intitule: "Reconnaître une écriture scientifique"
-    niveau_ref: "seconde"
-    difficulte: 3
-    type: concept
-    prerequis: [NUM.PUI.04]
-    erreurs_types: [concept]
-    items: [NUM.CAL.05.i1]
-
-  # ================================ EXTENSION — ALG =======================
-  - id: ALG.LIT.04
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Supprimer des parenthèses"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.02, NUM.REL.03]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.04.i1]
-
-  - id: ALG.LIT.05
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Développer (a + b)(c + d)"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.03]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.05.i1]
-
-  - id: ALG.LIT.06
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Factoriser avec un facteur commun"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.03]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.06.i1]
-
-  - id: ALG.LIT.07
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Identité remarquable (a + b)²"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: concept
-    prerequis: [ALG.LIT.05]
-    erreurs_types: [concept, procedure]
-    items: [ALG.LIT.07.i1]
-
-  - id: ALG.LIT.08
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Identité remarquable (a + b)(a − b)"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.05]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.08.i1]
-
-  - id: ALG.LIT.09
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Évaluer une expression à plusieurs variables"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [ALG.LIT.01]
-    erreurs_types: [procedure, etourderie]
-    items: [ALG.LIT.09.i1]
-
-  - id: ALG.LIT.10
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Expression littérale d'un programme de calcul"
-    niveau_ref: "4e"
-    difficulte: 3
-    type: modelisation
-    prerequis: [ALG.LIT.02, ALG.LIT.09]
-    erreurs_types: [modelisation, procedure]
-    items: [ALG.LIT.10.i1]
-
-  - id: ALG.LIT.11
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Puissances dans une expression littérale"
-    niveau_ref: "seconde"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.05, NUM.PUI.06]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.11.i1]
-
-  - id: ALG.LIT.12
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Développer et réduire"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.LIT.05, ALG.LIT.07]
-    erreurs_types: [procedure, etourderie]
-    items: [ALG.LIT.12.i1]
-
-  - id: ALG.LIT.13
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Factoriser une identité remarquable"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.LIT.07, ALG.LIT.08]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.13.i1]
-
-  - id: ALG.LIT.14
-    domaine: ALG
-    chapitre: "Calcul littéral"
-    intitule: "Réduire une expression avec x²"
-    niveau_ref: "3e"
-    difficulte: 3
-    type: procedure
-    prerequis: [ALG.LIT.05]
-    erreurs_types: [procedure, concept]
-    items: [ALG.LIT.14.i1]
-
-  - id: ALG.EQ1.05
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Résoudre x/a = b"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: procedure
-    prerequis: [ALG.EQ1.02, NUM.FRA.08]
-    erreurs_types: [procedure, concept]
-    items: [ALG.EQ1.05.i1]
-
-  - id: ALG.EQ1.06
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Équation avec des fractions"
-    niveau_ref: "4e"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.EQ1.03, NUM.FRA.05]
-    erreurs_types: [procedure, lacune]
-    items: [ALG.EQ1.06.i1]
-
-  - id: ALG.EQ1.07
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Vérifier une solution"
-    niveau_ref: "4e"
-    difficulte: 2
-    type: concept
-    prerequis: [ALG.EQ1.03]
-    erreurs_types: [concept, procedure]
-    items: [ALG.EQ1.07.i1]
-
-  - id: ALG.EQ1.08
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Mise en équation avec inconnue dans les deux membres"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: modelisation
-    prerequis: [ALG.EQ2.01, ALG.EQ1.04]
-    erreurs_types: [modelisation, procedure]
-    items: [ALG.EQ1.08.i1]
-
-  - id: ALG.EQ2.02
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Équation avec développement"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.EQ2.01, ALG.LIT.05]
-    erreurs_types: [procedure, lacune]
-    items: [ALG.EQ2.02.i1]
-
-  - id: ALG.EQ2.03
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Équation avec produits en croix"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.EQ1.06, NUM.FRA.08]
-    erreurs_types: [procedure, concept]
-    items: [ALG.EQ2.03.i1]
-
-  - id: ALG.EQ2.04
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Équation produit nul à factoriser"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.PRD.02, ALG.LIT.06]
-    erreurs_types: [procedure, raisonnement]
-    items: [ALG.EQ2.04.i1]
-
-  - id: ALG.EQ2.05
-    domaine: ALG
-    chapitre: "Équations du premier degré"
-    intitule: "Équation avec une identité remarquable"
-    niveau_ref: "seconde"
-    difficulte: 5
-    type: raisonnement
-    prerequis: [ALG.EQ2.02, ALG.LIT.07]
-    erreurs_types: [raisonnement, procedure]
-    items: [ALG.EQ2.05.i1]
-
-  - id: ALG.PRD.02
-    domaine: ALG
-    chapitre: "Équations produit nul"
-    intitule: "Factoriser puis résoudre = 0"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.PRD.01, ALG.LIT.06]
-    erreurs_types: [procedure, raisonnement]
-    items: [ALG.PRD.02.i1]
-
-  - id: ALG.PRD.03
-    domaine: ALG
-    chapitre: "Équations produit nul"
-    intitule: "Équation x² = a"
-    niveau_ref: "3e"
-    difficulte: 4
-    type: raisonnement
-    prerequis: [ALG.PRD.01, NUM.RAC.01]
-    erreurs_types: [raisonnement, concept]
-    items: [ALG.PRD.03.i1]
-
-  - id: ALG.PRD.04
-    domaine: ALG
-    chapitre: "Équations produit nul"
-    intitule: "Équation du second degré par factorisation"
-    niveau_ref: "seconde"
-    difficulte: 5
-    type: raisonnement
-    prerequis: [ALG.PRD.02, ALG.LIT.07]
-    erreurs_types: [raisonnement, procedure]
-    items: [ALG.PRD.04.i1]
-
-  - id: ALG.INE.02
-    domaine: ALG
-    chapitre: "Inéquations"
-    intitule: "Résoudre une inéquation du premier degré"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.INE.01]
-    erreurs_types: [procedure, concept]
-    items: [ALG.INE.02.i1]
-
-  - id: ALG.INE.03
-    domaine: ALG
-    chapitre: "Inéquations"
-    intitule: "Inéquation et ensemble solution"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: concept
-    prerequis: [ALG.INE.02, NUM.CAL.04]
-    erreurs_types: [concept]
-    items: [ALG.INE.03.i1]
-
-  - id: ALG.INE.04
-    domaine: ALG
-    chapitre: "Inéquations"
-    intitule: "Inéquation produit"
-    niveau_ref: "seconde"
-    difficulte: 5
-    type: raisonnement
-    prerequis: [ALG.INE.03, ALG.PRD.02]
-    erreurs_types: [raisonnement, concept]
-    items: [ALG.INE.04.i1]
-
-  - id: ALG.INE.05
-    domaine: ALG
-    chapitre: "Inéquations"
-    intitule: "Inéquation avec inconnue dans les deux membres"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.INE.02, ALG.EQ2.01]
-    erreurs_types: [procedure, concept]
-    items: [ALG.INE.05.i1]
-
-  - id: ALG.SYS.01
-    domaine: ALG
-    chapitre: "Systèmes d'équations"
-    intitule: "Système de deux équations : notion"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: concept
-    prerequis: [ALG.EQ2.01]
-    erreurs_types: [concept]
-    items: [ALG.SYS.01.i1]
-
-  - id: ALG.SYS.02
-    domaine: ALG
-    chapitre: "Systèmes d'équations"
-    intitule: "Résolution par substitution"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.SYS.01]
-    erreurs_types: [procedure]
-    items: [ALG.SYS.02.i1]
-
-  - id: ALG.SYS.03
-    domaine: ALG
-    chapitre: "Systèmes d'équations"
-    intitule: "Résolution par combinaison"
-    niveau_ref: "seconde"
-    difficulte: 4
-    type: procedure
-    prerequis: [ALG.SYS.01]
-    erreurs_types: [procedure, etourderie]
-    items: [ALG.SYS.03.i1]
+- id: NUM.ENT.01
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Addition et soustraction d'entiers
+  niveau_ref: 5e
+  difficulte: 1
+  type: procedure
+  prerequis: []
+  erreurs_types:
+  - etourderie
+  - procedure
+  items:
+  - NUM.ENT.01.i1
+  - NUM.ENT.01.i1.v2
+- id: NUM.ENT.02
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Multiplication d'entiers
+  niveau_ref: 5e
+  difficulte: 1
+  type: procedure
+  prerequis:
+  - NUM.ENT.01
+  erreurs_types:
+  - procedure
+  items:
+  - NUM.ENT.02.i1
+  - NUM.ENT.02.i1.v2
+- id: NUM.DIV.01
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Division euclidienne
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.DIV.01.i1
+  - NUM.DIV.01.i2
+  - NUM.DIV.01.i1.v2
+  - NUM.DIV.01.i2.v2
+- id: NUM.DIV.02
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Divisibilité et multiples
+  niveau_ref: 5e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.DIV.01
+  erreurs_types:
+  - concept
+  - procedure
+  items:
+  - NUM.DIV.02.i1
+  - NUM.DIV.02.i1.v2
+- id: NUM.FRA.01
+  domaine: NUM
+  chapitre: Fractions
+  intitule: 'Fraction : partage et valeur'
+  niveau_ref: 5e
+  difficulte: 1
+  type: concept
+  prerequis:
+  - NUM.DIV.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.FRA.01.i1
+  - NUM.FRA.01.i1.v2
+- id: NUM.FRA.02
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Fractions équivalentes
+  niveau_ref: 5e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.DIV.02
+  - NUM.FRA.01
+  erreurs_types:
+  - concept
+  - procedure
+  items:
+  - NUM.FRA.02.i1
+  - NUM.FRA.02.i1.v2
+- id: NUM.FRA.03
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Comparer des fractions
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.FRA.02
+  liens_faibles:
+  - NUM.REL.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.FRA.03.i1
+  - NUM.FRA.03.i1.v2
+- id: NUM.FRA.04
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Addition de fractions (même dénominateur)
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.FRA.02
+  erreurs_types:
+  - procedure
+  items:
+  - NUM.FRA.04.i1
+  - NUM.FRA.04.i1.v2
+- id: NUM.FRA.05
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Addition de fractions (dénominateurs différents)
+  niveau_ref: 5e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.FRA.04
+  - NUM.DIV.02
+  erreurs_types:
+  - procedure
+  - lacune
+  items:
+  - NUM.FRA.05.i1
+  - NUM.FRA.05.i1.v2
+- id: NUM.REL.01
+  domaine: NUM
+  chapitre: Nombres relatifs
+  intitule: 'Relatifs : repérage et notion'
+  niveau_ref: 5e
+  difficulte: 1
+  type: concept
+  prerequis:
+  - NUM.ENT.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.REL.01.i1
+  - NUM.REL.01.i1.v2
+- id: NUM.REL.02
+  domaine: NUM
+  chapitre: Nombres relatifs
+  intitule: Addition et soustraction de relatifs
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.REL.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.REL.02.i1
+  - NUM.REL.02.i1.v2
+- id: NUM.REL.03
+  domaine: NUM
+  chapitre: Nombres relatifs
+  intitule: Multiplication et division de relatifs
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.REL.02
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.REL.03.i1
+  - NUM.REL.03.i1.v2
+- id: NUM.PUI.01
+  domaine: NUM
+  chapitre: Puissances
+  intitule: Puissances de 10
+  niveau_ref: 4e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.ENT.02
+  erreurs_types:
+  - concept
+  items:
+  - NUM.PUI.01.i1
+  - NUM.PUI.01.i1.v2
+- id: NUM.PUI.02
+  domaine: NUM
+  chapitre: Puissances
+  intitule: Règles sur les puissances
+  niveau_ref: seconde
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.PUI.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.PUI.02.i1
+  - NUM.PUI.02.i1.v2
+- id: NUM.RAC.01
+  domaine: NUM
+  chapitre: Racines carrées
+  intitule: Racine carrée d'un carré
+  niveau_ref: 3e
+  difficulte: 3
+  type: concept
+  prerequis:
+  - NUM.ENT.02
+  erreurs_types:
+  - concept
+  items:
+  - NUM.RAC.01.i1
+  - NUM.RAC.01.i1.v2
+- id: ALG.LIT.01
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: 'Expression littérale : notation et valeur'
+  niveau_ref: 4e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.REL.03
+  erreurs_types:
+  - concept
+  items:
+  - ALG.LIT.01.i1
+  - ALG.LIT.01.i1.v2
+- id: ALG.LIT.02
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Simplifier une expression (réduire)
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - ALG.LIT.01
+  erreurs_types:
+  - procedure
+  items:
+  - ALG.LIT.02.i1
+  - ALG.LIT.02.i1.v2
+- id: ALG.LIT.03
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Développer a(b + c)
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.02
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.03.i1
+  - ALG.LIT.03.i1.v2
+- id: ALG.EQ1.01
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Résoudre x + a = b
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.REL.02
+  - ALG.LIT.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.EQ1.01.i1
+  - ALG.EQ1.01.i2
+  - ALG.EQ1.01.i1.v2
+  - ALG.EQ1.01.i2.v2
+- id: ALG.EQ1.02
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Résoudre ax = b
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - ALG.EQ1.01
+  - NUM.REL.03
+  erreurs_types:
+  - procedure
+  - lacune
+  items:
+  - ALG.EQ1.02.i1
+  - ALG.EQ1.02.i1.v2
+- id: ALG.EQ1.03
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Résoudre ax + b = c
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.EQ1.01
+  - ALG.EQ1.02
+  erreurs_types:
+  - procedure
+  - concept
+  - lacune
+  items:
+  - ALG.EQ1.03.i1
+  - ALG.EQ1.03.i2
+  - ALG.EQ1.03.i1.v2
+  - ALG.EQ1.03.i2.v2
+- id: ALG.EQ1.04
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Mettre en équation un problème
+  niveau_ref: 4e
+  difficulte: 4
+  type: modelisation
+  prerequis:
+  - ALG.EQ1.03
+  liens_faibles:
+  - NUM.FRA.05
+  erreurs_types:
+  - modelisation
+  - procedure
+  items:
+  - ALG.EQ1.04.i1
+  - ALG.EQ1.04.i1.v2
+- id: ALG.EQ2.01
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Résoudre ax + b = cx + d
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.EQ1.03
+  - ALG.LIT.02
+  erreurs_types:
+  - procedure
+  - lacune
+  items:
+  - ALG.EQ2.01.i1
+  - ALG.EQ2.01.i1.v2
+- id: ALG.PRD.01
+  domaine: ALG
+  chapitre: Équations produit nul
+  intitule: Équation produit nul
+  niveau_ref: 3e
+  difficulte: 4
+  type: raisonnement
+  prerequis:
+  - ALG.LIT.03
+  - ALG.EQ1.03
+  erreurs_types:
+  - raisonnement
+  - concept
+  items:
+  - ALG.PRD.01.i1
+  - ALG.PRD.01.i1.v2
+- id: ALG.INE.01
+  domaine: ALG
+  chapitre: Inéquations
+  intitule: Inéquation du premier degré
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.EQ1.03
+  - NUM.REL.03
+  liens_faibles:
+  - ALG.EQ2.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.INE.01.i1
+  - ALG.INE.01.i1.v2
+- id: NUM.ENT.03
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Priorités opératoires
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.ENT.01
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.ENT.03.i1
+  - NUM.ENT.03.i1.v2
+- id: NUM.ENT.04
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Ordre de grandeur et arrondi
+  niveau_ref: 5e
+  difficulte: 2
+  type: modelisation
+  prerequis:
+  - NUM.ENT.03
+  erreurs_types:
+  - modelisation
+  - etourderie
+  items:
+  - NUM.ENT.04.i1
+  - NUM.ENT.04.i1.v2
+- id: NUM.ENT.05
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Carré et cube d'un nombre
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.ENT.05.i1
+  - NUM.ENT.05.i1.v2
+- id: NUM.DEC.01
+  domaine: NUM
+  chapitre: Nombres décimaux
+  intitule: 'Nombres décimaux : écriture et rangs'
+  niveau_ref: 5e
+  difficulte: 1
+  type: concept
+  prerequis:
+  - NUM.ENT.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.DEC.01.i1
+  - NUM.DEC.01.i1.v2
+- id: NUM.DEC.02
+  domaine: NUM
+  chapitre: Nombres décimaux
+  intitule: Addition et soustraction de décimaux
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.DEC.01
+  - NUM.ENT.01
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.DEC.02.i1
+  - NUM.DEC.02.i1.v2
+- id: NUM.DEC.03
+  domaine: NUM
+  chapitre: Nombres décimaux
+  intitule: Multiplication de décimaux
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.DEC.02
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.DEC.03.i1
+  - NUM.DEC.03.i1.v2
+- id: NUM.DEC.04
+  domaine: NUM
+  chapitre: Nombres décimaux
+  intitule: Division décimale
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.DEC.03
+  - NUM.DIV.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.DEC.04.i1
+  - NUM.DEC.04.i1.v2
+- id: NUM.DEC.05
+  domaine: NUM
+  chapitre: Nombres décimaux
+  intitule: Multiplier un décimal par 10, 100, 1000
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.DEC.03
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.DEC.05.i1
+  - NUM.DEC.05.i1.v2
+- id: NUM.DIV.03
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Critères de divisibilité
+  niveau_ref: 5e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.DIV.02
+  erreurs_types:
+  - concept
+  - procedure
+  items:
+  - NUM.DIV.03.i1
+  - NUM.DIV.03.i1.v2
+- id: NUM.DIV.04
+  domaine: NUM
+  chapitre: Nombres entiers
+  intitule: Problème de partage (division euclidienne)
+  niveau_ref: 5e
+  difficulte: 3
+  type: modelisation
+  prerequis:
+  - NUM.DIV.01
+  erreurs_types:
+  - modelisation
+  - procedure
+  items:
+  - NUM.DIV.04.i1
+  - NUM.DIV.04.i1.v2
+- id: NUM.FRA.06
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Fraction d'une quantité
+  niveau_ref: 5e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.FRA.02
+  erreurs_types:
+  - procedure
+  - modelisation
+  items:
+  - NUM.FRA.06.i1
+  - NUM.FRA.06.i1.v2
+- id: NUM.FRA.07
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Multiplication de fractions
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.FRA.05
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.FRA.07.i1
+  - NUM.FRA.07.i1.v2
+- id: NUM.FRA.08
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Inverse et division de fractions
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.FRA.07
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.FRA.08.i1
+  - NUM.FRA.08.i1.v2
+- id: NUM.FRA.09
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Écriture fractionnaire et décimale
+  niveau_ref: 4e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.FRA.02
+  - NUM.DEC.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.FRA.09.i1
+  - NUM.FRA.09.i1.v2
+- id: NUM.FRA.10
+  domaine: NUM
+  chapitre: Fractions
+  intitule: Comparer des fractions (dénominateurs différents)
+  niveau_ref: 5e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.FRA.03
+  - NUM.FRA.05
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.FRA.10.i1
+  - NUM.FRA.10.i1.v2
+- id: NUM.REL.04
+  domaine: NUM
+  chapitre: Nombres relatifs
+  intitule: Distance à zéro et opposé
+  niveau_ref: 5e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.REL.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.REL.04.i1
+  - NUM.REL.04.i1.v2
+- id: NUM.REL.05
+  domaine: NUM
+  chapitre: Nombres relatifs
+  intitule: Soustraction de nombres relatifs
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.REL.03
+  - NUM.ENT.03
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.REL.05.i1
+  - NUM.REL.05.i1.v2
+- id: NUM.REL.06
+  domaine: NUM
+  chapitre: Nombres relatifs
+  intitule: Somme algébrique de plusieurs relatifs
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.REL.05
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.REL.06.i1
+  - NUM.REL.06.i1.v2
+- id: NUM.PUI.03
+  domaine: NUM
+  chapitre: Puissances
+  intitule: Puissances d'un nombre
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - NUM.PUI.01
+  - NUM.ENT.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.PUI.03.i1
+  - NUM.PUI.03.i1.v2
+- id: NUM.PUI.04
+  domaine: NUM
+  chapitre: Puissances
+  intitule: Notation scientifique
+  niveau_ref: 4e
+  difficulte: 3
+  type: modelisation
+  prerequis:
+  - NUM.PUI.03
+  erreurs_types:
+  - modelisation
+  - procedure
+  items:
+  - NUM.PUI.04.i1
+  - NUM.PUI.04.i1.v2
+- id: NUM.PUI.05
+  domaine: NUM
+  chapitre: Puissances
+  intitule: Exposants négatifs
+  niveau_ref: seconde
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.PUI.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.PUI.05.i1
+  - NUM.PUI.05.i1.v2
+- id: NUM.PUI.06
+  domaine: NUM
+  chapitre: Puissances
+  intitule: Simplifier une expression avec puissances
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - NUM.PUI.02
+  - NUM.PUI.05
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.PUI.06.i1
+  - NUM.PUI.06.i1.v2
+- id: NUM.RAC.02
+  domaine: NUM
+  chapitre: Racines carrées
+  intitule: Partie entière d'une racine carrée
+  niveau_ref: 3e
+  difficulte: 3
+  type: concept
+  prerequis:
+  - NUM.RAC.01
+  - NUM.ENT.05
+  erreurs_types:
+  - concept
+  items:
+  - NUM.RAC.02.i1
+  - NUM.RAC.02.i1.v2
+- id: NUM.RAC.03
+  domaine: NUM
+  chapitre: Racines carrées
+  intitule: Simplifier une racine carrée
+  niveau_ref: 3e
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - NUM.RAC.01
+  - NUM.DIV.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.RAC.03.i1
+  - NUM.RAC.03.i1.v2
+- id: NUM.RAC.04
+  domaine: NUM
+  chapitre: Racines carrées
+  intitule: Opérations sur les racines carrées
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - NUM.RAC.03
+  - NUM.PUI.03
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.RAC.04.i1
+  - NUM.RAC.04.i1.v2
+- id: NUM.ARI.01
+  domaine: NUM
+  chapitre: Arithmétique
+  intitule: Nombres premiers
+  niveau_ref: 3e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.DIV.02
+  erreurs_types:
+  - concept
+  items:
+  - NUM.ARI.01.i1
+  - NUM.ARI.01.i1.v2
+- id: NUM.ARI.02
+  domaine: NUM
+  chapitre: Arithmétique
+  intitule: Décomposition en facteurs premiers
+  niveau_ref: 3e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.ARI.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.ARI.02.i1
+  - NUM.ARI.02.i1.v2
+- id: NUM.ARI.03
+  domaine: NUM
+  chapitre: Arithmétique
+  intitule: PGCD de deux nombres
+  niveau_ref: 3e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.ARI.02
+  erreurs_types:
+  - procedure
+  items:
+  - NUM.ARI.03.i1
+  - NUM.ARI.03.i1.v2
+- id: NUM.ARI.04
+  domaine: NUM
+  chapitre: Arithmétique
+  intitule: Rendre une fraction irréductible
+  niveau_ref: 3e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.ARI.03
+  - NUM.FRA.02
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - NUM.ARI.04.i1
+  - NUM.ARI.04.i1.v2
+- id: NUM.CAL.01
+  domaine: NUM
+  chapitre: Calcul numérique
+  intitule: Calcul exact mêlant fractions et priorités
+  niveau_ref: seconde
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - NUM.FRA.08
+  - NUM.ENT.03
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - NUM.CAL.01.i1
+  - NUM.CAL.01.i1.v2
+- id: NUM.CAL.02
+  domaine: NUM
+  chapitre: Calcul numérique
+  intitule: Carrés parfaits et ensembles de nombres
+  niveau_ref: seconde
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.FRA.09
+  - NUM.RAC.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.CAL.02.i1
+  - NUM.CAL.02.i1.v2
+- id: NUM.CAL.03
+  domaine: NUM
+  chapitre: Calcul numérique
+  intitule: Équation avec valeur absolue
+  niveau_ref: seconde
+  difficulte: 3
+  type: concept
+  prerequis:
+  - NUM.REL.04
+  erreurs_types:
+  - concept
+  - raisonnement
+  items:
+  - NUM.CAL.03.i1
+  - NUM.CAL.03.i1.v2
+- id: NUM.CAL.04
+  domaine: NUM
+  chapitre: Calcul numérique
+  intitule: Encadrement par des multiples
+  niveau_ref: seconde
+  difficulte: 2
+  type: concept
+  prerequis:
+  - NUM.REL.01
+  - NUM.DEC.01
+  erreurs_types:
+  - concept
+  items:
+  - NUM.CAL.04.i1
+  - NUM.CAL.04.i1.v2
+- id: NUM.CAL.05
+  domaine: NUM
+  chapitre: Calcul numérique
+  intitule: Reconnaître une écriture scientifique
+  niveau_ref: seconde
+  difficulte: 3
+  type: concept
+  prerequis:
+  - NUM.PUI.04
+  erreurs_types:
+  - concept
+  items:
+  - NUM.CAL.05.i1
+  - NUM.CAL.05.i1.v2
+- id: ALG.LIT.04
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Supprimer des parenthèses
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.02
+  - NUM.REL.03
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.04.i1
+  - ALG.LIT.04.i1.v2
+- id: ALG.LIT.05
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Développer (a + b)(c + d)
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.03
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.05.i1
+  - ALG.LIT.05.i1.v2
+- id: ALG.LIT.06
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Factoriser avec un facteur commun
+  niveau_ref: 4e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.03
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.06.i1
+  - ALG.LIT.06.i1.v2
+- id: ALG.LIT.07
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Identité remarquable (a + b)²
+  niveau_ref: 3e
+  difficulte: 3
+  type: concept
+  prerequis:
+  - ALG.LIT.05
+  erreurs_types:
+  - concept
+  - procedure
+  items:
+  - ALG.LIT.07.i1
+  - ALG.LIT.07.i1.v2
+- id: ALG.LIT.08
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Identité remarquable (a + b)(a − b)
+  niveau_ref: 3e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.05
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.08.i1
+  - ALG.LIT.08.i1.v2
+- id: ALG.LIT.09
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Évaluer une expression à plusieurs variables
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - ALG.LIT.01
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - ALG.LIT.09.i1
+  - ALG.LIT.09.i1.v2
+- id: ALG.LIT.10
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Expression littérale d'un programme de calcul
+  niveau_ref: 4e
+  difficulte: 3
+  type: modelisation
+  prerequis:
+  - ALG.LIT.02
+  - ALG.LIT.09
+  erreurs_types:
+  - modelisation
+  - procedure
+  items:
+  - ALG.LIT.10.i1
+  - ALG.LIT.10.i1.v2
+- id: ALG.LIT.11
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Puissances dans une expression littérale
+  niveau_ref: seconde
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.05
+  - NUM.PUI.06
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.11.i1
+  - ALG.LIT.11.i1.v2
+- id: ALG.LIT.12
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Développer et réduire
+  niveau_ref: 3e
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.LIT.05
+  - ALG.LIT.07
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - ALG.LIT.12.i1
+  - ALG.LIT.12.i1.v2
+- id: ALG.LIT.13
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Factoriser une identité remarquable
+  niveau_ref: 3e
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.LIT.07
+  - ALG.LIT.08
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.13.i1
+  - ALG.LIT.13.i1.v2
+- id: ALG.LIT.14
+  domaine: ALG
+  chapitre: Calcul littéral
+  intitule: Réduire une expression avec x²
+  niveau_ref: 3e
+  difficulte: 3
+  type: procedure
+  prerequis:
+  - ALG.LIT.05
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.LIT.14.i1
+  - ALG.LIT.14.i1.v2
+- id: ALG.EQ1.05
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Résoudre x/a = b
+  niveau_ref: 4e
+  difficulte: 2
+  type: procedure
+  prerequis:
+  - ALG.EQ1.02
+  - NUM.FRA.08
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.EQ1.05.i1
+  - ALG.EQ1.05.i1.v2
+- id: ALG.EQ1.06
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Équation avec des fractions
+  niveau_ref: 4e
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.EQ1.03
+  - NUM.FRA.05
+  erreurs_types:
+  - procedure
+  - lacune
+  items:
+  - ALG.EQ1.06.i1
+  - ALG.EQ1.06.i1.v2
+- id: ALG.EQ1.07
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Vérifier une solution
+  niveau_ref: 4e
+  difficulte: 2
+  type: concept
+  prerequis:
+  - ALG.EQ1.03
+  erreurs_types:
+  - concept
+  - procedure
+  items:
+  - ALG.EQ1.07.i1
+  - ALG.EQ1.07.i1.v2
+- id: ALG.EQ1.08
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Mise en équation avec inconnue dans les deux membres
+  niveau_ref: 3e
+  difficulte: 4
+  type: modelisation
+  prerequis:
+  - ALG.EQ2.01
+  - ALG.EQ1.04
+  erreurs_types:
+  - modelisation
+  - procedure
+  items:
+  - ALG.EQ1.08.i1
+  - ALG.EQ1.08.i1.v2
+- id: ALG.EQ2.02
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Équation avec développement
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.EQ2.01
+  - ALG.LIT.05
+  erreurs_types:
+  - procedure
+  - lacune
+  items:
+  - ALG.EQ2.02.i1
+  - ALG.EQ2.02.i1.v2
+- id: ALG.EQ2.03
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Équation avec produits en croix
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.EQ1.06
+  - NUM.FRA.08
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.EQ2.03.i1
+  - ALG.EQ2.03.i1.v2
+- id: ALG.EQ2.04
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Équation produit nul à factoriser
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.PRD.02
+  - ALG.LIT.06
+  erreurs_types:
+  - procedure
+  - raisonnement
+  items:
+  - ALG.EQ2.04.i1
+  - ALG.EQ2.04.i1.v2
+- id: ALG.EQ2.05
+  domaine: ALG
+  chapitre: Équations du premier degré
+  intitule: Équation avec une identité remarquable
+  niveau_ref: seconde
+  difficulte: 5
+  type: raisonnement
+  prerequis:
+  - ALG.EQ2.02
+  - ALG.LIT.07
+  erreurs_types:
+  - raisonnement
+  - procedure
+  items:
+  - ALG.EQ2.05.i1
+  - ALG.EQ2.05.i1.v2
+- id: ALG.PRD.02
+  domaine: ALG
+  chapitre: Équations produit nul
+  intitule: Factoriser puis résoudre = 0
+  niveau_ref: 3e
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.PRD.01
+  - ALG.LIT.06
+  erreurs_types:
+  - procedure
+  - raisonnement
+  items:
+  - ALG.PRD.02.i1
+  - ALG.PRD.02.i1.v2
+- id: ALG.PRD.03
+  domaine: ALG
+  chapitre: Équations produit nul
+  intitule: Équation x² = a
+  niveau_ref: 3e
+  difficulte: 4
+  type: raisonnement
+  prerequis:
+  - ALG.PRD.01
+  - NUM.RAC.01
+  erreurs_types:
+  - raisonnement
+  - concept
+  items:
+  - ALG.PRD.03.i1
+  - ALG.PRD.03.i1.v2
+- id: ALG.PRD.04
+  domaine: ALG
+  chapitre: Équations produit nul
+  intitule: Équation du second degré par factorisation
+  niveau_ref: seconde
+  difficulte: 5
+  type: raisonnement
+  prerequis:
+  - ALG.PRD.02
+  - ALG.LIT.07
+  erreurs_types:
+  - raisonnement
+  - procedure
+  items:
+  - ALG.PRD.04.i1
+  - ALG.PRD.04.i1.v2
+- id: ALG.INE.02
+  domaine: ALG
+  chapitre: Inéquations
+  intitule: Résoudre une inéquation du premier degré
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.INE.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.INE.02.i1
+  - ALG.INE.02.i1.v2
+- id: ALG.INE.03
+  domaine: ALG
+  chapitre: Inéquations
+  intitule: Inéquation et ensemble solution
+  niveau_ref: seconde
+  difficulte: 4
+  type: concept
+  prerequis:
+  - ALG.INE.02
+  - NUM.CAL.04
+  erreurs_types:
+  - concept
+  items:
+  - ALG.INE.03.i1
+  - ALG.INE.03.i1.v2
+- id: ALG.INE.04
+  domaine: ALG
+  chapitre: Inéquations
+  intitule: Inéquation produit
+  niveau_ref: seconde
+  difficulte: 5
+  type: raisonnement
+  prerequis:
+  - ALG.INE.03
+  - ALG.PRD.02
+  erreurs_types:
+  - raisonnement
+  - concept
+  items:
+  - ALG.INE.04.i1
+  - ALG.INE.04.i1.v2
+- id: ALG.INE.05
+  domaine: ALG
+  chapitre: Inéquations
+  intitule: Inéquation avec inconnue dans les deux membres
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.INE.02
+  - ALG.EQ2.01
+  erreurs_types:
+  - procedure
+  - concept
+  items:
+  - ALG.INE.05.i1
+  - ALG.INE.05.i1.v2
+- id: ALG.SYS.01
+  domaine: ALG
+  chapitre: Systèmes d'équations
+  intitule: 'Système de deux équations : notion'
+  niveau_ref: seconde
+  difficulte: 4
+  type: concept
+  prerequis:
+  - ALG.EQ2.01
+  erreurs_types:
+  - concept
+  items:
+  - ALG.SYS.01.i1
+  - ALG.SYS.01.i1.v2
+- id: ALG.SYS.02
+  domaine: ALG
+  chapitre: Systèmes d'équations
+  intitule: Résolution par substitution
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.SYS.01
+  erreurs_types:
+  - procedure
+  items:
+  - ALG.SYS.02.i1
+  - ALG.SYS.02.i1.v2
+- id: ALG.SYS.03
+  domaine: ALG
+  chapitre: Systèmes d'équations
+  intitule: Résolution par combinaison
+  niveau_ref: seconde
+  difficulte: 4
+  type: procedure
+  prerequis:
+  - ALG.SYS.01
+  erreurs_types:
+  - procedure
+  - etourderie
+  items:
+  - ALG.SYS.03.i1
+  - ALG.SYS.03.i1.v2

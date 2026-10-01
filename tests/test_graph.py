@@ -52,3 +52,14 @@ def test_graphe_sans_cycle_est_valide():
     b = Noeud("B", "NUM", "t", "b", "5e", 1, "procedure", prerequis=("A",))
     g = Graphe(noeuds={"A": a, "B": b})
     assert g.ordre_topologique() == ["A", "B"]
+
+
+def test_chaque_noeud_a_variante_de_difficulte(graphe, gabarits):
+    """Chaque nœud doit avoir >= 2 gabarits de difficultés différentes (preferer_facile)."""
+    sans_variante = []
+    for nid in graphe.ids():
+        ids = graphe[nid].items
+        difficultes = {gabarits[i].difficulte for i in ids if i in gabarits}
+        if len(difficultes) < 2:
+            sans_variante.append(nid)
+    assert not sans_variante, f"nœuds sans variante de difficulté : {sans_variante}"

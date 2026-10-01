@@ -21,6 +21,8 @@ seuils:
     revision_j7: 7        # révision espacée planifiée à J+7
 
   # Anxiété (module A, 6 items, score 6 à 30) — seuils PROVISOIRES.
+  # Non encore branchés : ils serviront au pilotage par l'affect (items faciles,
+  # pas de chronomètre), à implémenter.
   anxiete:
     faible_max: 14        # <= 14 : faible
     moderee_max: 21       # 15..21 : modérée ; >= 22 : élevée
@@ -40,8 +42,6 @@ adaptatif:
   # lorsqu'un nœud échoue (SPEC §4-B).
   controle_prerequis: 1
 
-# Pondération des statuts de champ du profil (SPEC §3.8 : M l'emporte sur D).
-ponderation:
-  statut_declare: 0.3     # "D" — déclaré par l'élève, poids faible
-  statut_mesure: 1.0      # "M" — mesuré, l'emporte toujours
-  statut_hypothese: 0.5   # "H" — hypothèse, poids intermédiaire
+# Règles de décision (module D).
+decisions:
+  ecart_min_items: 2     # écart minimal en T7_p pour déclarer une condition gagnante

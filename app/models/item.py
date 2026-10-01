@@ -19,6 +19,7 @@ class GabaritItem(SQLModel, table=True):
     variables: dict = Field(default_factory=dict, sa_column=Column(JSON))
     reponse: str                        # expression sympy
     methode: str | None = None          # procédure attendue (traçage, cf. P2)
+    derives: dict | None = Field(default=None, sa_column=Column(JSON))
     meta: dict | None = Field(default=None, sa_column=Column(JSON))
 
 

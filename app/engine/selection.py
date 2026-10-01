@@ -94,7 +94,8 @@ def _choisir_item(
     ids_items = graphe[noeud].items
     candidats = [gabarits[i] for i in ids_items if i in gabarits]
     if not candidats:
-        return None
+        # Contenu invalide : chaque nœud doit avoir au moins un gabarit.
+        raise ValueError(f"le nœud {noeud} n'a aucun gabarit utilisable")
 
     if preferer_facile:
         difficulte_min = min(g.difficulte for g in candidats)

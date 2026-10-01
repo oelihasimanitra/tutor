@@ -17,11 +17,15 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Iterable, Mapping
 
-# Écart minimal en T7_p (sur 6 items) pour déclarer une condition gagnante.
-ECART_MIN_ITEMS = 2
+# Écart minimal par défaut (sur 6 items). Valeur de secours, surchargeable par la
+# config ``decisions.ecart_min_items``.
+_ECART_MIN_PAR_DEFAUT = 2
 
 
-def decider_representation(blocs: Iterable[Mapping]) -> str:
+def decider_representation(
+    blocs: Iterable[Mapping],
+    ecart_min_items: int = _ECART_MIN_PAR_DEFAUT,
+) -> str:
     """Retourne la condition jugée efficace : ``'V'``, ``'S'``, ``'C'`` ou ``'M'``.
 
     ``blocs`` : itérable de dicts ``{condition, t7_p, cycle}`` (un bloc = une
@@ -44,7 +48,7 @@ def decider_representation(blocs: Iterable[Mapping]) -> str:
         # Une condition simple gagne si elle dépasse la 2e d'au moins 2 items.
         if len(simples) >= 2:
             simples_triees = sorted(simples, key=lambda b: -b["t7_p"])
-            if simples_triees[0]["t7_p"] - simples_triees[1]["t7_p"] >= ECART_MIN_ITEMS:
+            if simples_triees[0]["t7_p"] - simples_triees[1]["t7_p"] >= ecart_min_items:
                 gagnants[cycle] = simples_triees[0]["condition"]
 
     if not gagnants:

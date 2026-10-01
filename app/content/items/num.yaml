@@ -1,636 +1,1586 @@
-# =============================================================================
-# Gabarits d'items — domaine NUM (nombres et calculs).
-# Version étendue : gabarits de num.yaml (à l'identique) + extension.
-# La réponse est une expression sympy, calculée à la génération (jamais un LLM).
-# Format : voir docs/05-formats-contenu.md
-# =============================================================================
 version: 1
 gabarits:
-  # ================================ EXISTANT (inchangés) ==================
-  # --- Nombres entiers ------------------------------------------------------
-  - id: NUM.ENT.01.i1
-    competence_id: NUM.ENT.01
-    type: addition_entiers
-    difficulte: 1
-    format_reponse: entier
-    enonce: "Calcule : ${a} + ${b}"
-    variables:
-      a: {min: 1, max: 50}
-      b: {min: 1, max: 50}
-    reponse: "${a} + ${b}"
-    methode: "Addition en colonnes ou calcul mental."
-
-  - id: NUM.ENT.02.i1
-    competence_id: NUM.ENT.02
-    type: multiplication_entiers
-    difficulte: 1
-    format_reponse: entier
-    enonce: "Calcule : ${a} × ${b}"
-    variables:
-      a: {min: 2, max: 12}
-      b: {min: 2, max: 12}
-    reponse: "${a} * ${b}"
-    methode: "Table de multiplication ou calcul en colonnes."
-
-  - id: NUM.DIV.01.i1
-    competence_id: NUM.DIV.01
-    type: division_euclidienne_reste
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Quel est le reste de la division euclidienne de ${a} par ${b} ?"
-    variables:
-      a: {min: 20, max: 200}
-      b: {min: 2, max: 9}
-    reponse: "Mod(${a}, ${b})"
-    methode: "Poser la division : a = b × q + r, reste r = a − b × q."
-
-  - id: NUM.DIV.01.i2
-    competence_id: NUM.DIV.01
-    type: division_euclidienne_quotient
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Quel est le quotient entier de la division euclidienne de ${a} par ${b} ?"
-    variables:
-      a: {min: 20, max: 200}
-      b: {min: 2, max: 9}
-    reponse: "floor(${a} / ${b})"
-    methode: "Poser la division : quotient entier q."
-
-  - id: NUM.DIV.02.i1
-    competence_id: NUM.DIV.02
-    type: divisibilite
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Le nombre ${a} est-il divisible par ${b} ? Réponds 1 si oui, 0 si non."
-    variables:
-      a: {min: 10, max: 200}
-      b: {min: 2, max: 9}
-    reponse: "Piecewise((1, Eq(Mod(${a}, ${b}), 0)), (0, True))"
-    methode: "Vérifier si le reste de la division est nul."
-
-  # --- Fractions ------------------------------------------------------------
-  - id: NUM.FRA.01.i1
-    competence_id: NUM.FRA.01
-    type: fraction_valeur
-    difficulte: 1
-    format_reponse: fraction
-    enonce: "Quelle est la valeur de la fraction ${a}/${b} ? Donne la réponse sous forme de fraction."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-    reponse: "${a} / ${b}"
-    methode: "La fraction a/b représente a parts sur b parts égales."
-
-  - id: NUM.FRA.02.i1
-    competence_id: NUM.FRA.02
-    type: fraction_equivalente
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Complète : ${a}/${b} = ?/${c}"
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      k: {min: 2, max: 6}
-    derives:
-      c: "${b} * ${k}"
-      rep: "${a} * ${k}"
-    reponse: "${rep}"
-    methode: "Multiplier numérateur et dénominateur par le même nombre k."
-
-  - id: NUM.FRA.03.i1
-    competence_id: NUM.FRA.03
-    type: fraction_soustraction
-    difficulte: 2
-    format_reponse: fraction
-    enonce: "Calcule : ${a}/${b} − ${c}/${d}. Donne le résultat sous forme de fraction."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      c: {min: 1, max: 9}
-      d: {min: 2, max: 9}
-    reponse: "(${a}*${d} - ${c}*${b}) / (${b}*${d})"
-    methode: "Réduire au même dénominateur puis soustraire."
-
-  - id: NUM.FRA.04.i1
-    competence_id: NUM.FRA.04
-    type: fraction_addition_meme_denom
-    difficulte: 2
-    format_reponse: fraction
-    enonce: "Calcule : ${a}/${b} + ${c}/${b}"
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 12}
-      c: {min: 1, max: 9}
-    reponse: "(${a} + ${c}) / ${b}"
-    methode: "Additionner les numérateurs, garder le dénominateur commun."
-
-  - id: NUM.FRA.05.i1
-    competence_id: NUM.FRA.05
-    type: fraction_addition_diff_denom
-    difficulte: 3
-    format_reponse: fraction
-    enonce: "Calcule : ${a}/${b} + ${c}/${d}. Donne le résultat sous forme de fraction."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      c: {min: 1, max: 9}
-      d: {min: 2, max: 9}
-    reponse: "(${a}*${d} + ${c}*${b}) / (${b}*${d})"
-    methode: "Réduire au même dénominateur (b × d) puis additionner."
-
-  # --- Nombres relatifs -----------------------------------------------------
-  - id: NUM.REL.01.i1
-    competence_id: NUM.REL.01
-    type: relatif_addition
-    difficulte: 1
-    format_reponse: entier
-    enonce: "Sur la droite graduée, quel est le résultat de (${a}) + (${b}) ?"
-    variables:
-      a: {min: -12, max: 12}
-      b: {min: -12, max: 12}
-    reponse: "${a} + ${b}"
-    methode: "Se déplacer sur la droite graduée."
-
-  - id: NUM.REL.02.i1
-    competence_id: NUM.REL.02
-    type: relatif_addition
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : (${a}) + (${b})"
-    variables:
-      a: {min: -20, max: 20}
-      b: {min: -20, max: 20}
-    reponse: "${a} + ${b}"
-    methode: "Additionner les relatifs en tenant compte des signes."
-
-  - id: NUM.REL.03.i1
-    competence_id: NUM.REL.03
-    type: relatif_multiplication
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : (${a}) × (${b})"
-    variables:
-      a: {min: -6, max: 6}
-      b: {min: -6, max: 6}
-    reponse: "${a} * ${b}"
-    methode: "Appliquer la règle des signes."
-
-  # --- Puissances et racines ------------------------------------------------
-  - id: NUM.PUI.01.i1
-    competence_id: NUM.PUI.01
-    type: puissance_dix
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : 10^${a}"
-    variables:
-      a: {min: 2, max: 5}
-    reponse: "10**${a}"
-    methode: "10^n s'écrit 1 suivi de n zéros."
-
-  - id: NUM.PUI.02.i1
-    competence_id: NUM.PUI.02
-    type: puissance_produit
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Écris 10^${a} × 10^${b} sous la forme 10^n. Quelle est la valeur de n ?"
-    variables:
-      a: {min: 2, max: 6}
-      b: {min: 2, max: 6}
-    reponse: "${a} + ${b}"
-    methode: "10^a × 10^b = 10^(a + b)."
-
-  - id: NUM.RAC.01.i1
-    competence_id: NUM.RAC.01
-    type: racine_carree_carre
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Calcule : √(${a}²)"
-    variables:
-      a: {min: 1, max: 12}
-    reponse: "${a}"
-    methode: "√(a²) = a pour a positif."
-
-  # ================================ EXTENSION — NUM =======================
-  # --- Nombres entiers et décimaux -----------------------------------------
-  - id: NUM.ENT.03.i1
-    competence_id: NUM.ENT.03
-    type: priorites_operatoires
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule en respectant les priorités : ${a} + ${b} × ${c}."
-    variables:
-      a: {min: 1, max: 20}
-      b: {min: 2, max: 9}
-      c: {min: 2, max: 9}
-    reponse: "${a} + ${b} * ${c}"
-    methode: "La multiplication est prioritaire sur l'addition."
-
-  - id: NUM.ENT.04.i1
-    competence_id: NUM.ENT.04
-    type: arrondi_dizaine
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Quel est l'arrondi du nombre ${a} à la dizaine la plus proche ?"
-    variables:
-      a: {min: 15, max: 995}
-    reponse: "10 * floor(${a} / 10 + 1/2)"
-    methode: "Regarder le chiffre des unités : s'il vaut 5 ou plus, arrondir à la dizaine supérieure."
-
-  - id: NUM.ENT.05.i1
-    competence_id: NUM.ENT.05
-    type: cube_entier
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : ${a}³."
-    variables:
-      a: {min: 2, max: 12}
-    reponse: "${a}**3"
-    methode: "a³ = a × a × a."
-
-  - id: NUM.DEC.01.i1
-    competence_id: NUM.DEC.01
-    type: rang_decimal
-    difficulte: 1
-    format_reponse: entier
-    enonce: "Quel est le chiffre des dixièmes dans le nombre ${a},${u} ?"
-    variables:
-      a: {min: 1, max: 99}
-      u: {min: 0, max: 9}
-    reponse: "${u}"
-    methode: "Le chiffre des dixièmes est le premier chiffre après la virgule."
-
-  - id: NUM.DEC.02.i1
-    competence_id: NUM.DEC.02
-    type: addition_decimaux
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : ${a},${u} + ${b},${v}."
-    variables:
-      a: {min: 1, max: 20}
-      b: {min: 1, max: 20}
-      u: {min: 1, max: 9}
-    derives:
-      v: "10 - ${u}"
-    reponse: "${a} + ${b} + 1"
-    methode: "Aligner les virgules : les dixièmes ${u} et ${v} forment ensemble une unité."
-
-  - id: NUM.DEC.03.i1
-    competence_id: NUM.DEC.03
-    type: multiplication_decimaux
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : ${a},5 × ${b}."
-    variables:
-      a: {min: 1, max: 20}
-      k: {min: 1, max: 9}
-    derives:
-      b: "${k} * 2"
-    reponse: "(2 * ${a} + 1) * ${k}"
-    methode: "Multiplier ${a},5 par ${b} : ${a},5 × 2 = ${a},5 + ${a},5, puis multiplier par ${k}."
-
-  - id: NUM.DEC.04.i1
-    competence_id: NUM.DEC.04
-    type: division_decimale
-    difficulte: 3
-    format_reponse: fraction
-    enonce: "Calcule : ${a} ÷ 4. Donne le résultat exact sous forme de fraction."
-    variables:
-      a: {min: 1, max: 50}
-    reponse: "${a} / 4"
-    methode: "Poser la division décimale : on peut ajouter des zéros après la virgule."
-
-  - id: NUM.DEC.05.i1
-    competence_id: NUM.DEC.05
-    type: multiplication_par_100
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : ${a},${u} × 100."
-    variables:
-      a: {min: 1, max: 99}
-      u: {min: 1, max: 9}
-    reponse: "(10 * ${a} + ${u}) * 10"
-    methode: "Multiplier par 100 décale la virgule de deux rangs vers la droite."
-
-  # --- Divisibilité, partage ------------------------------------------------
-  - id: NUM.DIV.03.i1
-    competence_id: NUM.DIV.03
-    type: critere_divisibilite_3
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Le nombre ${a} est-il divisible par 3 ? Réponds 1 si oui, 0 si non."
-    variables:
-      a: {min: 10, max: 400}
-    reponse: "Piecewise((1, Eq(Mod(${a}, 3), 0)), (0, True))"
-    methode: "Un nombre est divisible par 3 si la somme de ses chiffres est divisible par 3."
-
-  - id: NUM.DIV.04.i1
-    competence_id: NUM.DIV.04
-    type: division_euclidienne_probleme
-    difficulte: 3
-    format_reponse: entier
-    enonce: "On partage ${a} billes entre ${b} enfants le plus équitablement possible. Combien de billes restent non distribuées ?"
-    variables:
-      a: {min: 20, max: 200}
-      b: {min: 3, max: 9}
-    reponse: "Mod(${a}, ${b})"
-    methode: "Le reste de la division euclidienne de ${a} par ${b} est le nombre de billes restantes."
-
-  # --- Fractions ------------------------------------------------------------
-  - id: NUM.FRA.06.i1
-    competence_id: NUM.FRA.06
-    type: fraction_quantite
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule les ${a}/${b} de ${n}."
-    variables:
-      a: {min: 1, max: 5}
-      b: {min: 2, max: 9}
-      k: {min: 1, max: 12}
-    derives:
-      n: "${b} * ${k}"
-    reponse: "${a} * ${k}"
-    methode: "Diviser ${n} par ${b} puis multiplier par ${a}."
-
-  - id: NUM.FRA.07.i1
-    competence_id: NUM.FRA.07
-    type: fraction_multiplication
-    difficulte: 3
-    format_reponse: fraction
-    enonce: "Calcule : ${a}/${b} × ${c}/${d}. Donne le résultat sous forme de fraction."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      c: {min: 1, max: 9}
-      d: {min: 2, max: 9}
-    reponse: "(${a}*${c}) / (${b}*${d})"
-    methode: "Multiplier les numérateurs entre eux et les dénominateurs entre eux."
-
-  - id: NUM.FRA.08.i1
-    competence_id: NUM.FRA.08
-    type: fraction_division
-    difficulte: 3
-    format_reponse: fraction
-    enonce: "Calcule : ${a}/${b} ÷ ${c}/${d}. Donne le résultat sous forme de fraction."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      c: {min: 1, max: 9}
-      d: {min: 2, max: 9}
-    reponse: "(${a}*${d}) / (${b}*${c})"
-    methode: "Diviser par une fraction revient à multiplier par son inverse."
-
-  - id: NUM.FRA.09.i1
-    competence_id: NUM.FRA.09
-    type: decimal_vers_fraction
-    difficulte: 2
-    format_reponse: fraction
-    enonce: "Écris le nombre décimal ${a},${u} sous forme de fraction."
-    variables:
-      a: {min: 1, max: 20}
-      u: {min: 1, max: 9}
-    reponse: "(10 * ${a} + ${u}) / 10"
-    methode: "Un nombre décimal à un chiffre après la virgule est une fraction de dénominateur 10."
-
-  - id: NUM.FRA.10.i1
-    competence_id: NUM.FRA.10
-    type: fraction_comparaison
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Quelle est la plus grande fraction : ${a}/${b} ou ${c}/${d} ? Réponds 1 si c'est ${a}/${b}, 0 si c'est ${c}/${d}."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      c: {min: 1, max: 9}
-      d: {min: 2, max: 9}
-    reponse: "Piecewise((1, ${a}/${b} > ${c}/${d}), (0, True))"
-    methode: "Réduire les deux fractions au même dénominateur puis comparer les numérateurs."
-
-  # --- Nombres relatifs -----------------------------------------------------
-  - id: NUM.REL.04.i1
-    competence_id: NUM.REL.04
-    type: distance_a_zero
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Quelle est la distance à zéro du nombre relatif ${a} ?"
-    variables:
-      a: {min: -20, max: 20}
-    reponse: "Abs(${a})"
-    methode: "La distance à zéro est la valeur absolue : on enlève le signe."
-
-  - id: NUM.REL.05.i1
-    competence_id: NUM.REL.05
-    type: soustraction_relatifs
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Calcule : (${a}) − (${b})."
-    variables:
-      a: {min: -20, max: 20}
-      b: {min: -20, max: 20}
-    reponse: "${a} - (${b})"
-    methode: "Soustraire un relatif revient à ajouter son opposé."
-
-  - id: NUM.REL.06.i1
-    competence_id: NUM.REL.06
-    type: somme_algebrique
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Calcule : (${a}) + (${b}) − (${c})."
-    variables:
-      a: {min: -15, max: 15}
-      b: {min: -15, max: 15}
-      c: {min: -15, max: 15}
-    reponse: "${a} + ${b} - (${c})"
-    methode: "Regrouper les termes positifs et les termes négatifs, puis calculer."
-
-  # --- Puissances -----------------------------------------------------------
-  - id: NUM.PUI.03.i1
-    competence_id: NUM.PUI.03
-    type: puissance_entier
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule : ${a}^${b}."
-    variables:
-      a: {min: 2, max: 7}
-      b: {min: 2, max: 4}
-    reponse: "${a}**${b}"
-    methode: "a^b = a × a × ... × a (b facteurs)."
-
-  - id: NUM.PUI.04.i1
-    competence_id: NUM.PUI.04
-    type: notation_scientifique
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Quel est l'exposant n de l'écriture scientifique du nombre ${a} ?"
-    variables:
-      d: {min: 1, max: 9}
-      n: {min: 3, max: 6}
-    derives:
-      a: "${d} * 10**${n}"
-    reponse: "${n}"
-    methode: "Écrire ${a} sous la forme d × 10^n avec 1 ≤ d < 10."
-
-  - id: NUM.PUI.05.i1
-    competence_id: NUM.PUI.05
-    type: exposant_negatif
-    difficulte: 3
-    format_reponse: fraction
-    enonce: "Calcule : 10^(−${n}). Donne le résultat exact sous forme de fraction."
-    variables:
-      n: {min: 1, max: 4}
-    reponse: "1 / 10**${n}"
-    methode: "10^(−n) = 1 / 10^n."
-
-  - id: NUM.PUI.06.i1
-    competence_id: NUM.PUI.06
-    type: quotient_puissances_dix
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Simplifie 10^${p} / 10^${q} : quel est l'exposant n tel que le résultat soit 10^n ?"
-    variables:
-      p: {min: 2, max: 6}
-      q: {min: 1, max: 3}
-    reponse: "${p} - ${q}"
-    methode: "10^p / 10^q = 10^(p − q)."
-
-  # --- Racines carrées ------------------------------------------------------
-  - id: NUM.RAC.02.i1
-    competence_id: NUM.RAC.02
-    type: partie_entiere_racine
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Quelle est la partie entière de √${a} (le plus grand entier n tel que n² ≤ ${a}) ?"
-    variables:
-      a: {min: 2, max: 150}
-    reponse: "floor(sqrt(${a}))"
-    methode: "Chercher les carrés parfaits encadrant ${a}."
-
-  - id: NUM.RAC.03.i1
-    competence_id: NUM.RAC.03
-    type: simplifier_racine
-    difficulte: 4
-    format_reponse: expression
-    enonce: "Simplifie : √(${a}² × ${b}). Donne le résultat sous la forme k√${b} (par exemple 4*sqrt(3))."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 2, max: 3}
-    reponse: "sqrt(${a}**2 * ${b})"
-    methode: "√(a² × b) = a√b car √(a²) = a."
-
-  - id: NUM.RAC.04.i1
-    competence_id: NUM.RAC.04
-    type: produit_racines
-    difficulte: 4
-    format_reponse: expression
-    enonce: "Calcule : √${a} × √${b}. Donne le résultat exact (par exemple 4*sqrt(3))."
-    variables:
-      a: {min: 2, max: 18}
-      b: {min: 2, max: 18}
-    reponse: "sqrt(${a} * ${b})"
-    methode: "√a × √b = √(a × b), puis simplifier si possible."
-
-  # --- Arithmétique ---------------------------------------------------------
-  - id: NUM.ARI.01.i1
-    competence_id: NUM.ARI.01
-    type: test_premier
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Le nombre ${a} est-il premier ? Réponds 1 si oui, 0 si non."
-    variables:
-      a: {min: 2, max: 60}
-    reponse: "Piecewise((1, isprime(${a})), (0, True))"
-    methode: "Tester les diviseurs premiers jusqu'à √${a}."
-
-  - id: NUM.ARI.02.i1
-    competence_id: NUM.ARI.02
-    type: nombre_de_diviseurs
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Après avoir décomposé ${a} en produit de facteurs premiers, combien de diviseurs positifs possède ${a} ?"
-    variables:
-      a: {min: 2, max: 60}
-    reponse: "divisor_count(${a})"
-    methode: "Décomposer puis multiplier (exposant + 1) pour chaque facteur premier."
-
-  - id: NUM.ARI.03.i1
-    competence_id: NUM.ARI.03
-    type: pgcd
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Quel est le PGCD de ${a} et ${b} ?"
-    variables:
-      a: {min: 6, max: 60}
-      b: {min: 6, max: 60}
-    reponse: "gcd(${a}, ${b})"
-    methode: "Décomposer les deux nombres et garder les facteurs premiers communs."
-
-  - id: NUM.ARI.04.i1
-    competence_id: NUM.ARI.04
-    type: fraction_irreductible_denom
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Rends la fraction ${a}/${b} irréductible. Quel est le dénominateur obtenu ?"
-    variables:
-      a: {min: 2, max: 40}
-      b: {min: 2, max: 40}
-    reponse: "${b} / gcd(${a}, ${b})"
-    methode: "Diviser numérateur et dénominateur par leur PGCD."
-
-  # --- Calcul numérique (seconde) ------------------------------------------
-  - id: NUM.CAL.01.i1
-    competence_id: NUM.CAL.01
-    type: calcul_fractions_priorites
-    difficulte: 3
-    format_reponse: fraction
-    enonce: "Calcule : ${a}/${b} + ${c}/${b} × ${d}. Donne le résultat sous forme de fraction."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 2, max: 9}
-      c: {min: 1, max: 9}
-      d: {min: 2, max: 5}
-    reponse: "${a}/${b} + (${c}/${b})*${d}"
-    methode: "La multiplication est prioritaire ; réduire ensuite au même dénominateur."
-
-  - id: NUM.CAL.02.i1
-    competence_id: NUM.CAL.02
-    type: carre_parfait
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Le nombre √${a} est-il un entier naturel ? Réponds 1 si oui, 0 si non."
-    variables:
-      a: {min: 2, max: 100}
-    reponse: "Piecewise((1, Eq(sqrt(${a}), floor(sqrt(${a})))), (0, True))"
-    methode: "√${a} est entier si ${a} est un carré parfait."
-
-  - id: NUM.CAL.03.i1
-    competence_id: NUM.CAL.03
-    type: equation_valeur_absolue
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Résous l'équation |x| = ${a}. Donne la plus petite solution."
-    variables:
-      a: {min: 1, max: 15}
-    reponse: "-${a}"
-    methode: "|x| = a a deux solutions : a et −a ; la plus petite est −a."
-
-  - id: NUM.CAL.04.i1
-    competence_id: NUM.CAL.04
-    type: encadrement_multiple
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Encadre ${a} entre deux multiples consécutifs de 10 : n ≤ ${a} < n + 10. Quel est n ?"
-    variables:
-      a: {min: 11, max: 200}
-    reponse: "10 * floor(${a} / 10)"
-    methode: "n est le multiple de 10 immédiatement inférieur ou égal à ${a}."
-
-  - id: NUM.CAL.05.i1
-    competence_id: NUM.CAL.05
-    type: ecriture_scientifique_valide
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Le nombre ${a} × 10^${n} est-il écrit en notation scientifique (c'est-à-dire 1 ≤ ${a} < 10) ? Réponds 1 si oui, 0 si non."
-    variables:
-      a: {min: 1, max: 15}
-      n: {min: 2, max: 5}
-    reponse: "Piecewise((1, And(${a} >= 1, ${a} < 10)), (0, True))"
-    methode: "Une écriture scientifique demande un coefficient compris entre 1 (inclus) et 10 (exclu)."
+- id: NUM.ENT.01.i1
+  competence_id: NUM.ENT.01
+  type: addition_entiers
+  difficulte: 1
+  format_reponse: entier
+  enonce: 'Calcule : ${a} + ${b}'
+  variables:
+    a:
+      min: 1
+      max: 50
+    b:
+      min: 1
+      max: 50
+  reponse: ${a} + ${b}
+  methode: Addition en colonnes ou calcul mental.
+- id: NUM.ENT.02.i1
+  competence_id: NUM.ENT.02
+  type: multiplication_entiers
+  difficulte: 1
+  format_reponse: entier
+  enonce: 'Calcule : ${a} × ${b}'
+  variables:
+    a:
+      min: 2
+      max: 12
+    b:
+      min: 2
+      max: 12
+  reponse: ${a} * ${b}
+  methode: Table de multiplication ou calcul en colonnes.
+- id: NUM.DIV.01.i1
+  competence_id: NUM.DIV.01
+  type: division_euclidienne_reste
+  difficulte: 2
+  format_reponse: entier
+  enonce: Quel est le reste de la division euclidienne de ${a} par ${b} ?
+  variables:
+    a:
+      min: 20
+      max: 200
+    b:
+      min: 2
+      max: 9
+  reponse: Mod(${a}, ${b})
+  methode: 'Poser la division : a = b × q + r, reste r = a − b × q.'
+- id: NUM.DIV.01.i2
+  competence_id: NUM.DIV.01
+  type: division_euclidienne_quotient
+  difficulte: 2
+  format_reponse: entier
+  enonce: Quel est le quotient entier de la division euclidienne de ${a} par ${b}
+    ?
+  variables:
+    a:
+      min: 20
+      max: 200
+    b:
+      min: 2
+      max: 9
+  reponse: floor(${a} / ${b})
+  methode: 'Poser la division : quotient entier q.'
+- id: NUM.DIV.02.i1
+  competence_id: NUM.DIV.02
+  type: divisibilite
+  difficulte: 2
+  format_reponse: entier
+  enonce: Le nombre ${a} est-il divisible par ${b} ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 10
+      max: 200
+    b:
+      min: 2
+      max: 9
+  reponse: Piecewise((1, Eq(Mod(${a}, ${b}), 0)), (0, True))
+  methode: Vérifier si le reste de la division est nul.
+- id: NUM.FRA.01.i1
+  competence_id: NUM.FRA.01
+  type: fraction_valeur
+  difficulte: 1
+  format_reponse: fraction
+  enonce: Quelle est la valeur de la fraction ${a}/${b} ? Donne la réponse sous forme
+    de fraction.
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+  reponse: ${a} / ${b}
+  methode: La fraction a/b représente a parts sur b parts égales.
+- id: NUM.FRA.02.i1
+  competence_id: NUM.FRA.02
+  type: fraction_equivalente
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Complète : ${a}/${b} = ?/${c}'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    k:
+      min: 2
+      max: 6
+  derives:
+    c: ${b} * ${k}
+    rep: ${a} * ${k}
+  reponse: ${rep}
+  methode: Multiplier numérateur et dénominateur par le même nombre k.
+- id: NUM.FRA.03.i1
+  competence_id: NUM.FRA.03
+  type: fraction_soustraction
+  difficulte: 2
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} − ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 1
+      max: 9
+    d:
+      min: 2
+      max: 9
+  reponse: (${a}*${d} - ${c}*${b}) / (${b}*${d})
+  methode: Réduire au même dénominateur puis soustraire.
+- id: NUM.FRA.04.i1
+  competence_id: NUM.FRA.04
+  type: fraction_addition_meme_denom
+  difficulte: 2
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} + ${c}/${b}'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 12
+    c:
+      min: 1
+      max: 9
+  reponse: (${a} + ${c}) / ${b}
+  methode: Additionner les numérateurs, garder le dénominateur commun.
+- id: NUM.FRA.05.i1
+  competence_id: NUM.FRA.05
+  type: fraction_addition_diff_denom
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} + ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 1
+      max: 9
+    d:
+      min: 2
+      max: 9
+  reponse: (${a}*${d} + ${c}*${b}) / (${b}*${d})
+  methode: Réduire au même dénominateur (b × d) puis additionner.
+- id: NUM.REL.01.i1
+  competence_id: NUM.REL.01
+  type: relatif_addition
+  difficulte: 1
+  format_reponse: entier
+  enonce: Sur la droite graduée, quel est le résultat de (${a}) + (${b}) ?
+  variables:
+    a:
+      min: -12
+      max: 12
+    b:
+      min: -12
+      max: 12
+  reponse: ${a} + ${b}
+  methode: Se déplacer sur la droite graduée.
+- id: NUM.REL.02.i1
+  competence_id: NUM.REL.02
+  type: relatif_addition
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) + (${b})'
+  variables:
+    a:
+      min: -20
+      max: 20
+    b:
+      min: -20
+      max: 20
+  reponse: ${a} + ${b}
+  methode: Additionner les relatifs en tenant compte des signes.
+- id: NUM.REL.03.i1
+  competence_id: NUM.REL.03
+  type: relatif_multiplication
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) × (${b})'
+  variables:
+    a:
+      min: -6
+      max: 6
+    b:
+      min: -6
+      max: 6
+  reponse: ${a} * ${b}
+  methode: Appliquer la règle des signes.
+- id: NUM.PUI.01.i1
+  competence_id: NUM.PUI.01
+  type: puissance_dix
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : 10^${a}'
+  variables:
+    a:
+      min: 2
+      max: 5
+  reponse: 10**${a}
+  methode: 10^n s'écrit 1 suivi de n zéros.
+- id: NUM.PUI.02.i1
+  competence_id: NUM.PUI.02
+  type: puissance_produit
+  difficulte: 3
+  format_reponse: entier
+  enonce: Écris 10^${a} × 10^${b} sous la forme 10^n. Quelle est la valeur de n ?
+  variables:
+    a:
+      min: 2
+      max: 6
+    b:
+      min: 2
+      max: 6
+  reponse: ${a} + ${b}
+  methode: 10^a × 10^b = 10^(a + b).
+- id: NUM.RAC.01.i1
+  competence_id: NUM.RAC.01
+  type: racine_carree_carre
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : √(${a}²)'
+  variables:
+    a:
+      min: 1
+      max: 12
+  reponse: ${a}
+  methode: √(a²) = a pour a positif.
+- id: NUM.ENT.03.i1
+  competence_id: NUM.ENT.03
+  type: priorites_operatoires
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule en respectant les priorités : ${a} + ${b} × ${c}.'
+  variables:
+    a:
+      min: 1
+      max: 20
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 2
+      max: 9
+  reponse: ${a} + ${b} * ${c}
+  methode: La multiplication est prioritaire sur l'addition.
+- id: NUM.ENT.04.i1
+  competence_id: NUM.ENT.04
+  type: arrondi_dizaine
+  difficulte: 2
+  format_reponse: entier
+  enonce: Quel est l'arrondi du nombre ${a} à la dizaine la plus proche ?
+  variables:
+    a:
+      min: 15
+      max: 995
+  reponse: 10 * floor(${a} / 10 + 1/2)
+  methode: 'Regarder le chiffre des unités : s''il vaut 5 ou plus, arrondir à la dizaine
+    supérieure.'
+- id: NUM.ENT.05.i1
+  competence_id: NUM.ENT.05
+  type: cube_entier
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a}³.'
+  variables:
+    a:
+      min: 2
+      max: 12
+  reponse: ${a}**3
+  methode: a³ = a × a × a.
+- id: NUM.DEC.01.i1
+  competence_id: NUM.DEC.01
+  type: rang_decimal
+  difficulte: 1
+  format_reponse: entier
+  enonce: Quel est le chiffre des dixièmes dans le nombre ${a},${u} ?
+  variables:
+    a:
+      min: 1
+      max: 99
+    u:
+      min: 0
+      max: 9
+  reponse: ${u}
+  methode: Le chiffre des dixièmes est le premier chiffre après la virgule.
+- id: NUM.DEC.02.i1
+  competence_id: NUM.DEC.02
+  type: addition_decimaux
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a},${u} + ${b},${v}.'
+  variables:
+    a:
+      min: 1
+      max: 20
+    b:
+      min: 1
+      max: 20
+    u:
+      min: 1
+      max: 9
+  derives:
+    v: 10 - ${u}
+  reponse: ${a} + ${b} + 1
+  methode: 'Aligner les virgules : les dixièmes ${u} et ${v} forment ensemble une
+    unité.'
+- id: NUM.DEC.03.i1
+  competence_id: NUM.DEC.03
+  type: multiplication_decimaux
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a},5 × ${b}.'
+  variables:
+    a:
+      min: 1
+      max: 20
+    k:
+      min: 1
+      max: 9
+  derives:
+    b: ${k} * 2
+  reponse: (2 * ${a} + 1) * ${k}
+  methode: 'Multiplier ${a},5 par ${b} : ${a},5 × 2 = ${a},5 + ${a},5, puis multiplier
+    par ${k}.'
+- id: NUM.DEC.04.i1
+  competence_id: NUM.DEC.04
+  type: division_decimale
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a} ÷ 4. Donne le résultat exact sous forme de fraction.'
+  variables:
+    a:
+      min: 1
+      max: 50
+  reponse: ${a} / 4
+  methode: 'Poser la division décimale : on peut ajouter des zéros après la virgule.'
+- id: NUM.DEC.05.i1
+  competence_id: NUM.DEC.05
+  type: multiplication_par_100
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a},${u} × 100.'
+  variables:
+    a:
+      min: 1
+      max: 99
+    u:
+      min: 1
+      max: 9
+  reponse: (10 * ${a} + ${u}) * 10
+  methode: Multiplier par 100 décale la virgule de deux rangs vers la droite.
+- id: NUM.DIV.03.i1
+  competence_id: NUM.DIV.03
+  type: critere_divisibilite_3
+  difficulte: 2
+  format_reponse: entier
+  enonce: Le nombre ${a} est-il divisible par 3 ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 10
+      max: 400
+  reponse: Piecewise((1, Eq(Mod(${a}, 3), 0)), (0, True))
+  methode: Un nombre est divisible par 3 si la somme de ses chiffres est divisible
+    par 3.
+- id: NUM.DIV.04.i1
+  competence_id: NUM.DIV.04
+  type: division_euclidienne_probleme
+  difficulte: 3
+  format_reponse: entier
+  enonce: On partage ${a} billes entre ${b} enfants le plus équitablement possible.
+    Combien de billes restent non distribuées ?
+  variables:
+    a:
+      min: 20
+      max: 200
+    b:
+      min: 3
+      max: 9
+  reponse: Mod(${a}, ${b})
+  methode: Le reste de la division euclidienne de ${a} par ${b} est le nombre de billes
+    restantes.
+- id: NUM.FRA.06.i1
+  competence_id: NUM.FRA.06
+  type: fraction_quantite
+  difficulte: 2
+  format_reponse: entier
+  enonce: Calcule les ${a}/${b} de ${n}.
+  variables:
+    a:
+      min: 1
+      max: 5
+    b:
+      min: 2
+      max: 9
+    k:
+      min: 1
+      max: 12
+  derives:
+    n: ${b} * ${k}
+  reponse: ${a} * ${k}
+  methode: Diviser ${n} par ${b} puis multiplier par ${a}.
+- id: NUM.FRA.07.i1
+  competence_id: NUM.FRA.07
+  type: fraction_multiplication
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} × ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 1
+      max: 9
+    d:
+      min: 2
+      max: 9
+  reponse: (${a}*${c}) / (${b}*${d})
+  methode: Multiplier les numérateurs entre eux et les dénominateurs entre eux.
+- id: NUM.FRA.08.i1
+  competence_id: NUM.FRA.08
+  type: fraction_division
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} ÷ ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 1
+      max: 9
+    d:
+      min: 2
+      max: 9
+  reponse: (${a}*${d}) / (${b}*${c})
+  methode: Diviser par une fraction revient à multiplier par son inverse.
+- id: NUM.FRA.09.i1
+  competence_id: NUM.FRA.09
+  type: decimal_vers_fraction
+  difficulte: 2
+  format_reponse: fraction
+  enonce: Écris le nombre décimal ${a},${u} sous forme de fraction.
+  variables:
+    a:
+      min: 1
+      max: 20
+    u:
+      min: 1
+      max: 9
+  reponse: (10 * ${a} + ${u}) / 10
+  methode: Un nombre décimal à un chiffre après la virgule est une fraction de dénominateur
+    10.
+- id: NUM.FRA.10.i1
+  competence_id: NUM.FRA.10
+  type: fraction_comparaison
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Quelle est la plus grande fraction : ${a}/${b} ou ${c}/${d} ? Réponds 1
+    si c''est ${a}/${b}, 0 si c''est ${c}/${d}.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 1
+      max: 9
+    d:
+      min: 2
+      max: 9
+  reponse: Piecewise((1, ${a}/${b} > ${c}/${d}), (0, True))
+  methode: Réduire les deux fractions au même dénominateur puis comparer les numérateurs.
+- id: NUM.REL.04.i1
+  competence_id: NUM.REL.04
+  type: distance_a_zero
+  difficulte: 2
+  format_reponse: entier
+  enonce: Quelle est la distance à zéro du nombre relatif ${a} ?
+  variables:
+    a:
+      min: -20
+      max: 20
+  reponse: Abs(${a})
+  methode: 'La distance à zéro est la valeur absolue : on enlève le signe.'
+- id: NUM.REL.05.i1
+  competence_id: NUM.REL.05
+  type: soustraction_relatifs
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) − (${b}).'
+  variables:
+    a:
+      min: -20
+      max: 20
+    b:
+      min: -20
+      max: 20
+  reponse: ${a} - (${b})
+  methode: Soustraire un relatif revient à ajouter son opposé.
+- id: NUM.REL.06.i1
+  competence_id: NUM.REL.06
+  type: somme_algebrique
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) + (${b}) − (${c}).'
+  variables:
+    a:
+      min: -15
+      max: 15
+    b:
+      min: -15
+      max: 15
+    c:
+      min: -15
+      max: 15
+  reponse: ${a} + ${b} - (${c})
+  methode: Regrouper les termes positifs et les termes négatifs, puis calculer.
+- id: NUM.PUI.03.i1
+  competence_id: NUM.PUI.03
+  type: puissance_entier
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a}^${b}.'
+  variables:
+    a:
+      min: 2
+      max: 7
+    b:
+      min: 2
+      max: 4
+  reponse: ${a}**${b}
+  methode: a^b = a × a × ... × a (b facteurs).
+- id: NUM.PUI.04.i1
+  competence_id: NUM.PUI.04
+  type: notation_scientifique
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quel est l'exposant n de l'écriture scientifique du nombre ${a} ?
+  variables:
+    d:
+      min: 1
+      max: 9
+    n:
+      min: 3
+      max: 6
+  derives:
+    a: ${d} * 10**${n}
+  reponse: ${n}
+  methode: Écrire ${a} sous la forme d × 10^n avec 1 ≤ d < 10.
+- id: NUM.PUI.05.i1
+  competence_id: NUM.PUI.05
+  type: exposant_negatif
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : 10^(−${n}). Donne le résultat exact sous forme de fraction.'
+  variables:
+    n:
+      min: 1
+      max: 4
+  reponse: 1 / 10**${n}
+  methode: 10^(−n) = 1 / 10^n.
+- id: NUM.PUI.06.i1
+  competence_id: NUM.PUI.06
+  type: quotient_puissances_dix
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Simplifie 10^${p} / 10^${q} : quel est l''exposant n tel que le résultat
+    soit 10^n ?'
+  variables:
+    p:
+      min: 2
+      max: 6
+    q:
+      min: 1
+      max: 3
+  reponse: ${p} - ${q}
+  methode: 10^p / 10^q = 10^(p − q).
+- id: NUM.RAC.02.i1
+  competence_id: NUM.RAC.02
+  type: partie_entiere_racine
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quelle est la partie entière de √${a} (le plus grand entier n tel que n²
+    ≤ ${a}) ?
+  variables:
+    a:
+      min: 2
+      max: 150
+  reponse: floor(sqrt(${a}))
+  methode: Chercher les carrés parfaits encadrant ${a}.
+- id: NUM.RAC.03.i1
+  competence_id: NUM.RAC.03
+  type: simplifier_racine
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Simplifie : √(${a}² × ${b}). Donne le résultat sous la forme k√${b} (par
+    exemple 4*sqrt(3)).'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 2
+      max: 3
+  reponse: sqrt(${a}**2 * ${b})
+  methode: √(a² × b) = a√b car √(a²) = a.
+- id: NUM.RAC.04.i1
+  competence_id: NUM.RAC.04
+  type: produit_racines
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Calcule : √${a} × √${b}. Donne le résultat exact (par exemple 4*sqrt(3)).'
+  variables:
+    a:
+      min: 2
+      max: 18
+    b:
+      min: 2
+      max: 18
+  reponse: sqrt(${a} * ${b})
+  methode: √a × √b = √(a × b), puis simplifier si possible.
+- id: NUM.ARI.01.i1
+  competence_id: NUM.ARI.01
+  type: test_premier
+  difficulte: 2
+  format_reponse: entier
+  enonce: Le nombre ${a} est-il premier ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 2
+      max: 60
+  reponse: Piecewise((1, isprime(${a})), (0, True))
+  methode: Tester les diviseurs premiers jusqu'à √${a}.
+- id: NUM.ARI.02.i1
+  competence_id: NUM.ARI.02
+  type: nombre_de_diviseurs
+  difficulte: 3
+  format_reponse: entier
+  enonce: Après avoir décomposé ${a} en produit de facteurs premiers, combien de diviseurs
+    positifs possède ${a} ?
+  variables:
+    a:
+      min: 2
+      max: 60
+  reponse: divisor_count(${a})
+  methode: Décomposer puis multiplier (exposant + 1) pour chaque facteur premier.
+- id: NUM.ARI.03.i1
+  competence_id: NUM.ARI.03
+  type: pgcd
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quel est le PGCD de ${a} et ${b} ?
+  variables:
+    a:
+      min: 6
+      max: 60
+    b:
+      min: 6
+      max: 60
+  reponse: gcd(${a}, ${b})
+  methode: Décomposer les deux nombres et garder les facteurs premiers communs.
+- id: NUM.ARI.04.i1
+  competence_id: NUM.ARI.04
+  type: fraction_irreductible_denom
+  difficulte: 3
+  format_reponse: entier
+  enonce: Rends la fraction ${a}/${b} irréductible. Quel est le dénominateur obtenu
+    ?
+  variables:
+    a:
+      min: 2
+      max: 40
+    b:
+      min: 2
+      max: 40
+  reponse: ${b} / gcd(${a}, ${b})
+  methode: Diviser numérateur et dénominateur par leur PGCD.
+- id: NUM.CAL.01.i1
+  competence_id: NUM.CAL.01
+  type: calcul_fractions_priorites
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} + ${c}/${b} × ${d}. Donne le résultat sous forme de
+    fraction.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 1
+      max: 9
+    d:
+      min: 2
+      max: 5
+  reponse: ${a}/${b} + (${c}/${b})*${d}
+  methode: La multiplication est prioritaire ; réduire ensuite au même dénominateur.
+- id: NUM.CAL.02.i1
+  competence_id: NUM.CAL.02
+  type: carre_parfait
+  difficulte: 2
+  format_reponse: entier
+  enonce: Le nombre √${a} est-il un entier naturel ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 2
+      max: 100
+  reponse: Piecewise((1, Eq(sqrt(${a}), floor(sqrt(${a})))), (0, True))
+  methode: √${a} est entier si ${a} est un carré parfait.
+- id: NUM.CAL.03.i1
+  competence_id: NUM.CAL.03
+  type: equation_valeur_absolue
+  difficulte: 3
+  format_reponse: entier
+  enonce: Résous l'équation |x| = ${a}. Donne la plus petite solution.
+  variables:
+    a:
+      min: 1
+      max: 15
+  reponse: -${a}
+  methode: '|x| = a a deux solutions : a et −a ; la plus petite est −a.'
+- id: NUM.CAL.04.i1
+  competence_id: NUM.CAL.04
+  type: encadrement_multiple
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Encadre ${a} entre deux multiples consécutifs de 10 : n ≤ ${a} < n + 10.
+    Quel est n ?'
+  variables:
+    a:
+      min: 11
+      max: 200
+  reponse: 10 * floor(${a} / 10)
+  methode: n est le multiple de 10 immédiatement inférieur ou égal à ${a}.
+- id: NUM.CAL.05.i1
+  competence_id: NUM.CAL.05
+  type: ecriture_scientifique_valide
+  difficulte: 3
+  format_reponse: entier
+  enonce: Le nombre ${a} × 10^${n} est-il écrit en notation scientifique (c'est-à-dire
+    1 ≤ ${a} < 10) ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 1
+      max: 15
+    n:
+      min: 2
+      max: 5
+  reponse: Piecewise((1, And(${a} >= 1, ${a} < 10)), (0, True))
+  methode: Une écriture scientifique demande un coefficient compris entre 1 (inclus)
+    et 10 (exclu).
+- id: NUM.ENT.01.i1.v2
+  competence_id: NUM.ENT.01
+  type: addition_entiers
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a} + ${b}'
+  variables:
+    a:
+      min: 2
+      max: 51
+    b:
+      min: 2
+      max: 51
+  reponse: ${a} + ${b}
+  methode: Addition en colonnes ou calcul mental.
+- id: NUM.ENT.02.i1.v2
+  competence_id: NUM.ENT.02
+  type: multiplication_entiers
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Calcule : ${a} × ${b}'
+  variables:
+    a:
+      min: 3
+      max: 13
+    b:
+      min: 3
+      max: 13
+  reponse: ${a} * ${b}
+  methode: Table de multiplication ou calcul en colonnes.
+- id: NUM.DIV.01.i1.v2
+  competence_id: NUM.DIV.01
+  type: division_euclidienne_reste
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quel est le reste de la division euclidienne de ${a} par ${b} ?
+  variables:
+    a:
+      min: 21
+      max: 201
+    b:
+      min: 3
+      max: 10
+  reponse: Mod(${a}, ${b})
+  methode: 'Poser la division : a = b × q + r, reste r = a − b × q.'
+- id: NUM.DIV.01.i2.v2
+  competence_id: NUM.DIV.01
+  type: division_euclidienne_quotient
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quel est le quotient entier de la division euclidienne de ${a} par ${b}
+    ?
+  variables:
+    a:
+      min: 21
+      max: 201
+    b:
+      min: 3
+      max: 10
+  reponse: floor(${a} / ${b})
+  methode: 'Poser la division : quotient entier q.'
+- id: NUM.DIV.02.i1.v2
+  competence_id: NUM.DIV.02
+  type: divisibilite
+  difficulte: 3
+  format_reponse: entier
+  enonce: Le nombre ${a} est-il divisible par ${b} ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 11
+      max: 201
+    b:
+      min: 3
+      max: 10
+  reponse: Piecewise((1, Eq(Mod(${a}, ${b}), 0)), (0, True))
+  methode: Vérifier si le reste de la division est nul.
+- id: NUM.FRA.01.i1.v2
+  competence_id: NUM.FRA.01
+  type: fraction_valeur
+  difficulte: 2
+  format_reponse: fraction
+  enonce: Quelle est la valeur de la fraction ${a}/${b} ? Donne la réponse sous forme
+    de fraction.
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+  reponse: ${a} / ${b}
+  methode: La fraction a/b représente a parts sur b parts égales.
+- id: NUM.FRA.02.i1.v2
+  competence_id: NUM.FRA.02
+  type: fraction_equivalente
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Complète : ${a}/${b} = ?/${c}'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    k:
+      min: 3
+      max: 7
+  derives:
+    c: ${b} * ${k}
+    rep: ${a} * ${k}
+  reponse: ${rep}
+  methode: Multiplier numérateur et dénominateur par le même nombre k.
+- id: NUM.FRA.03.i1.v2
+  competence_id: NUM.FRA.03
+  type: fraction_soustraction
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} − ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 2
+      max: 10
+    d:
+      min: 3
+      max: 10
+  reponse: (${a}*${d} - ${c}*${b}) / (${b}*${d})
+  methode: Réduire au même dénominateur puis soustraire.
+- id: NUM.FRA.04.i1.v2
+  competence_id: NUM.FRA.04
+  type: fraction_addition_meme_denom
+  difficulte: 3
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} + ${c}/${b}'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 13
+    c:
+      min: 2
+      max: 10
+  reponse: (${a} + ${c}) / ${b}
+  methode: Additionner les numérateurs, garder le dénominateur commun.
+- id: NUM.FRA.05.i1.v2
+  competence_id: NUM.FRA.05
+  type: fraction_addition_diff_denom
+  difficulte: 4
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} + ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 2
+      max: 10
+    d:
+      min: 3
+      max: 10
+  reponse: (${a}*${d} + ${c}*${b}) / (${b}*${d})
+  methode: Réduire au même dénominateur (b × d) puis additionner.
+- id: NUM.REL.01.i1.v2
+  competence_id: NUM.REL.01
+  type: relatif_addition
+  difficulte: 2
+  format_reponse: entier
+  enonce: Sur la droite graduée, quel est le résultat de (${a}) + (${b}) ?
+  variables:
+    a:
+      min: -11
+      max: 13
+    b:
+      min: -11
+      max: 13
+  reponse: ${a} + ${b}
+  methode: Se déplacer sur la droite graduée.
+- id: NUM.REL.02.i1.v2
+  competence_id: NUM.REL.02
+  type: relatif_addition
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) + (${b})'
+  variables:
+    a:
+      min: -19
+      max: 21
+    b:
+      min: -19
+      max: 21
+  reponse: ${a} + ${b}
+  methode: Additionner les relatifs en tenant compte des signes.
+- id: NUM.REL.03.i1.v2
+  competence_id: NUM.REL.03
+  type: relatif_multiplication
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) × (${b})'
+  variables:
+    a:
+      min: -5
+      max: 7
+    b:
+      min: -5
+      max: 7
+  reponse: ${a} * ${b}
+  methode: Appliquer la règle des signes.
+- id: NUM.PUI.01.i1.v2
+  competence_id: NUM.PUI.01
+  type: puissance_dix
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : 10^${a}'
+  variables:
+    a:
+      min: 3
+      max: 6
+  reponse: 10**${a}
+  methode: 10^n s'écrit 1 suivi de n zéros.
+- id: NUM.PUI.02.i1.v2
+  competence_id: NUM.PUI.02
+  type: puissance_produit
+  difficulte: 4
+  format_reponse: entier
+  enonce: Écris 10^${a} × 10^${b} sous la forme 10^n. Quelle est la valeur de n ?
+  variables:
+    a:
+      min: 3
+      max: 7
+    b:
+      min: 3
+      max: 7
+  reponse: ${a} + ${b}
+  methode: 10^a × 10^b = 10^(a + b).
+- id: NUM.RAC.01.i1.v2
+  competence_id: NUM.RAC.01
+  type: racine_carree_carre
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Calcule : √(${a}²)'
+  variables:
+    a:
+      min: 2
+      max: 13
+  reponse: ${a}
+  methode: √(a²) = a pour a positif.
+- id: NUM.ENT.03.i1.v2
+  competence_id: NUM.ENT.03
+  type: priorites_operatoires
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule en respectant les priorités : ${a} + ${b} × ${c}.'
+  variables:
+    a:
+      min: 2
+      max: 21
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 3
+      max: 10
+  reponse: ${a} + ${b} * ${c}
+  methode: La multiplication est prioritaire sur l'addition.
+- id: NUM.ENT.04.i1.v2
+  competence_id: NUM.ENT.04
+  type: arrondi_dizaine
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quel est l'arrondi du nombre ${a} à la dizaine la plus proche ?
+  variables:
+    a:
+      min: 16
+      max: 996
+  reponse: 10 * floor(${a} / 10 + 1/2)
+  methode: 'Regarder le chiffre des unités : s''il vaut 5 ou plus, arrondir à la dizaine
+    supérieure.'
+- id: NUM.ENT.05.i1.v2
+  competence_id: NUM.ENT.05
+  type: cube_entier
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : ${a}³.'
+  variables:
+    a:
+      min: 3
+      max: 13
+  reponse: ${a}**3
+  methode: a³ = a × a × a.
+- id: NUM.DEC.01.i1.v2
+  competence_id: NUM.DEC.01
+  type: rang_decimal
+  difficulte: 2
+  format_reponse: entier
+  enonce: Quel est le chiffre des dixièmes dans le nombre ${a},${u} ?
+  variables:
+    a:
+      min: 2
+      max: 100
+    u:
+      min: 1
+      max: 10
+  reponse: ${u}
+  methode: Le chiffre des dixièmes est le premier chiffre après la virgule.
+- id: NUM.DEC.02.i1.v2
+  competence_id: NUM.DEC.02
+  type: addition_decimaux
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : ${a},${u} + ${b},${v}.'
+  variables:
+    a:
+      min: 2
+      max: 21
+    b:
+      min: 2
+      max: 21
+    u:
+      min: 2
+      max: 10
+  derives:
+    v: 10 - ${u}
+  reponse: ${a} + ${b} + 1
+  methode: 'Aligner les virgules : les dixièmes ${u} et ${v} forment ensemble une
+    unité.'
+- id: NUM.DEC.03.i1.v2
+  competence_id: NUM.DEC.03
+  type: multiplication_decimaux
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : ${a},5 × ${b}.'
+  variables:
+    a:
+      min: 2
+      max: 21
+    k:
+      min: 2
+      max: 10
+  derives:
+    b: ${k} * 2
+  reponse: (2 * ${a} + 1) * ${k}
+  methode: 'Multiplier ${a},5 par ${b} : ${a},5 × 2 = ${a},5 + ${a},5, puis multiplier
+    par ${k}.'
+- id: NUM.DEC.04.i1.v2
+  competence_id: NUM.DEC.04
+  type: division_decimale
+  difficulte: 4
+  format_reponse: fraction
+  enonce: 'Calcule : ${a} ÷ 4. Donne le résultat exact sous forme de fraction.'
+  variables:
+    a:
+      min: 2
+      max: 51
+  reponse: ${a} / 4
+  methode: 'Poser la division décimale : on peut ajouter des zéros après la virgule.'
+- id: NUM.DEC.05.i1.v2
+  competence_id: NUM.DEC.05
+  type: multiplication_par_100
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : ${a},${u} × 100.'
+  variables:
+    a:
+      min: 2
+      max: 100
+    u:
+      min: 2
+      max: 10
+  reponse: (10 * ${a} + ${u}) * 10
+  methode: Multiplier par 100 décale la virgule de deux rangs vers la droite.
+- id: NUM.DIV.03.i1.v2
+  competence_id: NUM.DIV.03
+  type: critere_divisibilite_3
+  difficulte: 3
+  format_reponse: entier
+  enonce: Le nombre ${a} est-il divisible par 3 ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 11
+      max: 401
+  reponse: Piecewise((1, Eq(Mod(${a}, 3), 0)), (0, True))
+  methode: Un nombre est divisible par 3 si la somme de ses chiffres est divisible
+    par 3.
+- id: NUM.DIV.04.i1.v2
+  competence_id: NUM.DIV.04
+  type: division_euclidienne_probleme
+  difficulte: 4
+  format_reponse: entier
+  enonce: On partage ${a} billes entre ${b} enfants le plus équitablement possible.
+    Combien de billes restent non distribuées ?
+  variables:
+    a:
+      min: 21
+      max: 201
+    b:
+      min: 4
+      max: 10
+  reponse: Mod(${a}, ${b})
+  methode: Le reste de la division euclidienne de ${a} par ${b} est le nombre de billes
+    restantes.
+- id: NUM.FRA.06.i1.v2
+  competence_id: NUM.FRA.06
+  type: fraction_quantite
+  difficulte: 3
+  format_reponse: entier
+  enonce: Calcule les ${a}/${b} de ${n}.
+  variables:
+    a:
+      min: 2
+      max: 6
+    b:
+      min: 3
+      max: 10
+    k:
+      min: 2
+      max: 13
+  derives:
+    n: ${b} * ${k}
+  reponse: ${a} * ${k}
+  methode: Diviser ${n} par ${b} puis multiplier par ${a}.
+- id: NUM.FRA.07.i1.v2
+  competence_id: NUM.FRA.07
+  type: fraction_multiplication
+  difficulte: 4
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} × ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 2
+      max: 10
+    d:
+      min: 3
+      max: 10
+  reponse: (${a}*${c}) / (${b}*${d})
+  methode: Multiplier les numérateurs entre eux et les dénominateurs entre eux.
+- id: NUM.FRA.08.i1.v2
+  competence_id: NUM.FRA.08
+  type: fraction_division
+  difficulte: 4
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} ÷ ${c}/${d}. Donne le résultat sous forme de fraction.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 2
+      max: 10
+    d:
+      min: 3
+      max: 10
+  reponse: (${a}*${d}) / (${b}*${c})
+  methode: Diviser par une fraction revient à multiplier par son inverse.
+- id: NUM.FRA.09.i1.v2
+  competence_id: NUM.FRA.09
+  type: decimal_vers_fraction
+  difficulte: 3
+  format_reponse: fraction
+  enonce: Écris le nombre décimal ${a},${u} sous forme de fraction.
+  variables:
+    a:
+      min: 2
+      max: 21
+    u:
+      min: 2
+      max: 10
+  reponse: (10 * ${a} + ${u}) / 10
+  methode: Un nombre décimal à un chiffre après la virgule est une fraction de dénominateur
+    10.
+- id: NUM.FRA.10.i1.v2
+  competence_id: NUM.FRA.10
+  type: fraction_comparaison
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Quelle est la plus grande fraction : ${a}/${b} ou ${c}/${d} ? Réponds 1
+    si c''est ${a}/${b}, 0 si c''est ${c}/${d}.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 2
+      max: 10
+    d:
+      min: 3
+      max: 10
+  reponse: Piecewise((1, ${a}/${b} > ${c}/${d}), (0, True))
+  methode: Réduire les deux fractions au même dénominateur puis comparer les numérateurs.
+- id: NUM.REL.04.i1.v2
+  competence_id: NUM.REL.04
+  type: distance_a_zero
+  difficulte: 3
+  format_reponse: entier
+  enonce: Quelle est la distance à zéro du nombre relatif ${a} ?
+  variables:
+    a:
+      min: -19
+      max: 21
+  reponse: Abs(${a})
+  methode: 'La distance à zéro est la valeur absolue : on enlève le signe.'
+- id: NUM.REL.05.i1.v2
+  competence_id: NUM.REL.05
+  type: soustraction_relatifs
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) − (${b}).'
+  variables:
+    a:
+      min: -19
+      max: 21
+    b:
+      min: -19
+      max: 21
+  reponse: ${a} - (${b})
+  methode: Soustraire un relatif revient à ajouter son opposé.
+- id: NUM.REL.06.i1.v2
+  competence_id: NUM.REL.06
+  type: somme_algebrique
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Calcule : (${a}) + (${b}) − (${c}).'
+  variables:
+    a:
+      min: -14
+      max: 16
+    b:
+      min: -14
+      max: 16
+    c:
+      min: -14
+      max: 16
+  reponse: ${a} + ${b} - (${c})
+  methode: Regrouper les termes positifs et les termes négatifs, puis calculer.
+- id: NUM.PUI.03.i1.v2
+  competence_id: NUM.PUI.03
+  type: puissance_entier
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Calcule : ${a}^${b}.'
+  variables:
+    a:
+      min: 3
+      max: 8
+    b:
+      min: 3
+      max: 5
+  reponse: ${a}**${b}
+  methode: a^b = a × a × ... × a (b facteurs).
+- id: NUM.PUI.04.i1.v2
+  competence_id: NUM.PUI.04
+  type: notation_scientifique
+  difficulte: 4
+  format_reponse: entier
+  enonce: Quel est l'exposant n de l'écriture scientifique du nombre ${a} ?
+  variables:
+    d:
+      min: 2
+      max: 10
+    n:
+      min: 4
+      max: 7
+  derives:
+    a: ${d} * 10**${n}
+  reponse: ${n}
+  methode: Écrire ${a} sous la forme d × 10^n avec 1 ≤ d < 10.
+- id: NUM.PUI.05.i1.v2
+  competence_id: NUM.PUI.05
+  type: exposant_negatif
+  difficulte: 4
+  format_reponse: fraction
+  enonce: 'Calcule : 10^(−${n}). Donne le résultat exact sous forme de fraction.'
+  variables:
+    n:
+      min: 2
+      max: 5
+  reponse: 1 / 10**${n}
+  methode: 10^(−n) = 1 / 10^n.
+- id: NUM.PUI.06.i1.v2
+  competence_id: NUM.PUI.06
+  type: quotient_puissances_dix
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Simplifie 10^${p} / 10^${q} : quel est l''exposant n tel que le résultat
+    soit 10^n ?'
+  variables:
+    p:
+      min: 3
+      max: 7
+    q:
+      min: 2
+      max: 4
+  reponse: ${p} - ${q}
+  methode: 10^p / 10^q = 10^(p − q).
+- id: NUM.RAC.02.i1.v2
+  competence_id: NUM.RAC.02
+  type: partie_entiere_racine
+  difficulte: 4
+  format_reponse: entier
+  enonce: Quelle est la partie entière de √${a} (le plus grand entier n tel que n²
+    ≤ ${a}) ?
+  variables:
+    a:
+      min: 3
+      max: 151
+  reponse: floor(sqrt(${a}))
+  methode: Chercher les carrés parfaits encadrant ${a}.
+- id: NUM.RAC.03.i1.v2
+  competence_id: NUM.RAC.03
+  type: simplifier_racine
+  difficulte: 5
+  format_reponse: expression
+  enonce: 'Simplifie : √(${a}² × ${b}). Donne le résultat sous la forme k√${b} (par
+    exemple 4*sqrt(3)).'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 3
+      max: 4
+  reponse: sqrt(${a}**2 * ${b})
+  methode: √(a² × b) = a√b car √(a²) = a.
+- id: NUM.RAC.04.i1.v2
+  competence_id: NUM.RAC.04
+  type: produit_racines
+  difficulte: 5
+  format_reponse: expression
+  enonce: 'Calcule : √${a} × √${b}. Donne le résultat exact (par exemple 4*sqrt(3)).'
+  variables:
+    a:
+      min: 3
+      max: 19
+    b:
+      min: 3
+      max: 19
+  reponse: sqrt(${a} * ${b})
+  methode: √a × √b = √(a × b), puis simplifier si possible.
+- id: NUM.ARI.01.i1.v2
+  competence_id: NUM.ARI.01
+  type: test_premier
+  difficulte: 3
+  format_reponse: entier
+  enonce: Le nombre ${a} est-il premier ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 3
+      max: 61
+  reponse: Piecewise((1, isprime(${a})), (0, True))
+  methode: Tester les diviseurs premiers jusqu'à √${a}.
+- id: NUM.ARI.02.i1.v2
+  competence_id: NUM.ARI.02
+  type: nombre_de_diviseurs
+  difficulte: 4
+  format_reponse: entier
+  enonce: Après avoir décomposé ${a} en produit de facteurs premiers, combien de diviseurs
+    positifs possède ${a} ?
+  variables:
+    a:
+      min: 3
+      max: 61
+  reponse: divisor_count(${a})
+  methode: Décomposer puis multiplier (exposant + 1) pour chaque facteur premier.
+- id: NUM.ARI.03.i1.v2
+  competence_id: NUM.ARI.03
+  type: pgcd
+  difficulte: 4
+  format_reponse: entier
+  enonce: Quel est le PGCD de ${a} et ${b} ?
+  variables:
+    a:
+      min: 7
+      max: 61
+    b:
+      min: 7
+      max: 61
+  reponse: gcd(${a}, ${b})
+  methode: Décomposer les deux nombres et garder les facteurs premiers communs.
+- id: NUM.ARI.04.i1.v2
+  competence_id: NUM.ARI.04
+  type: fraction_irreductible_denom
+  difficulte: 4
+  format_reponse: entier
+  enonce: Rends la fraction ${a}/${b} irréductible. Quel est le dénominateur obtenu
+    ?
+  variables:
+    a:
+      min: 3
+      max: 41
+    b:
+      min: 3
+      max: 41
+  reponse: ${b} / gcd(${a}, ${b})
+  methode: Diviser numérateur et dénominateur par leur PGCD.
+- id: NUM.CAL.01.i1.v2
+  competence_id: NUM.CAL.01
+  type: calcul_fractions_priorites
+  difficulte: 4
+  format_reponse: fraction
+  enonce: 'Calcule : ${a}/${b} + ${c}/${b} × ${d}. Donne le résultat sous forme de
+    fraction.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 2
+      max: 10
+    d:
+      min: 3
+      max: 6
+  reponse: ${a}/${b} + (${c}/${b})*${d}
+  methode: La multiplication est prioritaire ; réduire ensuite au même dénominateur.
+- id: NUM.CAL.02.i1.v2
+  competence_id: NUM.CAL.02
+  type: carre_parfait
+  difficulte: 3
+  format_reponse: entier
+  enonce: Le nombre √${a} est-il un entier naturel ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 3
+      max: 101
+  reponse: Piecewise((1, Eq(sqrt(${a}), floor(sqrt(${a})))), (0, True))
+  methode: √${a} est entier si ${a} est un carré parfait.
+- id: NUM.CAL.03.i1.v2
+  competence_id: NUM.CAL.03
+  type: equation_valeur_absolue
+  difficulte: 4
+  format_reponse: entier
+  enonce: Résous l'équation |x| = ${a}. Donne la plus petite solution.
+  variables:
+    a:
+      min: 2
+      max: 16
+  reponse: -${a}
+  methode: '|x| = a a deux solutions : a et −a ; la plus petite est −a.'
+- id: NUM.CAL.04.i1.v2
+  competence_id: NUM.CAL.04
+  type: encadrement_multiple
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Encadre ${a} entre deux multiples consécutifs de 10 : n ≤ ${a} < n + 10.
+    Quel est n ?'
+  variables:
+    a:
+      min: 12
+      max: 201
+  reponse: 10 * floor(${a} / 10)
+  methode: n est le multiple de 10 immédiatement inférieur ou égal à ${a}.
+- id: NUM.CAL.05.i1.v2
+  competence_id: NUM.CAL.05
+  type: ecriture_scientifique_valide
+  difficulte: 4
+  format_reponse: entier
+  enonce: Le nombre ${a} × 10^${n} est-il écrit en notation scientifique (c'est-à-dire
+    1 ≤ ${a} < 10) ? Réponds 1 si oui, 0 si non.
+  variables:
+    a:
+      min: 2
+      max: 16
+    n:
+      min: 3
+      max: 6
+  reponse: Piecewise((1, And(${a} >= 1, ${a} < 10)), (0, True))
+  methode: Une écriture scientifique demande un coefficient compris entre 1 (inclus)
+    et 10 (exclu).

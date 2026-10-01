@@ -55,12 +55,10 @@ class Adaptatif:
 
 
 @dataclass(frozen=True)
-class Ponderation:
-    """Poids des statuts de champ du profil (M l'emporte toujours sur D, SPEC §3.8)."""
+class Decisions:
+    """Règles de décision (module D)."""
 
-    statut_declare: float
-    statut_mesure: float
-    statut_hypothese: float
+    ecart_min_items: int
 
 
 @dataclass(frozen=True)
@@ -78,7 +76,7 @@ class Config:
     retention: Retention
     anxiete: Anxiete
     adaptatif: Adaptatif
-    ponderation: Ponderation
+    decisions: Decisions
     verification: Verification
 
     @classmethod
@@ -90,7 +88,7 @@ class Config:
             retention=Retention(**s["retention"]),
             anxiete=Anxiete(**s["anxiete"]),
             adaptatif=Adaptatif(**d["adaptatif"]),
-            ponderation=Ponderation(**d["ponderation"]),
+            decisions=Decisions(**d["decisions"]),
             verification=Verification(**s["verification"]),
         )
 

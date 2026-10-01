@@ -1,577 +1,1468 @@
-# =============================================================================
-# Gabarits d'items — domaine ALG (algèbre).
-# Version étendue : gabarits de alg.yaml (à l'identique) + extension.
-# Les équations sont construites avec des variables dérivées pour garantir des
-# solutions entières et propres (ex. b = a × sol).
-# =============================================================================
 version: 1
 gabarits:
-  # ================================ EXISTANT (inchangés) ==================
-  # --- Calcul littéral ------------------------------------------------------
-  - id: ALG.LIT.01.i1
-    competence_id: ALG.LIT.01
-    type: expression_valeur
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule la valeur de l'expression ${a}x + ${b} pour x = ${x}."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 20}
-      x: {min: 1, max: 10}
-    reponse: "${a}*${x} + ${b}"
-    methode: "Remplacer x par sa valeur puis calculer."
-
-  - id: ALG.LIT.02.i1
-    competence_id: ALG.LIT.02
-    type: simplifier_lineaire
-    difficulte: 2
-    format_reponse: expression
-    enonce: "Simplifie : ${a}x + ${b}x."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 2, max: 9}
-    reponse: "(${a} + ${b})*x"
-    methode: "Regrouper les termes en x."
-
-  - id: ALG.LIT.03.i1
-    competence_id: ALG.LIT.03
-    type: developper_distributivite
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Développe : ${a}(${b} + ${c})."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 9}
-      c: {min: 1, max: 9}
-    reponse: "${a}*${b} + ${a}*${c}"
-    methode: "Distribuer a sur b et c."
-
-  # --- Équations du premier degré ------------------------------------------
-  - id: ALG.EQ1.01.i1
-    competence_id: ALG.EQ1.01
-    type: equation_x_plus_a
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Résous l'équation : x + ${a} = ${b}."
-    variables:
-      a: {min: 1, max: 9}
-      sol: {min: 1, max: 15}
-    derives:
-      b: "${a} + ${sol}"
-    reponse: "${sol}"
-    methode: "Soustraire ${a} des deux côtés."
-
-  - id: ALG.EQ1.01.i2
-    competence_id: ALG.EQ1.01
-    type: equation_x_plus_a
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Résous l'équation : ${a} + x = ${b}."
-    variables:
-      a: {min: 2, max: 10}
-      sol: {min: 2, max: 20}
-    derives:
-      b: "${a} + ${sol}"
-    reponse: "${sol}"
-    methode: "Soustraire ${a} des deux côtés."
-
-  - id: ALG.EQ1.02.i1
-    competence_id: ALG.EQ1.02
-    type: equation_ax
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Résous l'équation : ${a}x = ${b}."
-    variables:
-      a: {min: 2, max: 9}
-      sol: {min: 2, max: 12}
-    derives:
-      b: "${a} * ${sol}"
-    reponse: "${sol}"
-    methode: "Diviser par ${a} des deux côtés."
-
-  - id: ALG.EQ1.03.i1
-    competence_id: ALG.EQ1.03
-    type: equation_ax_plus_b
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Résous l'équation : ${a}x + ${b} = ${c}."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 20}
-      sol: {min: 1, max: 12}
-    derives:
-      c: "${a} * ${sol} + ${b}"
-    reponse: "${sol}"
-    methode: "Isoler ${a}x puis diviser par ${a}."
-
-  - id: ALG.EQ1.03.i2
-    competence_id: ALG.EQ1.03
-    type: equation_ax_plus_b
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Résous l'équation : ${a}x − ${b} = ${c}."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 10}
-      sol: {min: 2, max: 12}
-    derives:
-      c: "${a} * ${sol} - ${b}"
-    reponse: "${sol}"
-    methode: "Ajouter ${b} des deux côtés puis diviser par ${a}."
-
-  - id: ALG.EQ1.04.i1
-    competence_id: ALG.EQ1.04
-    type: mise_en_equation
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Un nombre x, multiplié par ${a} puis augmenté de ${b}, vaut ${c}. Trouve x."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 20}
-      sol: {min: 2, max: 12}
-    derives:
-      c: "${a} * ${sol} + ${b}"
-    reponse: "${sol}"
-    methode: "Traduire la phrase en équation ${a}x + ${b} = ${c}."
-
-  # --- Équations avancées ---------------------------------------------------
-  - id: ALG.EQ2.01.i1
-    competence_id: ALG.EQ2.01
-    type: equation_ax_plus_b_cx_plus_d
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous l'équation : ${a}x + ${b} = ${c}x + ${d}."
-    variables:
-      a: {min: 3, max: 9}
-      c: {min: 1, max: 2}
-      b: {min: 1, max: 10}
-      sol: {min: 1, max: 10}
-    derives:
-      d: "(${a} - ${c}) * ${sol} + ${b}"
-    reponse: "${sol}"
-    methode: "Regrouper les x d'un côté, les constantes de l'autre."
-
-  - id: ALG.PRD.01.i1
-    competence_id: ALG.PRD.01
-    type: produit_nul
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous : (x − ${p})(x − ${q}) = 0. Donne la plus petite solution."
-    variables:
-      p: {min: 1, max: 5}
-      q: {min: 6, max: 10}
-    reponse: "${p}"
-    methode: "Un produit est nul si l'un des facteurs est nul."
-
-  - id: ALG.INE.01.i1
-    competence_id: ALG.INE.01
-    type: inequation_frontiere
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Quelle est la valeur frontière x telle que ${a}x + ${b} = ${c} ?"
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 20}
-      sol: {min: 1, max: 12}
-    derives:
-      c: "${a} * ${sol} + ${b}"
-    reponse: "${sol}"
-    methode: "Trouver la frontière en résolvant l'équation associée."
-
-  # ================================ EXTENSION — ALG =======================
-  # --- Calcul littéral ------------------------------------------------------
-  - id: ALG.LIT.04.i1
-    competence_id: ALG.LIT.04
-    type: supprimer_parentheses
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Simplifie : ${a}x − (${b}x − ${c})."
-    variables:
-      a: {min: 4, max: 9}
-      b: {min: 1, max: 3}
-      c: {min: 1, max: 9}
-    reponse: "${a}*x - (${b}*x - ${c})"
-    methode: "Changer les signes des termes entre parenthèses précédées d'un signe −."
-
-  - id: ALG.LIT.05.i1
-    competence_id: ALG.LIT.05
-    type: developper_double_distributivite
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Développe et réduis : (x + ${a})(x + ${b})."
-    variables:
-      a: {min: 1, max: 9}
-      b: {min: 1, max: 9}
-    reponse: "x**2 + (${a} + ${b})*x + ${a}*${b}"
-    methode: "Distribuer chaque terme : (x + a)(x + b) = x² + (a + b)x + ab."
-
-  - id: ALG.LIT.06.i1
-    competence_id: ALG.LIT.06
-    type: factoriser_facteur_commun
-    difficulte: 3
-    format_reponse: entier
-    enonce: "Complète la factorisation : ${a}x + ${ab} = ${a}(x + ?). Quel est le nombre manquant ?"
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 2, max: 9}
-    derives:
-      ab: "${a} * ${b}"
-    reponse: "${b}"
-    methode: "Mettre ${a} en facteur commun : ${a}x + ${a}×${b} = ${a}(x + ${b})."
-
-  - id: ALG.LIT.07.i1
-    competence_id: ALG.LIT.07
-    type: identite_carre
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Développe : (x + ${a})²."
-    variables:
-      a: {min: 1, max: 9}
-    reponse: "x**2 + 2*${a}*x + ${a}**2"
-    methode: "(x + a)² = x² + 2ax + a²."
-
-  - id: ALG.LIT.08.i1
-    competence_id: ALG.LIT.08
-    type: identite_difference_carres
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Développe : (x + ${a})(x − ${a})."
-    variables:
-      a: {min: 1, max: 9}
-    reponse: "x**2 - ${a}**2"
-    methode: "(x + a)(x − a) = x² − a²."
-
-  - id: ALG.LIT.09.i1
-    competence_id: ALG.LIT.09
-    type: expression_valeur_deux_variables
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Calcule ${a}x + ${b}y pour x = ${x} et y = ${y}."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 2, max: 9}
-      x: {min: 1, max: 10}
-      y: {min: 1, max: 10}
-    reponse: "${a}*${x} + ${b}*${y}"
-    methode: "Remplacer x et y par leurs valeurs puis calculer."
-
-  - id: ALG.LIT.10.i1
-    competence_id: ALG.LIT.10
-    type: programme_de_calcul
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Un programme de calcul : je choisis un nombre x, je le multiplie par ${a}, puis j'ajoute ${b}. Exprime le résultat en fonction de x."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 20}
-    reponse: "${a}*x + ${b}"
-    methode: "Suivre le programme pas à pas en gardant x comme lettre."
-
-  - id: ALG.LIT.11.i1
-    competence_id: ALG.LIT.11
-    type: produit_puissances_litterales
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Simplifie : x × x^${a}."
-    variables:
-      a: {min: 2, max: 5}
-    reponse: "x**(${a} + 1)"
-    methode: "x × x^a = x^(a + 1)."
-
-  - id: ALG.LIT.12.i1
-    competence_id: ALG.LIT.12
-    type: developper_et_reduire
-    difficulte: 4
-    format_reponse: expression
-    enonce: "Développe et réduis : ${a}(x + ${b}) − ${c}x."
-    variables:
-      a: {min: 2, max: 7}
-      b: {min: 1, max: 9}
-      c: {min: 1, max: 2}
-    reponse: "${a}*x + ${a}*${b} - ${c}*x"
-    methode: "Développer puis regrouper les termes en x."
-
-  - id: ALG.LIT.13.i1
-    competence_id: ALG.LIT.13
-    type: factoriser_difference_carres
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Écris x² − ${a} sous la forme (x − r)(x + r). Quelle est la valeur positive de r ?"
-    variables:
-      r: {min: 2, max: 9}
-    derives:
-      a: "${r}**2"
-    reponse: "${r}"
-    methode: "Reconnaître la différence de deux carrés : x² − r² = (x − r)(x + r), avec r² = ${a}."
-
-  - id: ALG.LIT.14.i1
-    competence_id: ALG.LIT.14
-    type: reduire_avec_carre
-    difficulte: 3
-    format_reponse: expression
-    enonce: "Réduis : ${a}x² + ${b}x + ${c}x² − ${d}x."
-    variables:
-      a: {min: 1, max: 5}
-      c: {min: 1, max: 5}
-      b: {min: 3, max: 9}
-      d: {min: 1, max: 2}
-    reponse: "(${a} + ${c})*x**2 + (${b} - ${d})*x"
-    methode: "Regrouper séparément les termes en x² et les termes en x."
-
-  # --- Équations du premier degré ------------------------------------------
-  - id: ALG.EQ1.05.i1
-    competence_id: ALG.EQ1.05
-    type: equation_x_sur_a
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Résous l'équation : x / ${a} = ${b}."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 2, max: 12}
-    reponse: "${a} * ${b}"
-    methode: "Multiplier les deux membres par ${a}."
-
-  - id: ALG.EQ1.06.i1
-    competence_id: ALG.EQ1.06
-    type: equation_avec_fraction
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous l'équation : x/${a} + ${b} = ${c}."
-    variables:
-      a: {min: 2, max: 9}
-      k: {min: 1, max: 10}
-      b: {min: 1, max: 10}
-    derives:
-      sol: "${a} * ${k}"
-      c: "${k} + ${b}"
-    reponse: "${sol}"
-    methode: "Soustraire ${b}, puis multiplier par ${a}."
-
-  - id: ALG.EQ1.07.i1
-    competence_id: ALG.EQ1.07
-    type: verifier_solution
-    difficulte: 2
-    format_reponse: entier
-    enonce: "Le nombre ${s} est-il solution de l'équation ${a}x + ${b} = ${c} ? Réponds 1 si oui, 0 si non."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 15}
-      s: {min: 1, max: 12}
-      t: {min: -1, max: 1}
-    derives:
-      c: "${a} * ${s} + ${b} + ${t}"
-    reponse: "Piecewise((1, Eq(${a}*${s} + ${b}, ${c})), (0, True))"
-    methode: "Remplacer x par ${s} dans les deux membres et comparer."
-
-  - id: ALG.EQ1.08.i1
-    competence_id: ALG.EQ1.08
-    type: mise_en_equation_ages
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Deux frères ont ensemble ${S} ans. L'aîné a ${d} ans de plus que le cadet. Quel est l'âge du cadet ?"
-    variables:
-      s: {min: 5, max: 15}
-      d: {min: 1, max: 6}
-    derives:
-      S: "2 * ${s} + ${d}"
-    reponse: "${s}"
-    methode: "Noter s l'âge du cadet, l'aîné a s + ${d}, et s + (s + ${d}) = ${S}."
-
-  # --- Équations avancées ---------------------------------------------------
-  - id: ALG.EQ2.02.i1
-    competence_id: ALG.EQ2.02
-    type: equation_avec_developpement
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous l'équation : ${a}(x + ${b}) = ${c}."
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 9}
-      sol: {min: 1, max: 10}
-    derives:
-      c: "${a} * (${sol} + ${b})"
-    reponse: "${sol}"
-    methode: "Développer ou diviser par ${a} avant d'isoler x."
-
-  - id: ALG.EQ2.03.i1
-    competence_id: ALG.EQ2.03
-    type: equation_produit_en_croix
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Trouve x tel que x / ${a} = ${b} / ${c}."
-    variables:
-      b: {min: 2, max: 9}
-      c: {min: 2, max: 9}
-      k: {min: 1, max: 9}
-    derives:
-      a: "${c} * ${k}"
-    reponse: "${k} * ${b}"
-    methode: "Produit en croix : x × ${c} = ${a} × ${b}."
-
-  - id: ALG.EQ2.04.i1
-    competence_id: ALG.EQ2.04
-    type: equation_produit_a_factoriser
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous l'équation : x² + ${a}x = 0. Donne la plus petite solution."
-    variables:
-      a: {min: 1, max: 9}
-    reponse: "-${a}"
-    methode: "Factoriser par x : x(x + ${a}) = 0, donc x = 0 ou x = −${a}."
-
-  - id: ALG.EQ2.05.i1
-    competence_id: ALG.EQ2.05
-    type: equation_identite_remarquable
-    difficulte: 5
-    format_reponse: entier
-    enonce: "Résous l'équation : (x + ${a})² = ${c}. Donne la plus grande solution."
-    variables:
-      a: {min: 1, max: 6}
-      sol: {min: 1, max: 10}
-    derives:
-      c: "(${sol} + ${a})**2"
-    reponse: "${sol}"
-    methode: "Prendre la racine carrée des deux membres : x + ${a} = ±(racine), puis isoler x."
-
-  # --- Équations produit nul -----------------------------------------------
-  - id: ALG.PRD.02.i1
-    competence_id: ALG.PRD.02
-    type: produit_nul_a_factoriser
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous : (x − ${p})(x + ${q}) = 0. Donne la plus petite solution."
-    variables:
-      p: {min: 1, max: 9}
-      q: {min: 1, max: 9}
-    reponse: "-${q}"
-    methode: "Un produit est nul si l'un des facteurs est nul : x = ${p} ou x = −${q}."
-
-  - id: ALG.PRD.03.i1
-    competence_id: ALG.PRD.03
-    type: equation_x_carre_egal_a
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous l'équation : x² = ${a}. Donne la plus petite solution."
-    variables:
-      r: {min: 2, max: 12}
-    derives:
-      a: "${r}**2"
-    reponse: "-${r}"
-    methode: "x² = ${a} donne x = ${r} ou x = −${r}."
-
-  - id: ALG.PRD.04.i1
-    competence_id: ALG.PRD.04
-    type: second_degre_factorisation
-    difficulte: 5
-    format_reponse: entier
-    enonce: "Résous l'équation : x² + ${b}x + ${c} = 0. Donne la plus grande solution."
-    variables:
-      p: {min: 1, max: 5}
-      q: {min: 6, max: 10}
-    derives:
-      b: "${p} + ${q}"
-      c: "${p} * ${q}"
-    reponse: "-${p}"
-    methode: "Factoriser x² + (${p} + ${q})x + ${p}×${q} = (x + ${p})(x + ${q})."
-
-  # --- Inéquations ----------------------------------------------------------
-  - id: ALG.INE.02.i1
-    competence_id: ALG.INE.02
-    type: inequation_premier_degre
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Quelle est la plus grande valeur entière de x telle que ${a}x + ${b} ≤ ${c} ?"
-    variables:
-      a: {min: 2, max: 9}
-      b: {min: 1, max: 15}
-      sol: {min: 1, max: 12}
-    derives:
-      c: "${a} * ${sol} + ${b}"
-    reponse: "${sol}"
-    methode: "Résoudre l'inéquation : x ≤ ${sol}."
-
-  - id: ALG.INE.03.i1
-    competence_id: ALG.INE.03
-    type: ensemble_solution_intervalle
-    difficulte: 4
-    format_reponse: entier
-    enonce: "L'inéquation x + ${a} ≤ ${b} a pour ensemble solution l'intervalle ] −∞ ; s ]. Quelle est la valeur de s ?"
-    variables:
-      a: {min: 1, max: 10}
-      b: {min: 11, max: 30}
-    reponse: "${b} - ${a}"
-    methode: "Soustraire ${a} des deux côtés : x ≤ ${b} − ${a}."
-
-  - id: ALG.INE.04.i1
-    competence_id: ALG.INE.04
-    type: inequation_produit
-    difficulte: 5
-    format_reponse: entier
-    enonce: "Résous l'inéquation (x − ${p})(x − ${q}) ≤ 0 avec ${p} < ${q}. Donne la borne inférieure de l'ensemble solution."
-    variables:
-      p: {min: 1, max: 5}
-      q: {min: 6, max: 10}
-    reponse: "${p}"
-    methode: "Un produit de deux facteurs est négatif entre les racines : ${p} ≤ x ≤ ${q}."
-
-  - id: ALG.INE.05.i1
-    competence_id: ALG.INE.05
-    type: inequation_deux_membres
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Quelle est la plus grande valeur entière de x telle que ${a}x + ${b} ≤ ${c}x + ${d} ?"
-    variables:
-      a: {min: 3, max: 9}
-      c: {min: 1, max: 2}
-      b: {min: 1, max: 10}
-      sol: {min: 1, max: 10}
-    derives:
-      d: "(${a} - ${c}) * ${sol} + ${b}"
-    reponse: "${sol}"
-    methode: "Regrouper les x d'un côté : (${a} − ${c})x ≤ ${d} − ${b}, donc x ≤ ${sol}."
-
-  # --- Systèmes d'équations -------------------------------------------------
-  - id: ALG.SYS.01.i1
-    competence_id: ALG.SYS.01
-    type: verifier_couple_solution
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Le couple (${x} ; ${y}) est-il solution du système x + y = ${s} et x − y = ${dif} ? Réponds 1 si oui, 0 si non."
-    variables:
-      x: {min: 1, max: 9}
-      y: {min: 1, max: 9}
-      e: {min: -1, max: 1}
-    derives:
-      s: "${x} + ${y}"
-      dif: "${x} - ${y} + ${e}"
-    reponse: "Piecewise((1, And(Eq(${x} + ${y}, ${s}), Eq(${x} - ${y}, ${dif}))), (0, True))"
-    methode: "Remplacer x et y dans les deux équations et vérifier les deux égalités."
-
-  - id: ALG.SYS.02.i1
-    competence_id: ALG.SYS.02
-    type: systeme_par_substitution
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous le système : y = ${a}x et x + y = ${s}. Quelle est la valeur de x ?"
-    variables:
-      a: {min: 2, max: 5}
-      x: {min: 1, max: 8}
-    derives:
-      s: "(${a} + 1) * ${x}"
-    reponse: "${x}"
-    methode: "Substituer y = ${a}x dans x + y = ${s} : (${a} + 1)x = ${s}."
-
-  - id: ALG.SYS.03.i1
-    competence_id: ALG.SYS.03
-    type: systeme_par_combinaison
-    difficulte: 4
-    format_reponse: entier
-    enonce: "Résous le système : x + y = ${s} et x − y = ${dif}. Quelle est la valeur de x ?"
-    variables:
-      x: {min: 1, max: 12}
-      y: {min: 1, max: 12}
-    derives:
-      s: "${x} + ${y}"
-      dif: "${x} - ${y}"
-    reponse: "${x}"
-    methode: "Additionner les deux équations : 2x = ${s} + ${dif}."
+- id: ALG.LIT.01.i1
+  competence_id: ALG.LIT.01
+  type: expression_valeur
+  difficulte: 2
+  format_reponse: entier
+  enonce: Calcule la valeur de l'expression ${a}x + ${b} pour x = ${x}.
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 20
+    x:
+      min: 1
+      max: 10
+  reponse: ${a}*${x} + ${b}
+  methode: Remplacer x par sa valeur puis calculer.
+- id: ALG.LIT.02.i1
+  competence_id: ALG.LIT.02
+  type: simplifier_lineaire
+  difficulte: 2
+  format_reponse: expression
+  enonce: 'Simplifie : ${a}x + ${b}x.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 2
+      max: 9
+  reponse: (${a} + ${b})*x
+  methode: Regrouper les termes en x.
+- id: ALG.LIT.03.i1
+  competence_id: ALG.LIT.03
+  type: developper_distributivite
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Développe : ${a}(${b} + ${c}).'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 9
+    c:
+      min: 1
+      max: 9
+  reponse: ${a}*${b} + ${a}*${c}
+  methode: Distribuer a sur b et c.
+- id: ALG.EQ1.01.i1
+  competence_id: ALG.EQ1.01
+  type: equation_x_plus_a
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Résous l''équation : x + ${a} = ${b}.'
+  variables:
+    a:
+      min: 1
+      max: 9
+    sol:
+      min: 1
+      max: 15
+  derives:
+    b: ${a} + ${sol}
+  reponse: ${sol}
+  methode: Soustraire ${a} des deux côtés.
+- id: ALG.EQ1.01.i2
+  competence_id: ALG.EQ1.01
+  type: equation_x_plus_a
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a} + x = ${b}.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    sol:
+      min: 2
+      max: 20
+  derives:
+    b: ${a} + ${sol}
+  reponse: ${sol}
+  methode: Soustraire ${a} des deux côtés.
+- id: ALG.EQ1.02.i1
+  competence_id: ALG.EQ1.02
+  type: equation_ax
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x = ${b}.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    sol:
+      min: 2
+      max: 12
+  derives:
+    b: ${a} * ${sol}
+  reponse: ${sol}
+  methode: Diviser par ${a} des deux côtés.
+- id: ALG.EQ1.03.i1
+  competence_id: ALG.EQ1.03
+  type: equation_ax_plus_b
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x + ${b} = ${c}.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 20
+    sol:
+      min: 1
+      max: 12
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Isoler ${a}x puis diviser par ${a}.
+- id: ALG.EQ1.03.i2
+  competence_id: ALG.EQ1.03
+  type: equation_ax_plus_b
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x − ${b} = ${c}.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 10
+    sol:
+      min: 2
+      max: 12
+  derives:
+    c: ${a} * ${sol} - ${b}
+  reponse: ${sol}
+  methode: Ajouter ${b} des deux côtés puis diviser par ${a}.
+- id: ALG.EQ1.04.i1
+  competence_id: ALG.EQ1.04
+  type: mise_en_equation
+  difficulte: 4
+  format_reponse: entier
+  enonce: Un nombre x, multiplié par ${a} puis augmenté de ${b}, vaut ${c}. Trouve
+    x.
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 20
+    sol:
+      min: 2
+      max: 12
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Traduire la phrase en équation ${a}x + ${b} = ${c}.
+- id: ALG.EQ2.01.i1
+  competence_id: ALG.EQ2.01
+  type: equation_ax_plus_b_cx_plus_d
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x + ${b} = ${c}x + ${d}.'
+  variables:
+    a:
+      min: 3
+      max: 9
+    c:
+      min: 1
+      max: 2
+    b:
+      min: 1
+      max: 10
+    sol:
+      min: 1
+      max: 10
+  derives:
+    d: (${a} - ${c}) * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Regrouper les x d'un côté, les constantes de l'autre.
+- id: ALG.PRD.01.i1
+  competence_id: ALG.PRD.01
+  type: produit_nul
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous : (x − ${p})(x − ${q}) = 0. Donne la plus petite solution.'
+  variables:
+    p:
+      min: 1
+      max: 5
+    q:
+      min: 6
+      max: 10
+  reponse: ${p}
+  methode: Un produit est nul si l'un des facteurs est nul.
+- id: ALG.INE.01.i1
+  competence_id: ALG.INE.01
+  type: inequation_frontiere
+  difficulte: 4
+  format_reponse: entier
+  enonce: Quelle est la valeur frontière x telle que ${a}x + ${b} = ${c} ?
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 20
+    sol:
+      min: 1
+      max: 12
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Trouver la frontière en résolvant l'équation associée.
+- id: ALG.LIT.04.i1
+  competence_id: ALG.LIT.04
+  type: supprimer_parentheses
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Simplifie : ${a}x − (${b}x − ${c}).'
+  variables:
+    a:
+      min: 4
+      max: 9
+    b:
+      min: 1
+      max: 3
+    c:
+      min: 1
+      max: 9
+  reponse: ${a}*x - (${b}*x - ${c})
+  methode: Changer les signes des termes entre parenthèses précédées d'un signe −.
+- id: ALG.LIT.05.i1
+  competence_id: ALG.LIT.05
+  type: developper_double_distributivite
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Développe et réduis : (x + ${a})(x + ${b}).'
+  variables:
+    a:
+      min: 1
+      max: 9
+    b:
+      min: 1
+      max: 9
+  reponse: x**2 + (${a} + ${b})*x + ${a}*${b}
+  methode: 'Distribuer chaque terme : (x + a)(x + b) = x² + (a + b)x + ab.'
+- id: ALG.LIT.06.i1
+  competence_id: ALG.LIT.06
+  type: factoriser_facteur_commun
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Complète la factorisation : ${a}x + ${ab} = ${a}(x + ?). Quel est le nombre
+    manquant ?'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 2
+      max: 9
+  derives:
+    ab: ${a} * ${b}
+  reponse: ${b}
+  methode: 'Mettre ${a} en facteur commun : ${a}x + ${a}×${b} = ${a}(x + ${b}).'
+- id: ALG.LIT.07.i1
+  competence_id: ALG.LIT.07
+  type: identite_carre
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Développe : (x + ${a})².'
+  variables:
+    a:
+      min: 1
+      max: 9
+  reponse: x**2 + 2*${a}*x + ${a}**2
+  methode: (x + a)² = x² + 2ax + a².
+- id: ALG.LIT.08.i1
+  competence_id: ALG.LIT.08
+  type: identite_difference_carres
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Développe : (x + ${a})(x − ${a}).'
+  variables:
+    a:
+      min: 1
+      max: 9
+  reponse: x**2 - ${a}**2
+  methode: (x + a)(x − a) = x² − a².
+- id: ALG.LIT.09.i1
+  competence_id: ALG.LIT.09
+  type: expression_valeur_deux_variables
+  difficulte: 2
+  format_reponse: entier
+  enonce: Calcule ${a}x + ${b}y pour x = ${x} et y = ${y}.
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 2
+      max: 9
+    x:
+      min: 1
+      max: 10
+    y:
+      min: 1
+      max: 10
+  reponse: ${a}*${x} + ${b}*${y}
+  methode: Remplacer x et y par leurs valeurs puis calculer.
+- id: ALG.LIT.10.i1
+  competence_id: ALG.LIT.10
+  type: programme_de_calcul
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Un programme de calcul : je choisis un nombre x, je le multiplie par ${a},
+    puis j''ajoute ${b}. Exprime le résultat en fonction de x.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 20
+  reponse: ${a}*x + ${b}
+  methode: Suivre le programme pas à pas en gardant x comme lettre.
+- id: ALG.LIT.11.i1
+  competence_id: ALG.LIT.11
+  type: produit_puissances_litterales
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Simplifie : x × x^${a}.'
+  variables:
+    a:
+      min: 2
+      max: 5
+  reponse: x**(${a} + 1)
+  methode: x × x^a = x^(a + 1).
+- id: ALG.LIT.12.i1
+  competence_id: ALG.LIT.12
+  type: developper_et_reduire
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Développe et réduis : ${a}(x + ${b}) − ${c}x.'
+  variables:
+    a:
+      min: 2
+      max: 7
+    b:
+      min: 1
+      max: 9
+    c:
+      min: 1
+      max: 2
+  reponse: ${a}*x + ${a}*${b} - ${c}*x
+  methode: Développer puis regrouper les termes en x.
+- id: ALG.LIT.13.i1
+  competence_id: ALG.LIT.13
+  type: factoriser_difference_carres
+  difficulte: 4
+  format_reponse: entier
+  enonce: Écris x² − ${a} sous la forme (x − r)(x + r). Quelle est la valeur positive
+    de r ?
+  variables:
+    r:
+      min: 2
+      max: 9
+  derives:
+    a: ${r}**2
+  reponse: ${r}
+  methode: 'Reconnaître la différence de deux carrés : x² − r² = (x − r)(x + r), avec
+    r² = ${a}.'
+- id: ALG.LIT.14.i1
+  competence_id: ALG.LIT.14
+  type: reduire_avec_carre
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Réduis : ${a}x² + ${b}x + ${c}x² − ${d}x.'
+  variables:
+    a:
+      min: 1
+      max: 5
+    c:
+      min: 1
+      max: 5
+    b:
+      min: 3
+      max: 9
+    d:
+      min: 1
+      max: 2
+  reponse: (${a} + ${c})*x**2 + (${b} - ${d})*x
+  methode: Regrouper séparément les termes en x² et les termes en x.
+- id: ALG.EQ1.05.i1
+  competence_id: ALG.EQ1.05
+  type: equation_x_sur_a
+  difficulte: 2
+  format_reponse: entier
+  enonce: 'Résous l''équation : x / ${a} = ${b}.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 2
+      max: 12
+  reponse: ${a} * ${b}
+  methode: Multiplier les deux membres par ${a}.
+- id: ALG.EQ1.06.i1
+  competence_id: ALG.EQ1.06
+  type: equation_avec_fraction
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : x/${a} + ${b} = ${c}.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    k:
+      min: 1
+      max: 10
+    b:
+      min: 1
+      max: 10
+  derives:
+    sol: ${a} * ${k}
+    c: ${k} + ${b}
+  reponse: ${sol}
+  methode: Soustraire ${b}, puis multiplier par ${a}.
+- id: ALG.EQ1.07.i1
+  competence_id: ALG.EQ1.07
+  type: verifier_solution
+  difficulte: 2
+  format_reponse: entier
+  enonce: Le nombre ${s} est-il solution de l'équation ${a}x + ${b} = ${c} ? Réponds
+    1 si oui, 0 si non.
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 15
+    s:
+      min: 1
+      max: 12
+    t:
+      min: -1
+      max: 1
+  derives:
+    c: ${a} * ${s} + ${b} + ${t}
+  reponse: Piecewise((1, Eq(${a}*${s} + ${b}, ${c})), (0, True))
+  methode: Remplacer x par ${s} dans les deux membres et comparer.
+- id: ALG.EQ1.08.i1
+  competence_id: ALG.EQ1.08
+  type: mise_en_equation_ages
+  difficulte: 4
+  format_reponse: entier
+  enonce: Deux frères ont ensemble ${S} ans. L'aîné a ${d} ans de plus que le cadet.
+    Quel est l'âge du cadet ?
+  variables:
+    s:
+      min: 5
+      max: 15
+    d:
+      min: 1
+      max: 6
+  derives:
+    S: 2 * ${s} + ${d}
+  reponse: ${s}
+  methode: Noter s l'âge du cadet, l'aîné a s + ${d}, et s + (s + ${d}) = ${S}.
+- id: ALG.EQ2.02.i1
+  competence_id: ALG.EQ2.02
+  type: equation_avec_developpement
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}(x + ${b}) = ${c}.'
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 9
+    sol:
+      min: 1
+      max: 10
+  derives:
+    c: ${a} * (${sol} + ${b})
+  reponse: ${sol}
+  methode: Développer ou diviser par ${a} avant d'isoler x.
+- id: ALG.EQ2.03.i1
+  competence_id: ALG.EQ2.03
+  type: equation_produit_en_croix
+  difficulte: 4
+  format_reponse: entier
+  enonce: Trouve x tel que x / ${a} = ${b} / ${c}.
+  variables:
+    b:
+      min: 2
+      max: 9
+    c:
+      min: 2
+      max: 9
+    k:
+      min: 1
+      max: 9
+  derives:
+    a: ${c} * ${k}
+  reponse: ${k} * ${b}
+  methode: 'Produit en croix : x × ${c} = ${a} × ${b}.'
+- id: ALG.EQ2.04.i1
+  competence_id: ALG.EQ2.04
+  type: equation_produit_a_factoriser
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : x² + ${a}x = 0. Donne la plus petite solution.'
+  variables:
+    a:
+      min: 1
+      max: 9
+  reponse: -${a}
+  methode: 'Factoriser par x : x(x + ${a}) = 0, donc x = 0 ou x = −${a}.'
+- id: ALG.EQ2.05.i1
+  competence_id: ALG.EQ2.05
+  type: equation_identite_remarquable
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : (x + ${a})² = ${c}. Donne la plus grande solution.'
+  variables:
+    a:
+      min: 1
+      max: 6
+    sol:
+      min: 1
+      max: 10
+  derives:
+    c: (${sol} + ${a})**2
+  reponse: ${sol}
+  methode: 'Prendre la racine carrée des deux membres : x + ${a} = ±(racine), puis
+    isoler x.'
+- id: ALG.PRD.02.i1
+  competence_id: ALG.PRD.02
+  type: produit_nul_a_factoriser
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous : (x − ${p})(x + ${q}) = 0. Donne la plus petite solution.'
+  variables:
+    p:
+      min: 1
+      max: 9
+    q:
+      min: 1
+      max: 9
+  reponse: -${q}
+  methode: 'Un produit est nul si l''un des facteurs est nul : x = ${p} ou x = −${q}.'
+- id: ALG.PRD.03.i1
+  competence_id: ALG.PRD.03
+  type: equation_x_carre_egal_a
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : x² = ${a}. Donne la plus petite solution.'
+  variables:
+    r:
+      min: 2
+      max: 12
+  derives:
+    a: ${r}**2
+  reponse: -${r}
+  methode: x² = ${a} donne x = ${r} ou x = −${r}.
+- id: ALG.PRD.04.i1
+  competence_id: ALG.PRD.04
+  type: second_degre_factorisation
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : x² + ${b}x + ${c} = 0. Donne la plus grande solution.'
+  variables:
+    p:
+      min: 1
+      max: 5
+    q:
+      min: 6
+      max: 10
+  derives:
+    b: ${p} + ${q}
+    c: ${p} * ${q}
+  reponse: -${p}
+  methode: Factoriser x² + (${p} + ${q})x + ${p}×${q} = (x + ${p})(x + ${q}).
+- id: ALG.INE.02.i1
+  competence_id: ALG.INE.02
+  type: inequation_premier_degre
+  difficulte: 4
+  format_reponse: entier
+  enonce: Quelle est la plus grande valeur entière de x telle que ${a}x + ${b} ≤ ${c}
+    ?
+  variables:
+    a:
+      min: 2
+      max: 9
+    b:
+      min: 1
+      max: 15
+    sol:
+      min: 1
+      max: 12
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: 'Résoudre l''inéquation : x ≤ ${sol}.'
+- id: ALG.INE.03.i1
+  competence_id: ALG.INE.03
+  type: ensemble_solution_intervalle
+  difficulte: 4
+  format_reponse: entier
+  enonce: L'inéquation x + ${a} ≤ ${b} a pour ensemble solution l'intervalle ] −∞
+    ; s ]. Quelle est la valeur de s ?
+  variables:
+    a:
+      min: 1
+      max: 10
+    b:
+      min: 11
+      max: 30
+  reponse: ${b} - ${a}
+  methode: 'Soustraire ${a} des deux côtés : x ≤ ${b} − ${a}.'
+- id: ALG.INE.04.i1
+  competence_id: ALG.INE.04
+  type: inequation_produit
+  difficulte: 5
+  format_reponse: entier
+  enonce: Résous l'inéquation (x − ${p})(x − ${q}) ≤ 0 avec ${p} < ${q}. Donne la
+    borne inférieure de l'ensemble solution.
+  variables:
+    p:
+      min: 1
+      max: 5
+    q:
+      min: 6
+      max: 10
+  reponse: ${p}
+  methode: 'Un produit de deux facteurs est négatif entre les racines : ${p} ≤ x ≤
+    ${q}.'
+- id: ALG.INE.05.i1
+  competence_id: ALG.INE.05
+  type: inequation_deux_membres
+  difficulte: 4
+  format_reponse: entier
+  enonce: Quelle est la plus grande valeur entière de x telle que ${a}x + ${b} ≤ ${c}x
+    + ${d} ?
+  variables:
+    a:
+      min: 3
+      max: 9
+    c:
+      min: 1
+      max: 2
+    b:
+      min: 1
+      max: 10
+    sol:
+      min: 1
+      max: 10
+  derives:
+    d: (${a} - ${c}) * ${sol} + ${b}
+  reponse: ${sol}
+  methode: 'Regrouper les x d''un côté : (${a} − ${c})x ≤ ${d} − ${b}, donc x ≤ ${sol}.'
+- id: ALG.SYS.01.i1
+  competence_id: ALG.SYS.01
+  type: verifier_couple_solution
+  difficulte: 4
+  format_reponse: entier
+  enonce: Le couple (${x} ; ${y}) est-il solution du système x + y = ${s} et x − y
+    = ${dif} ? Réponds 1 si oui, 0 si non.
+  variables:
+    x:
+      min: 1
+      max: 9
+    y:
+      min: 1
+      max: 9
+    e:
+      min: -1
+      max: 1
+  derives:
+    s: ${x} + ${y}
+    dif: ${x} - ${y} + ${e}
+  reponse: Piecewise((1, And(Eq(${x} + ${y}, ${s}), Eq(${x} - ${y}, ${dif}))), (0,
+    True))
+  methode: Remplacer x et y dans les deux équations et vérifier les deux égalités.
+- id: ALG.SYS.02.i1
+  competence_id: ALG.SYS.02
+  type: systeme_par_substitution
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous le système : y = ${a}x et x + y = ${s}. Quelle est la valeur de
+    x ?'
+  variables:
+    a:
+      min: 2
+      max: 5
+    x:
+      min: 1
+      max: 8
+  derives:
+    s: (${a} + 1) * ${x}
+  reponse: ${x}
+  methode: 'Substituer y = ${a}x dans x + y = ${s} : (${a} + 1)x = ${s}.'
+- id: ALG.SYS.03.i1
+  competence_id: ALG.SYS.03
+  type: systeme_par_combinaison
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous le système : x + y = ${s} et x − y = ${dif}. Quelle est la valeur
+    de x ?'
+  variables:
+    x:
+      min: 1
+      max: 12
+    y:
+      min: 1
+      max: 12
+  derives:
+    s: ${x} + ${y}
+    dif: ${x} - ${y}
+  reponse: ${x}
+  methode: 'Additionner les deux équations : 2x = ${s} + ${dif}.'
+- id: ALG.LIT.01.i1.v2
+  competence_id: ALG.LIT.01
+  type: expression_valeur
+  difficulte: 3
+  format_reponse: entier
+  enonce: Calcule la valeur de l'expression ${a}x + ${b} pour x = ${x}.
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 21
+    x:
+      min: 2
+      max: 11
+  reponse: ${a}*${x} + ${b}
+  methode: Remplacer x par sa valeur puis calculer.
+- id: ALG.LIT.02.i1.v2
+  competence_id: ALG.LIT.02
+  type: simplifier_lineaire
+  difficulte: 3
+  format_reponse: expression
+  enonce: 'Simplifie : ${a}x + ${b}x.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 3
+      max: 10
+  reponse: (${a} + ${b})*x
+  methode: Regrouper les termes en x.
+- id: ALG.LIT.03.i1.v2
+  competence_id: ALG.LIT.03
+  type: developper_distributivite
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Développe : ${a}(${b} + ${c}).'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 10
+    c:
+      min: 2
+      max: 10
+  reponse: ${a}*${b} + ${a}*${c}
+  methode: Distribuer a sur b et c.
+- id: ALG.EQ1.01.i1.v2
+  competence_id: ALG.EQ1.01
+  type: equation_x_plus_a
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Résous l''équation : x + ${a} = ${b}.'
+  variables:
+    a:
+      min: 2
+      max: 10
+    sol:
+      min: 2
+      max: 16
+  derives:
+    b: ${a} + ${sol}
+  reponse: ${sol}
+  methode: Soustraire ${a} des deux côtés.
+- id: ALG.EQ1.01.i2.v2
+  competence_id: ALG.EQ1.01
+  type: equation_x_plus_a
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a} + x = ${b}.'
+  variables:
+    a:
+      min: 3
+      max: 11
+    sol:
+      min: 3
+      max: 21
+  derives:
+    b: ${a} + ${sol}
+  reponse: ${sol}
+  methode: Soustraire ${a} des deux côtés.
+- id: ALG.EQ1.02.i1.v2
+  competence_id: ALG.EQ1.02
+  type: equation_ax
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x = ${b}.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    sol:
+      min: 3
+      max: 13
+  derives:
+    b: ${a} * ${sol}
+  reponse: ${sol}
+  methode: Diviser par ${a} des deux côtés.
+- id: ALG.EQ1.03.i1.v2
+  competence_id: ALG.EQ1.03
+  type: equation_ax_plus_b
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x + ${b} = ${c}.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 21
+    sol:
+      min: 2
+      max: 13
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Isoler ${a}x puis diviser par ${a}.
+- id: ALG.EQ1.03.i2.v2
+  competence_id: ALG.EQ1.03
+  type: equation_ax_plus_b
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x − ${b} = ${c}.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 11
+    sol:
+      min: 3
+      max: 13
+  derives:
+    c: ${a} * ${sol} - ${b}
+  reponse: ${sol}
+  methode: Ajouter ${b} des deux côtés puis diviser par ${a}.
+- id: ALG.EQ1.04.i1.v2
+  competence_id: ALG.EQ1.04
+  type: mise_en_equation
+  difficulte: 5
+  format_reponse: entier
+  enonce: Un nombre x, multiplié par ${a} puis augmenté de ${b}, vaut ${c}. Trouve
+    x.
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 21
+    sol:
+      min: 3
+      max: 13
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Traduire la phrase en équation ${a}x + ${b} = ${c}.
+- id: ALG.EQ2.01.i1.v2
+  competence_id: ALG.EQ2.01
+  type: equation_ax_plus_b_cx_plus_d
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}x + ${b} = ${c}x + ${d}.'
+  variables:
+    a:
+      min: 4
+      max: 10
+    c:
+      min: 2
+      max: 3
+    b:
+      min: 2
+      max: 11
+    sol:
+      min: 2
+      max: 11
+  derives:
+    d: (${a} - ${c}) * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Regrouper les x d'un côté, les constantes de l'autre.
+- id: ALG.PRD.01.i1.v2
+  competence_id: ALG.PRD.01
+  type: produit_nul
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous : (x − ${p})(x − ${q}) = 0. Donne la plus petite solution.'
+  variables:
+    p:
+      min: 2
+      max: 6
+    q:
+      min: 7
+      max: 11
+  reponse: ${p}
+  methode: Un produit est nul si l'un des facteurs est nul.
+- id: ALG.INE.01.i1.v2
+  competence_id: ALG.INE.01
+  type: inequation_frontiere
+  difficulte: 5
+  format_reponse: entier
+  enonce: Quelle est la valeur frontière x telle que ${a}x + ${b} = ${c} ?
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 21
+    sol:
+      min: 2
+      max: 13
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: Trouver la frontière en résolvant l'équation associée.
+- id: ALG.LIT.04.i1.v2
+  competence_id: ALG.LIT.04
+  type: supprimer_parentheses
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Simplifie : ${a}x − (${b}x − ${c}).'
+  variables:
+    a:
+      min: 5
+      max: 10
+    b:
+      min: 2
+      max: 4
+    c:
+      min: 2
+      max: 10
+  reponse: ${a}*x - (${b}*x - ${c})
+  methode: Changer les signes des termes entre parenthèses précédées d'un signe −.
+- id: ALG.LIT.05.i1.v2
+  competence_id: ALG.LIT.05
+  type: developper_double_distributivite
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Développe et réduis : (x + ${a})(x + ${b}).'
+  variables:
+    a:
+      min: 2
+      max: 10
+    b:
+      min: 2
+      max: 10
+  reponse: x**2 + (${a} + ${b})*x + ${a}*${b}
+  methode: 'Distribuer chaque terme : (x + a)(x + b) = x² + (a + b)x + ab.'
+- id: ALG.LIT.06.i1.v2
+  competence_id: ALG.LIT.06
+  type: factoriser_facteur_commun
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Complète la factorisation : ${a}x + ${ab} = ${a}(x + ?). Quel est le nombre
+    manquant ?'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 3
+      max: 10
+  derives:
+    ab: ${a} * ${b}
+  reponse: ${b}
+  methode: 'Mettre ${a} en facteur commun : ${a}x + ${a}×${b} = ${a}(x + ${b}).'
+- id: ALG.LIT.07.i1.v2
+  competence_id: ALG.LIT.07
+  type: identite_carre
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Développe : (x + ${a})².'
+  variables:
+    a:
+      min: 2
+      max: 10
+  reponse: x**2 + 2*${a}*x + ${a}**2
+  methode: (x + a)² = x² + 2ax + a².
+- id: ALG.LIT.08.i1.v2
+  competence_id: ALG.LIT.08
+  type: identite_difference_carres
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Développe : (x + ${a})(x − ${a}).'
+  variables:
+    a:
+      min: 2
+      max: 10
+  reponse: x**2 - ${a}**2
+  methode: (x + a)(x − a) = x² − a².
+- id: ALG.LIT.09.i1.v2
+  competence_id: ALG.LIT.09
+  type: expression_valeur_deux_variables
+  difficulte: 3
+  format_reponse: entier
+  enonce: Calcule ${a}x + ${b}y pour x = ${x} et y = ${y}.
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 3
+      max: 10
+    x:
+      min: 2
+      max: 11
+    y:
+      min: 2
+      max: 11
+  reponse: ${a}*${x} + ${b}*${y}
+  methode: Remplacer x et y par leurs valeurs puis calculer.
+- id: ALG.LIT.10.i1.v2
+  competence_id: ALG.LIT.10
+  type: programme_de_calcul
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Un programme de calcul : je choisis un nombre x, je le multiplie par ${a},
+    puis j''ajoute ${b}. Exprime le résultat en fonction de x.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 21
+  reponse: ${a}*x + ${b}
+  methode: Suivre le programme pas à pas en gardant x comme lettre.
+- id: ALG.LIT.11.i1.v2
+  competence_id: ALG.LIT.11
+  type: produit_puissances_litterales
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Simplifie : x × x^${a}.'
+  variables:
+    a:
+      min: 3
+      max: 6
+  reponse: x**(${a} + 1)
+  methode: x × x^a = x^(a + 1).
+- id: ALG.LIT.12.i1.v2
+  competence_id: ALG.LIT.12
+  type: developper_et_reduire
+  difficulte: 5
+  format_reponse: expression
+  enonce: 'Développe et réduis : ${a}(x + ${b}) − ${c}x.'
+  variables:
+    a:
+      min: 3
+      max: 8
+    b:
+      min: 2
+      max: 10
+    c:
+      min: 2
+      max: 3
+  reponse: ${a}*x + ${a}*${b} - ${c}*x
+  methode: Développer puis regrouper les termes en x.
+- id: ALG.LIT.13.i1.v2
+  competence_id: ALG.LIT.13
+  type: factoriser_difference_carres
+  difficulte: 5
+  format_reponse: entier
+  enonce: Écris x² − ${a} sous la forme (x − r)(x + r). Quelle est la valeur positive
+    de r ?
+  variables:
+    r:
+      min: 3
+      max: 10
+  derives:
+    a: ${r}**2
+  reponse: ${r}
+  methode: 'Reconnaître la différence de deux carrés : x² − r² = (x − r)(x + r), avec
+    r² = ${a}.'
+- id: ALG.LIT.14.i1.v2
+  competence_id: ALG.LIT.14
+  type: reduire_avec_carre
+  difficulte: 4
+  format_reponse: expression
+  enonce: 'Réduis : ${a}x² + ${b}x + ${c}x² − ${d}x.'
+  variables:
+    a:
+      min: 2
+      max: 6
+    c:
+      min: 2
+      max: 6
+    b:
+      min: 4
+      max: 10
+    d:
+      min: 2
+      max: 3
+  reponse: (${a} + ${c})*x**2 + (${b} - ${d})*x
+  methode: Regrouper séparément les termes en x² et les termes en x.
+- id: ALG.EQ1.05.i1.v2
+  competence_id: ALG.EQ1.05
+  type: equation_x_sur_a
+  difficulte: 3
+  format_reponse: entier
+  enonce: 'Résous l''équation : x / ${a} = ${b}.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 3
+      max: 13
+  reponse: ${a} * ${b}
+  methode: Multiplier les deux membres par ${a}.
+- id: ALG.EQ1.06.i1.v2
+  competence_id: ALG.EQ1.06
+  type: equation_avec_fraction
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : x/${a} + ${b} = ${c}.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    k:
+      min: 2
+      max: 11
+    b:
+      min: 2
+      max: 11
+  derives:
+    sol: ${a} * ${k}
+    c: ${k} + ${b}
+  reponse: ${sol}
+  methode: Soustraire ${b}, puis multiplier par ${a}.
+- id: ALG.EQ1.07.i1.v2
+  competence_id: ALG.EQ1.07
+  type: verifier_solution
+  difficulte: 3
+  format_reponse: entier
+  enonce: Le nombre ${s} est-il solution de l'équation ${a}x + ${b} = ${c} ? Réponds
+    1 si oui, 0 si non.
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 16
+    s:
+      min: 2
+      max: 13
+    t:
+      min: 0
+      max: 2
+  derives:
+    c: ${a} * ${s} + ${b} + ${t}
+  reponse: Piecewise((1, Eq(${a}*${s} + ${b}, ${c})), (0, True))
+  methode: Remplacer x par ${s} dans les deux membres et comparer.
+- id: ALG.EQ1.08.i1.v2
+  competence_id: ALG.EQ1.08
+  type: mise_en_equation_ages
+  difficulte: 5
+  format_reponse: entier
+  enonce: Deux frères ont ensemble ${S} ans. L'aîné a ${d} ans de plus que le cadet.
+    Quel est l'âge du cadet ?
+  variables:
+    s:
+      min: 6
+      max: 16
+    d:
+      min: 2
+      max: 7
+  derives:
+    S: 2 * ${s} + ${d}
+  reponse: ${s}
+  methode: Noter s l'âge du cadet, l'aîné a s + ${d}, et s + (s + ${d}) = ${S}.
+- id: ALG.EQ2.02.i1.v2
+  competence_id: ALG.EQ2.02
+  type: equation_avec_developpement
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : ${a}(x + ${b}) = ${c}.'
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 10
+    sol:
+      min: 2
+      max: 11
+  derives:
+    c: ${a} * (${sol} + ${b})
+  reponse: ${sol}
+  methode: Développer ou diviser par ${a} avant d'isoler x.
+- id: ALG.EQ2.03.i1.v2
+  competence_id: ALG.EQ2.03
+  type: equation_produit_en_croix
+  difficulte: 5
+  format_reponse: entier
+  enonce: Trouve x tel que x / ${a} = ${b} / ${c}.
+  variables:
+    b:
+      min: 3
+      max: 10
+    c:
+      min: 3
+      max: 10
+    k:
+      min: 2
+      max: 10
+  derives:
+    a: ${c} * ${k}
+  reponse: ${k} * ${b}
+  methode: 'Produit en croix : x × ${c} = ${a} × ${b}.'
+- id: ALG.EQ2.04.i1.v2
+  competence_id: ALG.EQ2.04
+  type: equation_produit_a_factoriser
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : x² + ${a}x = 0. Donne la plus petite solution.'
+  variables:
+    a:
+      min: 2
+      max: 10
+  reponse: -${a}
+  methode: 'Factoriser par x : x(x + ${a}) = 0, donc x = 0 ou x = −${a}.'
+- id: ALG.EQ2.05.i1.v2
+  competence_id: ALG.EQ2.05
+  type: equation_identite_remarquable
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : (x + ${a})² = ${c}. Donne la plus grande solution.'
+  variables:
+    a:
+      min: 2
+      max: 7
+    sol:
+      min: 2
+      max: 11
+  derives:
+    c: (${sol} + ${a})**2
+  reponse: ${sol}
+  methode: 'Prendre la racine carrée des deux membres : x + ${a} = ±(racine), puis
+    isoler x.'
+- id: ALG.PRD.02.i1.v2
+  competence_id: ALG.PRD.02
+  type: produit_nul_a_factoriser
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous : (x − ${p})(x + ${q}) = 0. Donne la plus petite solution.'
+  variables:
+    p:
+      min: 2
+      max: 10
+    q:
+      min: 2
+      max: 10
+  reponse: -${q}
+  methode: 'Un produit est nul si l''un des facteurs est nul : x = ${p} ou x = −${q}.'
+- id: ALG.PRD.03.i1.v2
+  competence_id: ALG.PRD.03
+  type: equation_x_carre_egal_a
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous l''équation : x² = ${a}. Donne la plus petite solution.'
+  variables:
+    r:
+      min: 3
+      max: 13
+  derives:
+    a: ${r}**2
+  reponse: -${r}
+  methode: x² = ${a} donne x = ${r} ou x = −${r}.
+- id: ALG.PRD.04.i1.v2
+  competence_id: ALG.PRD.04
+  type: second_degre_factorisation
+  difficulte: 4
+  format_reponse: entier
+  enonce: 'Résous l''équation : x² + ${b}x + ${c} = 0. Donne la plus grande solution.'
+  variables:
+    p:
+      min: 2
+      max: 6
+    q:
+      min: 7
+      max: 11
+  derives:
+    b: ${p} + ${q}
+    c: ${p} * ${q}
+  reponse: -${p}
+  methode: Factoriser x² + (${p} + ${q})x + ${p}×${q} = (x + ${p})(x + ${q}).
+- id: ALG.INE.02.i1.v2
+  competence_id: ALG.INE.02
+  type: inequation_premier_degre
+  difficulte: 5
+  format_reponse: entier
+  enonce: Quelle est la plus grande valeur entière de x telle que ${a}x + ${b} ≤ ${c}
+    ?
+  variables:
+    a:
+      min: 3
+      max: 10
+    b:
+      min: 2
+      max: 16
+    sol:
+      min: 2
+      max: 13
+  derives:
+    c: ${a} * ${sol} + ${b}
+  reponse: ${sol}
+  methode: 'Résoudre l''inéquation : x ≤ ${sol}.'
+- id: ALG.INE.03.i1.v2
+  competence_id: ALG.INE.03
+  type: ensemble_solution_intervalle
+  difficulte: 5
+  format_reponse: entier
+  enonce: L'inéquation x + ${a} ≤ ${b} a pour ensemble solution l'intervalle ] −∞
+    ; s ]. Quelle est la valeur de s ?
+  variables:
+    a:
+      min: 2
+      max: 11
+    b:
+      min: 12
+      max: 31
+  reponse: ${b} - ${a}
+  methode: 'Soustraire ${a} des deux côtés : x ≤ ${b} − ${a}.'
+- id: ALG.INE.04.i1.v2
+  competence_id: ALG.INE.04
+  type: inequation_produit
+  difficulte: 4
+  format_reponse: entier
+  enonce: Résous l'inéquation (x − ${p})(x − ${q}) ≤ 0 avec ${p} < ${q}. Donne la
+    borne inférieure de l'ensemble solution.
+  variables:
+    p:
+      min: 2
+      max: 6
+    q:
+      min: 7
+      max: 11
+  reponse: ${p}
+  methode: 'Un produit de deux facteurs est négatif entre les racines : ${p} ≤ x ≤
+    ${q}.'
+- id: ALG.INE.05.i1.v2
+  competence_id: ALG.INE.05
+  type: inequation_deux_membres
+  difficulte: 5
+  format_reponse: entier
+  enonce: Quelle est la plus grande valeur entière de x telle que ${a}x + ${b} ≤ ${c}x
+    + ${d} ?
+  variables:
+    a:
+      min: 4
+      max: 10
+    c:
+      min: 2
+      max: 3
+    b:
+      min: 2
+      max: 11
+    sol:
+      min: 2
+      max: 11
+  derives:
+    d: (${a} - ${c}) * ${sol} + ${b}
+  reponse: ${sol}
+  methode: 'Regrouper les x d''un côté : (${a} − ${c})x ≤ ${d} − ${b}, donc x ≤ ${sol}.'
+- id: ALG.SYS.01.i1.v2
+  competence_id: ALG.SYS.01
+  type: verifier_couple_solution
+  difficulte: 5
+  format_reponse: entier
+  enonce: Le couple (${x} ; ${y}) est-il solution du système x + y = ${s} et x − y
+    = ${dif} ? Réponds 1 si oui, 0 si non.
+  variables:
+    x:
+      min: 2
+      max: 10
+    y:
+      min: 2
+      max: 10
+    e:
+      min: 0
+      max: 2
+  derives:
+    s: ${x} + ${y}
+    dif: ${x} - ${y} + ${e}
+  reponse: Piecewise((1, And(Eq(${x} + ${y}, ${s}), Eq(${x} - ${y}, ${dif}))), (0,
+    True))
+  methode: Remplacer x et y dans les deux équations et vérifier les deux égalités.
+- id: ALG.SYS.02.i1.v2
+  competence_id: ALG.SYS.02
+  type: systeme_par_substitution
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous le système : y = ${a}x et x + y = ${s}. Quelle est la valeur de
+    x ?'
+  variables:
+    a:
+      min: 3
+      max: 6
+    x:
+      min: 2
+      max: 9
+  derives:
+    s: (${a} + 1) * ${x}
+  reponse: ${x}
+  methode: 'Substituer y = ${a}x dans x + y = ${s} : (${a} + 1)x = ${s}.'
+- id: ALG.SYS.03.i1.v2
+  competence_id: ALG.SYS.03
+  type: systeme_par_combinaison
+  difficulte: 5
+  format_reponse: entier
+  enonce: 'Résous le système : x + y = ${s} et x − y = ${dif}. Quelle est la valeur
+    de x ?'
+  variables:
+    x:
+      min: 2
+      max: 13
+    y:
+      min: 2
+      max: 13
+  derives:
+    s: ${x} + ${y}
+    dif: ${x} - ${y}
+  reponse: ${x}
+  methode: 'Additionner les deux équations : 2x = ${s} + ${dif}.'

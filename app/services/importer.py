@@ -51,6 +51,7 @@ def importer_contenu(
             variables=dict(g.variables),
             reponse=g.reponse,
             methode=g.methode,
+            derives=dict(g.derives),
         ))
         compteur["gabarits"] += 1
 
