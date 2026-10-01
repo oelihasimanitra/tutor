@@ -1,0 +1,177 @@
+# =============================================================================
+# Gabarits d'items — domaine ALG (algèbre).
+# Les équations sont construites avec des variables dérivées pour garantir des
+# solutions entières et propres (ex. b = a × sol).
+# =============================================================================
+version: 1
+gabarits:
+  # --- Calcul littéral ------------------------------------------------------
+  - id: ALG.LIT.01.i1
+    competence_id: ALG.LIT.01
+    type: expression_valeur
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Calcule la valeur de l'expression ${a}x + ${b} pour x = ${x}."
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 1, max: 20}
+      x: {min: 1, max: 10}
+    reponse: "${a}*${x} + ${b}"
+    methode: "Remplacer x par sa valeur puis calculer."
+
+  - id: ALG.LIT.02.i1
+    competence_id: ALG.LIT.02
+    type: simplifier_lineaire
+    difficulte: 2
+    format_reponse: expression
+    enonce: "Simplifie : ${a}x + ${b}x."
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 2, max: 9}
+    reponse: "(${a} + ${b})*x"
+    methode: "Regrouper les termes en x."
+
+  - id: ALG.LIT.03.i1
+    competence_id: ALG.LIT.03
+    type: developper_distributivite
+    difficulte: 3
+    format_reponse: expression
+    enonce: "Développe : ${a}(${b} + ${c})."
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 1, max: 9}
+      c: {min: 1, max: 9}
+    reponse: "${a}*${b} + ${a}*${c}"
+    methode: "Distribuer a sur b et c."
+
+  # --- Équations du premier degré ------------------------------------------
+  - id: ALG.EQ1.01.i1
+    competence_id: ALG.EQ1.01
+    type: equation_x_plus_a
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Résous l'équation : x + ${a} = ${b}."
+    variables:
+      a: {min: 1, max: 9}
+      sol: {min: 1, max: 15}
+    derives:
+      b: "${a} + ${sol}"
+    reponse: "${sol}"
+    methode: "Soustraire ${a} des deux côtés."
+
+  - id: ALG.EQ1.01.i2
+    competence_id: ALG.EQ1.01
+    type: equation_x_plus_a
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Résous l'équation : ${a} + x = ${b}."
+    variables:
+      a: {min: 2, max: 10}
+      sol: {min: 2, max: 20}
+    derives:
+      b: "${a} + ${sol}"
+    reponse: "${sol}"
+    methode: "Soustraire ${a} des deux côtés."
+
+  - id: ALG.EQ1.02.i1
+    competence_id: ALG.EQ1.02
+    type: equation_ax
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Résous l'équation : ${a}x = ${b}."
+    variables:
+      a: {min: 2, max: 9}
+      sol: {min: 2, max: 12}
+    derives:
+      b: "${a} * ${sol}"
+    reponse: "${sol}"
+    methode: "Diviser par ${a} des deux côtés."
+
+  - id: ALG.EQ1.03.i1
+    competence_id: ALG.EQ1.03
+    type: equation_ax_plus_b
+    difficulte: 3
+    format_reponse: entier
+    enonce: "Résous l'équation : ${a}x + ${b} = ${c}."
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 1, max: 20}
+      sol: {min: 1, max: 12}
+    derives:
+      c: "${a} * ${sol} + ${b}"
+    reponse: "${sol}"
+    methode: "Isoler ${a}x puis diviser par ${a}."
+
+  - id: ALG.EQ1.03.i2
+    competence_id: ALG.EQ1.03
+    type: equation_ax_plus_b
+    difficulte: 3
+    format_reponse: entier
+    enonce: "Résous l'équation : ${a}x − ${b} = ${c}."
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 1, max: 10}
+      sol: {min: 2, max: 12}
+    derives:
+      c: "${a} * ${sol} - ${b}"
+    reponse: "${sol}"
+    methode: "Ajouter ${b} des deux côtés puis diviser par ${a}."
+
+  - id: ALG.EQ1.04.i1
+    competence_id: ALG.EQ1.04
+    type: mise_en_equation
+    difficulte: 4
+    format_reponse: entier
+    enonce: "Un nombre x, multiplié par ${a} puis augmenté de ${b}, vaut ${c}. Trouve x."
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 1, max: 20}
+      sol: {min: 2, max: 12}
+    derives:
+      c: "${a} * ${sol} + ${b}"
+    reponse: "${sol}"
+    methode: "Traduire la phrase en équation ${a}x + ${b} = ${c}."
+
+  # --- Équations avancées ---------------------------------------------------
+  - id: ALG.EQ2.01.i1
+    competence_id: ALG.EQ2.01
+    type: equation_ax_plus_b_cx_plus_d
+    difficulte: 4
+    format_reponse: entier
+    enonce: "Résous l'équation : ${a}x + ${b} = ${c}x + ${d}."
+    variables:
+      a: {min: 3, max: 9}
+      c: {min: 1, max: 2}
+      b: {min: 1, max: 10}
+      sol: {min: 1, max: 10}
+    derives:
+      d: "(${a} - ${c}) * ${sol} + ${b}"
+    reponse: "${sol}"
+    methode: "Regrouper les x d'un côté, les constantes de l'autre."
+
+  - id: ALG.PRD.01.i1
+    competence_id: ALG.PRD.01
+    type: produit_nul
+    difficulte: 4
+    format_reponse: entier
+    enonce: "Résous : (x − ${p})(x − ${q}) = 0. Donne la plus petite solution."
+    variables:
+      p: {min: 1, max: 5}
+      q: {min: 6, max: 10}
+    reponse: "${p}"
+    methode: "Un produit est nul si l'un des facteurs est nul."
+
+  - id: ALG.INE.01.i1
+    competence_id: ALG.INE.01
+    type: inequation_frontiere
+    difficulte: 4
+    format_reponse: entier
+    enonce: "Quelle est la valeur frontière x telle que ${a}x + ${b} = ${c} ?"
+    variables:
+      a: {min: 2, max: 9}
+      b: {min: 1, max: 20}
+      sol: {min: 1, max: 12}
+    derives:
+      c: "${a} * ${sol} + ${b}"
+    reponse: "${sol}"
+    methode: "Trouver la frontière en résolvant l'équation associée."

@@ -1,0 +1,29 @@
+[project]
+name = "projet-tutorat"
+version = "0.1.0"
+description = "Système de suivi de tutorat en mathématiques et logique (tuteur assisté, moteur adaptatif)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # Couche de données (choix SQLModel, cf. docs/01-reformulation.md)
+    "sqlmodel>=0.0.22",
+    # Calcul symbolique pour générer/valider les réponses des items
+    "sympy>=1.13",
+    # Contenu versionné (graphe + gabarits) en YAML
+    "pyyaml>=6.0",
+    # Interface web phase 1
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",  # tests de l'API FastAPI
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]

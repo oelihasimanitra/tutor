@@ -1,0 +1,209 @@
+# =============================================================================
+# Gabarits d'items — domaine NUM (nombres et calculs).
+# La réponse est une expression sympy, calculée à la génération (jamais un LLM).
+# Format : voir docs/05-formats-contenu.md
+# =============================================================================
+version: 1
+gabarits:
+  # --- Nombres entiers ------------------------------------------------------
+  - id: NUM.ENT.01.i1
+    competence_id: NUM.ENT.01
+    type: addition_entiers
+    difficulte: 1
+    format_reponse: entier
+    enonce: "Calcule : ${a} + ${b}"
+    variables:
+      a: {min: 1, max: 50}
+      b: {min: 1, max: 50}
+    reponse: "${a} + ${b}"
+    methode: "Addition en colonnes ou calcul mental."
+
+  - id: NUM.ENT.02.i1
+    competence_id: NUM.ENT.02
+    type: multiplication_entiers
+    difficulte: 1
+    format_reponse: entier
+    enonce: "Calcule : ${a} × ${b}"
+    variables:
+      a: {min: 2, max: 12}
+      b: {min: 2, max: 12}
+    reponse: "${a} * ${b}"
+    methode: "Table de multiplication ou calcul en colonnes."
+
+  - id: NUM.DIV.01.i1
+    competence_id: NUM.DIV.01
+    type: division_euclidienne_reste
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Quel est le reste de la division euclidienne de ${a} par ${b} ?"
+    variables:
+      a: {min: 20, max: 200}
+      b: {min: 2, max: 9}
+    reponse: "Mod(${a}, ${b})"
+    methode: "Poser la division : a = b × q + r, reste r = a − b × q."
+
+  - id: NUM.DIV.01.i2
+    competence_id: NUM.DIV.01
+    type: division_euclidienne_quotient
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Quel est le quotient entier de la division euclidienne de ${a} par ${b} ?"
+    variables:
+      a: {min: 20, max: 200}
+      b: {min: 2, max: 9}
+    reponse: "floor(${a} / ${b})"
+    methode: "Poser la division : quotient entier q."
+
+  - id: NUM.DIV.02.i1
+    competence_id: NUM.DIV.02
+    type: divisibilite
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Le nombre ${a} est-il divisible par ${b} ? Réponds 1 si oui, 0 si non."
+    variables:
+      a: {min: 10, max: 200}
+      b: {min: 2, max: 9}
+    reponse: "Piecewise((1, Eq(Mod(${a}, ${b}), 0)), (0, True))"
+    methode: "Vérifier si le reste de la division est nul."
+
+  # --- Fractions ------------------------------------------------------------
+  - id: NUM.FRA.01.i1
+    competence_id: NUM.FRA.01
+    type: fraction_valeur
+    difficulte: 1
+    format_reponse: fraction
+    enonce: "Quelle est la valeur de la fraction ${a}/${b} ? Donne la réponse sous forme de fraction."
+    variables:
+      a: {min: 1, max: 9}
+      b: {min: 2, max: 9}
+    reponse: "${a} / ${b}"
+    methode: "La fraction a/b représente a parts sur b parts égales."
+
+  - id: NUM.FRA.02.i1
+    competence_id: NUM.FRA.02
+    type: fraction_equivalente
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Complète : ${a}/${b} = ?/${c}"
+    variables:
+      a: {min: 1, max: 9}
+      b: {min: 2, max: 9}
+      k: {min: 2, max: 6}
+    derives:
+      c: "${b} * ${k}"
+      rep: "${a} * ${k}"
+    reponse: "${rep}"
+    methode: "Multiplier numérateur et dénominateur par le même nombre k."
+
+  - id: NUM.FRA.03.i1
+    competence_id: NUM.FRA.03
+    type: fraction_soustraction
+    difficulte: 2
+    format_reponse: fraction
+    enonce: "Calcule : ${a}/${b} − ${c}/${d}. Donne le résultat sous forme de fraction."
+    variables:
+      a: {min: 1, max: 9}
+      b: {min: 2, max: 9}
+      c: {min: 1, max: 9}
+      d: {min: 2, max: 9}
+    reponse: "(${a}*${d} - ${c}*${b}) / (${b}*${d})"
+    methode: "Réduire au même dénominateur puis soustraire."
+
+  - id: NUM.FRA.04.i1
+    competence_id: NUM.FRA.04
+    type: fraction_addition_meme_denom
+    difficulte: 2
+    format_reponse: fraction
+    enonce: "Calcule : ${a}/${b} + ${c}/${b}"
+    variables:
+      a: {min: 1, max: 9}
+      b: {min: 2, max: 12}
+      c: {min: 1, max: 9}
+    reponse: "(${a} + ${c}) / ${b}"
+    methode: "Additionner les numérateurs, garder le dénominateur commun."
+
+  - id: NUM.FRA.05.i1
+    competence_id: NUM.FRA.05
+    type: fraction_addition_diff_denom
+    difficulte: 3
+    format_reponse: fraction
+    enonce: "Calcule : ${a}/${b} + ${c}/${d}. Donne le résultat sous forme de fraction."
+    variables:
+      a: {min: 1, max: 9}
+      b: {min: 2, max: 9}
+      c: {min: 1, max: 9}
+      d: {min: 2, max: 9}
+    reponse: "(${a}*${d} + ${c}*${b}) / (${b}*${d})"
+    methode: "Réduire au même dénominateur (b × d) puis additionner."
+
+  # --- Nombres relatifs -----------------------------------------------------
+  - id: NUM.REL.01.i1
+    competence_id: NUM.REL.01
+    type: relatif_addition
+    difficulte: 1
+    format_reponse: entier
+    enonce: "Sur la droite graduée, quel est le résultat de (${a}) + (${b}) ?"
+    variables:
+      a: {min: -12, max: 12}
+      b: {min: -12, max: 12}
+    reponse: "${a} + ${b}"
+    methode: "Se déplacer sur la droite graduée."
+
+  - id: NUM.REL.02.i1
+    competence_id: NUM.REL.02
+    type: relatif_addition
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Calcule : (${a}) + (${b})"
+    variables:
+      a: {min: -20, max: 20}
+      b: {min: -20, max: 20}
+    reponse: "${a} + ${b}"
+    methode: "Additionner les relatifs en tenant compte des signes."
+
+  - id: NUM.REL.03.i1
+    competence_id: NUM.REL.03
+    type: relatif_multiplication
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Calcule : (${a}) × (${b})"
+    variables:
+      a: {min: -6, max: 6}
+      b: {min: -6, max: 6}
+    reponse: "${a} * ${b}"
+    methode: "Appliquer la règle des signes."
+
+  # --- Puissances et racines ------------------------------------------------
+  - id: NUM.PUI.01.i1
+    competence_id: NUM.PUI.01
+    type: puissance_dix
+    difficulte: 2
+    format_reponse: entier
+    enonce: "Calcule : 10^${a}"
+    variables:
+      a: {min: 2, max: 5}
+    reponse: "10**${a}"
+    methode: "10^n s'écrit 1 suivi de n zéros."
+
+  - id: NUM.PUI.02.i1
+    competence_id: NUM.PUI.02
+    type: puissance_produit
+    difficulte: 3
+    format_reponse: entier
+    enonce: "Écris 10^${a} × 10^${b} sous la forme 10^n. Quelle est la valeur de n ?"
+    variables:
+      a: {min: 2, max: 6}
+      b: {min: 2, max: 6}
+    reponse: "${a} + ${b}"
+    methode: "10^a × 10^b = 10^(a + b)."
+
+  - id: NUM.RAC.01.i1
+    competence_id: NUM.RAC.01
+    type: racine_carree_carre
+    difficulte: 3
+    format_reponse: entier
+    enonce: "Calcule : √(${a}²)"
+    variables:
+      a: {min: 1, max: 12}
+    reponse: "${a}"
+    methode: "√(a²) = a pour a positif."

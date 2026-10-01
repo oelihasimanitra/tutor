@@ -1,0 +1,42 @@
+# =============================================================================
+# Configuration des seuils, pondérations et règles de décision.
+#
+# RÈGLE D'OR (SPEC §7) : aucun seuil ni pondération en dur dans le code.
+# Tout ce qui pilote le moteur vit ici, éditables sans recompiler.
+# Les valeurs marquées "provisoire" dans le SPEC restent ici, volontairement.
+# =============================================================================
+
+seuils:
+  # Maîtrise d'une compétence (SPEC §4-B : "3 sur 4 avec méthode correcte").
+  maitrise:
+    reussites: 3          # nombre de réussites requises
+    sur: 4                # sur ce nombre de tentatives
+    methode_correcte: true  # exiger aussi la méthode correcte (sinon étourderie)
+
+  # Rétention : validation à J+7 (status "consolidé").
+  retention:
+    delai_jours: 7        # délai minimal avant l'item de contrôle J+7
+    revision_j2: 2        # révision rapprochée planifiée à J+2
+    revision_j7: 7        # révision espacée planifiée à J+7
+
+  # Anxiété (module A, 6 items, score 6 à 30) — seuils PROVISOIRES.
+  anxiete:
+    faible_max: 14        # <= 14 : faible
+    moderee_max: 21       # 15..21 : modérée ; >= 22 : élevée
+
+  # Mindset (module A, 4 items, score 4 à 20).
+  mindset:
+    items: 4
+    max: 20
+
+# Pilotage du test adaptatif.
+adaptatif:
+  # Nombre d'items de contrôle posés sur chaque prérequis direct
+  # lorsqu'un nœud échoue (SPEC §4-B).
+  controle_prerequis: 1
+
+# Pondération des statuts de champ du profil (SPEC §3.8 : M l'emporte sur D).
+ponderation:
+  statut_declare: 0.3     # "D" — déclaré par l'élève, poids faible
+  statut_mesure: 1.0      # "M" — mesuré, l'emporte toujours
+  statut_hypothese: 0.5   # "H" — hypothèse, poids intermédiaire

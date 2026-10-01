@@ -1,0 +1,18 @@
+# Environnement virtuel
+.venv/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Base de données locale (SQLite) — jamais versionnée
+*.db
+*.sqlite3
+*.sqlite
+
+# Divers
+.DS_Store
+*.log
