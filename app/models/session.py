@@ -37,6 +37,7 @@ class Reponse(SQLModel, table=True):
     confiance_annoncee: int | None = None   # 1..5
     type_erreur: str | None = None          # etourderie | procedure | concept | lacune
     methode_observee: str | None = None     # traçage de méthode (P2)
+    est_controle: bool = False              # item de contrôle (prérequis propagé)
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 

@@ -17,7 +17,7 @@ from typing import Mapping
 
 from .graph import Graphe
 from .items import Gabarit, ItemGenere, instancier
-from .status import EtatCompetence, Statut
+from .status import EtatCompetence, Origine, Statut
 
 # Borne anti-boucle : nombre maximal de déplacements (montée/descente) autorisés.
 PROFONDEUR_MAX = 50
@@ -42,8 +42,19 @@ def prochain_item(
     for _ in range(PROFONDEUR_MAX):
         etat = etats.get(noeud) or EtatCompetence()
 
-        # 1. Maîtrisé : monter vers un successeur non maîtrisé.
+        # 0. Prérequis propagé (présumé acquis) : poser un item de contrôle.
+        if etat.statut in (Statut.ACQUIS, Statut.CONSOLIDE) and etat.origine == Origine.PROPAGATION:
+            return _choisir_item(noeud, graphe, gabarits, rng, preferer_facile)
+
+        # 1. Maîtrisé : vérifier les prérequis propagés, puis monter.
         if etat.statut in (Statut.ACQUIS, Statut.CONSOLIDE):
+            pre_propagues = [
+                p for p in graphe.prerequis(noeud)
+                if etats.get(p, EtatCompetence()).origine == Origine.PROPAGATION
+            ]
+            if pre_propagues:
+                noeud = pre_propagues[0]
+                continue
             suivants = [
                 s for s in graphe.successeurs(noeud)
                 if _non_maitrise(etats.get(s, EtatCompetence()))

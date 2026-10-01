@@ -74,3 +74,16 @@ def test_preferer_facile(graphe, gabarits):
     item = prochain_item(graphe, etats, gabarits, "NUM.ENT.02", preferer_facile=True)
     assert item is not None
     assert item.competence_id == "NUM.DIV.01"
+
+
+def test_controle_prerequis_propage(make_noeud, make_gabarit):
+    """Un prérequis d'origine propagation est testé (item de contrôle) avant de monter."""
+    graphe, gabarits = _chaine(make_noeud, make_gabarit)
+    etats = {
+        "A": EtatCompetence(statut=Statut.ACQUIS, origine=Origine.PROPAGATION),
+        "B": EtatCompetence(statut=Statut.ACQUIS, origine=Origine.MESURE),
+        "C": EtatCompetence(),  # absent
+    }
+    item = prochain_item(graphe, etats, gabarits, "B")
+    assert item is not None
+    assert item.competence_id == "A"  # contrôle du prérequis propagé, pas C

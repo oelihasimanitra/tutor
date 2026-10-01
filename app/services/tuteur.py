@@ -20,7 +20,7 @@ from ..engine.config import Config
 from ..engine.graph import Graphe
 from ..engine.items import Gabarit, ItemGenere as ItemMoteur, reponse_equivalente
 from ..engine.selection import prochain_item as prochain_item_moteur
-from ..engine.status import Reponse as ReponseMoteur, calculer_etats
+from ..engine.status import Origine, Reponse as ReponseMoteur, calculer_etats
 from ..models import Eleve, ItemGenere as ItemGenereModel, Reponse
 
 
@@ -91,6 +91,11 @@ class TuteurService:
         )
         competence_id = self.gabarits[item_db.gabarit_id].competence_id
 
+        # Détecter un item de contrôle : la cible était un prérequis propagé.
+        etats_avant = self.carte_competences(eleve_id)
+        etat_avant = etats_avant.get(competence_id)
+        est_controle = etat_avant is not None and etat_avant.origine == Origine.PROPAGATION
+
         reponse = Reponse(
             eleve_id=eleve_id,
             item_id=item_db.id,
@@ -100,6 +105,7 @@ class TuteurService:
             confiance_annoncee=confiance_annoncee,
             type_erreur=type_erreur,
             methode_observee=methode_observee,
+            est_controle=est_controle,
         )
         self.session.add(reponse)
         self.session.commit()

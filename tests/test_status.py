@@ -64,6 +64,20 @@ def test_methode_non_renseignee_comptee(config):
     assert etat.nb_reussites == 3
 
 
+def test_controle_binaire_reussi(config):
+    """Un contrôle réussi confirme le prérequis propagé (origine controle)."""
+    etat = statut_noeud([Reponse("N", True, D, est_controle=True)], config)
+    assert etat.statut == Statut.ACQUIS
+    assert etat.origine == Origine.CONTROLE
+
+
+def test_controle_binaire_echoue(config):
+    """Un contrôle échoué infirme le prérequis (fragile, origine mesure)."""
+    etat = statut_noeud([Reponse("N", False, D, est_controle=True)], config)
+    assert etat.statut == Statut.FRAGILE
+    assert etat.origine == Origine.MESURE
+
+
 def test_fenetre_glissante(config):
     """On ne regarde que les 4 dernières tentatives : un vieil échec est ignoré."""
     reponses = [

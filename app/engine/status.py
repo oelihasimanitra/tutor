@@ -46,6 +46,7 @@ class Reponse:
     methode_observee: str | None = None
     type_erreur: str | None = None
     confiance_annoncee: int | None = None
+    est_controle: bool = False
 
 
 @dataclass
@@ -74,6 +75,20 @@ def statut_noeud(
     """
     seuil = config.seuil_maitrise
     reponses_triees = sorted(reponses, key=lambda r: r.date)
+
+    # Contrôle binaire : si la réponse la plus récente est un item de contrôle
+    # (posé sur un prérequis propagé), son verdict domine le seuil de maîtrise.
+    if reponses_triees and reponses_triees[-1].est_controle:
+        dernier = reponses_triees[-1]
+        etat = EtatCompetence(nb_tentatives=1, nb_reussites=1 if dernier.est_correct else 0)
+        if dernier.est_correct:
+            etat.statut = Statut.ACQUIS
+            etat.origine = Origine.CONTROLE
+            etat.date_acquisition = dernier.date
+        else:
+            etat.statut = Statut.FRAGILE
+            etat.origine = Origine.MESURE
+        return etat
 
     def _ok(r: Reponse) -> bool:
         if not r.est_correct:
