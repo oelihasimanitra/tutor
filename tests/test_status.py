@@ -56,6 +56,14 @@ def test_methode_incorrecte_non_comptee(config):
     assert etat.nb_reussites == 0
 
 
+def test_methode_non_renseignee_comptee(config):
+    """Une réussite sans méthode renseignée est comptée (pas rejetée comme « mauvaise »)."""
+    reponses = _reponses([True, True, True])  # methode_observee = None
+    etat = statut_noeud(reponses, config, methode_attendue="bonne")
+    assert etat.statut == Statut.ACQUIS
+    assert etat.nb_reussites == 3
+
+
 def test_fenetre_glissante(config):
     """On ne regarde que les 4 dernières tentatives : un vieil échec est ignoré."""
     reponses = [

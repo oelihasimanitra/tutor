@@ -27,6 +27,7 @@ class SeuilMaitrise:
     reussites: int
     sur: int
     methode_correcte: bool
+    methode_non_renseignee_compte: bool = True
 
 
 @dataclass(frozen=True)

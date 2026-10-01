@@ -78,9 +78,13 @@ def statut_noeud(
     def _ok(r: Reponse) -> bool:
         if not r.est_correct:
             return False
-        if seuil.methode_correcte and methode_attendue and r.methode_observee != methode_attendue:
-            return False
-        return True
+        if not seuil.methode_correcte or not methode_attendue:
+            return True  # pas de vérification de méthode demandée
+        if r.methode_observee is None:
+            # Méthode non renseignée ≠ mauvaise méthode : la réussite est comptée
+            # (comportement configurable via methode_non_renseignee_compte).
+            return seuil.methode_non_renseignee_compte
+        return r.methode_observee == methode_attendue
 
     # date_acquisition : premier franchissement du seuil sur l'historique complet.
     reussites_cumul = 0

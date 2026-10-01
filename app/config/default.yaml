@@ -12,6 +12,7 @@ seuils:
     reussites: 3          # nombre de réussites requises
     sur: 4                # sur ce nombre de tentatives
     methode_correcte: true  # exiger aussi la méthode correcte (sinon étourderie)
+    methode_non_renseignee_compte: true  # une méthode non renseignée compte comme réussite
 
   # Rétention : validation à J+7 (status "consolidé").
   retention:

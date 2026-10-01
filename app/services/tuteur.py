@@ -130,4 +130,13 @@ class TuteurService:
                 confiance_annoncee=r.confiance_annoncee,
             ))
 
-        return calculer_etats(self.graphe, par_noeud, self.config)
+        # Méthode attendue par nœud, déduite des gabarits (Gabarit.methode) :
+        # sans elle, methode_correcte n'était jamais appliquée.
+        methode_attendue_par_noeud: dict[str, str] = {}
+        for g in self.gabarits.values():
+            if g.methode and g.competence_id not in methode_attendue_par_noeud:
+                methode_attendue_par_noeud[g.competence_id] = g.methode
+
+        return calculer_etats(
+            self.graphe, par_noeud, self.config, methode_attendue_par_noeud
+        )
